@@ -10,7 +10,7 @@ namespace Infrastructure.Nats;
 /// <summary>
 /// Default implementation of <see cref="INatsGate"/>
 /// </summary>
-public class NatsGate : INatsGate
+public sealed class NatsGate : INatsGate, IDisposable
 {
     /// <summary>
     /// Default timeout, 20 seconds
@@ -18,6 +18,7 @@ public class NatsGate : INatsGate
     private const int Timeout = 20 * 1000;
     
     private IConnection? _connection;
+    private readonly List<IAsyncSubscription> _subscriptions = new ();
 
     /// <inheritdoc />
     public void ConnectToServer(NatsServerSettings server)
@@ -75,11 +76,49 @@ public class NatsGate : INatsGate
         return Encoding.UTF8.GetString(req.Data);
     }
 
+    /// <inheritdoc />
+    public long Subscribe(string topicName, Func<IncomingMessageData, ResponseMessageData?> handler)
+    {
+        EventHandler<MsgHandlerEventArgs> h = (sender, args) =>
+        {
+            var body = Encoding.UTF8.GetString(args.Message.Data);
+            var response = handler.Invoke(new IncomingMessageData(body, string.IsNullOrWhiteSpace(args.Message.Reply) ? null : args.Message.Reply));
+            if (response is null) return;
+            
+            GetConnection().Publish(response.TopicToResponse ?? args.Message.Reply, Encoding.UTF8.GetBytes(response.Body));
+        };
+        var sub = GetConnection().SubscribeAsync(topicName, h);
+        if (sub is null) throw new FailedToSubscribeToTopicException("Connection is null");
+        _subscriptions.Add(sub);
+        
+        return sub.Sid;
+    }
+
+    /// <inheritdoc />
+    public void Unsubscribe(long subscriptionId)
+    {
+        var sub = _subscriptions.Find(x => x.Sid == subscriptionId);
+        if (sub is null) return;
+        sub.Unsubscribe();
+        _subscriptions.Remove(sub);
+    }
+
     private IConnection GetConnection()
     {
         if (_connection is null) throw new NatsGateIsNotConnectedException("Please, connect to a server first", false);
         if (_connection.IsClosed()) throw new NatsGateIsNotConnectedException("Connection is closed", false);
         if (_connection.State != ConnState.CONNECTED) throw new NatsGateIsNotConnectedException("Connection is in a wrong state", true);
         return _connection;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        foreach (var asyncSubscription in _subscriptions)
+        {
+            asyncSubscription.Dispose();
+        }
+
+        _connection?.Dispose();
     }
 }

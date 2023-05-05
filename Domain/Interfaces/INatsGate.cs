@@ -33,9 +33,23 @@ public interface INatsGate
     Task<T> SendRequestReply<T>(NatsRequest request);
 
     /// <summary>
-    /// Publishes request and wait for reply
+    /// Publishes request and waiting for reply
     /// </summary>
     /// <param name="request">Request to publish</param>
     /// <returns>Reply as string</returns>
     Task<string> SendRequestReply(NatsRequest request);
+
+    /// <summary>
+    /// Subscribes to the subject
+    /// </summary>
+    /// <param name="topicName">Subject</param>
+    /// <param name="handler">Handler for incoming messages</param>
+    /// <returns>Subscription Id</returns>
+    long Subscribe(string topicName, Func<IncomingMessageData, ResponseMessageData?> handler);
+
+    /// <summary>
+    /// Unsubscribes from a subscription
+    /// </summary>
+    /// <param name="subscriptionId">Id of the subscription</param>
+    void Unsubscribe(long subscriptionId);
 }

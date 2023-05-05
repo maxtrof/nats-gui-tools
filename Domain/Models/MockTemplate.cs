@@ -11,4 +11,14 @@ public sealed class MockTemplate
     /// Type of a Mock
     /// </summary>
     public MockTypes Type { get; set; }
+
+    /// <summary>
+    /// Topic to subscribe
+    /// </summary>
+    public string Topic { get; set; } = default!;
+
+    /// <summary>
+    /// Answer template
+    /// </summary>
+    public string AnswerTemplate { get; set; } = default!;
 }
