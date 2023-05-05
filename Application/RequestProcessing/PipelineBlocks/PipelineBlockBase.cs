@@ -11,5 +11,5 @@ public abstract class PipelineBlockBase
     /// Transforms and processes request
     /// </summary>
     /// <param name="request">Request</param>
-    public abstract void Process(NatsRequest request);
+    public abstract Task Process(NatsRequest request);
 }

@@ -6,7 +6,7 @@ namespace Application.RequestProcessing.PipelineBlocks;
 /// <summary>
 /// Pipeline block that replaces variables in request body with user-defined values.
 /// </summary>
-public sealed class ReplaceUserVariablesPipelineBlock : PipelineBlockBase
+internal sealed class ReplaceUserVariablesPipelineBlock : PipelineBlockBase
 {
     private readonly Dictionary<string, string> _dictionary;
 
@@ -16,7 +16,7 @@ public sealed class ReplaceUserVariablesPipelineBlock : PipelineBlockBase
     }
     
     /// <inheritdoc />
-    public override void Process(NatsRequest request)
+    public override Task Process(NatsRequest request)
     {
         var sb = new StringBuilder(request.Body);
         foreach (var (key, value) in _dictionary)
@@ -25,5 +25,7 @@ public sealed class ReplaceUserVariablesPipelineBlock : PipelineBlockBase
         }
 
         request.Body = sb.ToString();
+        
+        return Task.CompletedTask;
     }
 }

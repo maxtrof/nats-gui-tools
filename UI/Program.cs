@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using Application;
+using Application.RequestProcessing;
 using Autofac;
 using Domain.Interfaces;
 using Infrastructure.Repositories.AppDataRepository;
@@ -42,6 +44,8 @@ class Program
     {
         var builder = new ContainerBuilder();
         builder.RegisterType<FileStorageAppDataRepository>().As<IAppDataRepository>().SingleInstance();
+        builder.RegisterType<DataStorage>().As<IDataStorage>().SingleInstance();
+        builder.RegisterType<PipelineBuilder>().AsSelf();
         Container = builder.Build();
     }
 }
