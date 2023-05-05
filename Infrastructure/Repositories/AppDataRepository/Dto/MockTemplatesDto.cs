@@ -4,4 +4,5 @@ namespace Infrastructure.Repositories.AppDataRepository.Dto;
 /// DTO for Mock Templates containing file
 /// </summary>
 /// <param name="Templates">Mock templates DTOs</param>
-internal sealed record MockTemplatesDto(List<MockTemplateDto> Templates);
+/// <param name="Version">Version of a format</param>
+internal sealed record MockTemplatesDto(List<MockTemplateDto> Templates, int Version);

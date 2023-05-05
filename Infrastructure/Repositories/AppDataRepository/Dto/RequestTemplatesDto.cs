@@ -4,4 +4,5 @@ namespace Infrastructure.Repositories.AppDataRepository.Dto;
 /// DTO for Request Templates containing file
 /// </summary>
 /// <param name="Templates">Templates</param>
-internal sealed record RequestTemplatesDto(List<RequestTemplateDto> Templates);
+/// <param name="Version">Version of a format</param>
+internal sealed record RequestTemplatesDto(List<RequestTemplateDto> Templates, int Version);

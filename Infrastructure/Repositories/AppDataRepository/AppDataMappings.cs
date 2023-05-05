@@ -8,6 +8,7 @@ namespace Infrastructure.Repositories.AppDataRepository;
 /// </summary>
 internal static class AppDataMappings
 {
+    private const int CurrentFileFormatVersion = 1;
     /// <summary>
     /// Maps <see cref="AppSettingsDto"/> to <see cref="AppSettings"/>
     /// </summary>
@@ -76,7 +77,8 @@ internal static class AppDataMappings
         var serversDto = settings.Servers.Select(x => x.ToDto()).ToList();
         return new AppSettingsDto(
             Servers: serversDto,
-            UserDictionary: settings.UserDictionary
+            UserDictionary: settings.UserDictionary,
+            Version: CurrentFileFormatVersion
         );
     }
 
@@ -112,7 +114,8 @@ internal static class AppDataMappings
         }
 
         return new RequestTemplatesDto(
-            Templates: templatesDto
+            Templates: templatesDto,
+            Version: CurrentFileFormatVersion
         );
     }
     
@@ -131,7 +134,8 @@ internal static class AppDataMappings
         }
 
         return new MockTemplatesDto(
-            Templates: templatesDto
+            Templates: templatesDto,
+            Version: CurrentFileFormatVersion
         );
     }
 }
