@@ -41,7 +41,7 @@ class Program
     private static void SetUpDi()
     {
         var builder = new ContainerBuilder();
-        builder.RegisterType<FileStorageAppDataRepository>().As<IAppDataRepository>();
+        builder.RegisterType<FileStorageAppDataRepository>().As<IAppDataRepository>().SingleInstance();
         Container = builder.Build();
     }
 }

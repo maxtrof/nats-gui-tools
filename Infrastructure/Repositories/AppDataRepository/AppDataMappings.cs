@@ -15,6 +15,7 @@ internal static class AppDataMappings
     {
         var settings = new AppSettings();
         settings.Servers = dto.Servers.Select(x => x.ToDomain()).ToList();
+        settings.UserDictionary = dto.UserDictionary;
         return settings;
     }
 
@@ -73,7 +74,8 @@ internal static class AppDataMappings
     {
         var serversDto = settings.Servers.Select(x => x.ToDto()).ToList();
         return new AppSettingsDto(
-            Servers: serversDto
+            Servers: serversDto,
+            UserDictionary: settings.UserDictionary
         );
     }
 

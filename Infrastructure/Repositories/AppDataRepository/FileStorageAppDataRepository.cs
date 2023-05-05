@@ -22,7 +22,7 @@ public sealed class FileStorageAppDataRepository : IAppDataRepository
     /// <summary>
     /// Ensures we'll read or write only one file at a time
     /// </summary>
-    private readonly SemaphoreSlim _fileAccessSemaphore = new (1);
+    private static readonly SemaphoreSlim FileAccessSemaphore = new (1);
     
     public FileStorageAppDataRepository()
     {
@@ -81,7 +81,7 @@ public sealed class FileStorageAppDataRepository : IAppDataRepository
         var path = Path.Combine(_localDataFolder, fileName);
         if (!File.Exists(path)) return default;
         
-        await _fileAccessSemaphore.WaitAsync();
+        await FileAccessSemaphore.WaitAsync();
         try
         {
             await using var stream = File.OpenRead(path);
@@ -89,7 +89,7 @@ public sealed class FileStorageAppDataRepository : IAppDataRepository
         }
         finally
         {
-            _fileAccessSemaphore.Release();
+            FileAccessSemaphore.Release();
         }
     }
 
@@ -100,7 +100,7 @@ public sealed class FileStorageAppDataRepository : IAppDataRepository
     /// <param name="data">Object</param>
     private async Task WriteJsonFile(string fileName, object data)
     {
-        await _fileAccessSemaphore.WaitAsync();
+        await FileAccessSemaphore.WaitAsync();
         try
         {
             var content = JsonSerializer.Serialize(data);
@@ -108,7 +108,7 @@ public sealed class FileStorageAppDataRepository : IAppDataRepository
         }
         finally
         {
-            _fileAccessSemaphore.Release();
+            FileAccessSemaphore.Release();
         }
     }
 

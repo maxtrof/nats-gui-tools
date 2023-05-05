@@ -38,3 +38,13 @@ publish/
 *.nuget.targets
 
 /.idea/
+
+# Mac desktop service store files
+.DS_Store
+
+# VS 2015+
+*.vc.vc.opendb
+*.vc.db
+
+# Visual Studio Code
+.vscode/
