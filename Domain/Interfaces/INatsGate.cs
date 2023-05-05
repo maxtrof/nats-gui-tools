@@ -17,6 +17,11 @@ public interface INatsGate
     /// Disconnect from a server
     /// </summary>
     Task Disconnect();
+    
+    /// <summary>
+    /// True if connection is active
+    /// </summary>
+    bool Connected { get; }
 
     /// <summary>
     /// Publishes request

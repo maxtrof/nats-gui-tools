@@ -52,6 +52,8 @@ public sealed class NatsGate : INatsGate, IDisposable
         _connection = null;
     }
 
+    public bool Connected => _connection?.State == ConnState.CONNECTED;
+
     /// <inheritdoc />
     public void SendRequest(NatsRequest request)
     {
