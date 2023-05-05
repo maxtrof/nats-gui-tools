@@ -1,3 +1,4 @@
+using Application.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
 
@@ -62,7 +63,7 @@ public sealed class DataStorage : IDataStorage
     {
         get
         {
-            if (_appSettings is null) throw new ArgumentNullException(nameof(_appSettings));
+            if (_appSettings is null) throw new DataStorageIsNotInitializedException(nameof(_appSettings));
             return _appSettings;
         }
         set
@@ -77,7 +78,7 @@ public sealed class DataStorage : IDataStorage
     {
         get
         {
-            if (_requestTemplates is null) throw new ArgumentNullException(nameof(_requestTemplates));
+            if (_requestTemplates is null) throw new DataStorageIsNotInitializedException(nameof(_requestTemplates));
             return _requestTemplates;
         }
         set
@@ -92,7 +93,7 @@ public sealed class DataStorage : IDataStorage
     {
         get
         {
-            if (_mockTemplates is null) throw new ArgumentNullException(nameof(_requestTemplates));
+            if (_mockTemplates is null) throw new DataStorageIsNotInitializedException(nameof(_requestTemplates));
             return _mockTemplates;
         }
         set

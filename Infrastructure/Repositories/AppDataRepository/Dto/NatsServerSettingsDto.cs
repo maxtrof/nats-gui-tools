@@ -10,10 +10,12 @@ namespace Infrastructure.Repositories.AppDataRepository.Dto;
 /// <param name="Port">Port</param>
 /// <param name="Login">Login</param>
 /// <param name="Password">Password</param>
+/// <param name="Tls">Should use secure connection</param>
 internal sealed record NatsServerSettingsDto(
     string Name,
     string Address,
-    string? Port,
+    int? Port,
     string? Login,
-    string? Password
+    string? Password,
+    bool Tls
 );

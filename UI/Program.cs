@@ -5,6 +5,7 @@ using Application;
 using Application.RequestProcessing;
 using Autofac;
 using Domain.Interfaces;
+using Infrastructure.Nats;
 using Infrastructure.Repositories.AppDataRepository;
 
 namespace UI;
@@ -46,6 +47,7 @@ class Program
         builder.RegisterType<FileStorageAppDataRepository>().As<IAppDataRepository>().SingleInstance();
         builder.RegisterType<DataStorage>().As<IDataStorage>().SingleInstance();
         builder.RegisterType<PipelineBuilder>().AsSelf();
+        builder.RegisterType<NatsGate>().As<INatsGate>().SingleInstance();
         Container = builder.Build();
     }
 }

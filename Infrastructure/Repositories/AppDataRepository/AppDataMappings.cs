@@ -30,6 +30,7 @@ internal static class AppDataMappings
         server.Port = dto.Port;
         server.Login = dto.Login;
         server.Password = dto.Password;
+        server.Tls = dto.Tls;
         return server;
     }
 
@@ -89,7 +90,8 @@ internal static class AppDataMappings
             Address: serverSettings.Address,
             Port: serverSettings.Port,
             Login: serverSettings.Login,
-            Password: serverSettings.Password
+            Password: serverSettings.Password,
+            Tls: serverSettings.Tls
         );
     }
 

@@ -11,4 +11,8 @@
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="NATS.Client" Version="1.0.3" />
+    </ItemGroup>
+
 </Project>
