@@ -4,6 +4,7 @@ using System;
 using Application;
 using Application.MockEngine;
 using Application.RequestProcessing;
+using Application.TopicListener;
 using Autofac;
 using Domain.Interfaces;
 using Infrastructure.Nats;
@@ -47,9 +48,10 @@ class Program
         var builder = new ContainerBuilder();
         builder.RegisterType<FileStorageAppDataRepository>().As<IAppDataRepository>().SingleInstance();
         builder.RegisterType<DataStorage>().As<IDataStorage>().SingleInstance();
-        builder.RegisterType<PipelineBuilder>().AsSelf();
-        builder.RegisterType<MockEngine>().AsSelf();
         builder.RegisterType<NatsGate>().As<INatsGate>().SingleInstance();
+        builder.RegisterType<PipelineBuilder>().AsSelf();
+        builder.RegisterType<MockEngine>().AsSelf().SingleInstance();
+        builder.RegisterType<TopicListener>().AsSelf().SingleInstance();
         Container = builder.Build();
     }
 }
