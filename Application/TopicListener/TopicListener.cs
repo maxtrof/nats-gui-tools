@@ -1,3 +1,4 @@
+using Application.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
 
@@ -27,17 +28,18 @@ public sealed class TopicListener : IDisposable
     /// <summary>
     /// Subscribes to a topic to listen
     /// </summary>
-    /// <param name="topicName">Name of the topic</param>
+    /// <param name="topicName">Subject name</param>
     /// <returns>Subscription Id</returns>
     public long SubscribeToListen(string topicName)
     {
+        if (_subscriptions.ContainsKey(topicName)) throw new AlreadyListeningToATopicException(topicName);
         var subId = _natsGate.Subscribe(topicName, ListeningHandler);
         _subscriptions.Add(topicName, subId);
         return subId;
     }
 
     /// <summary>
-    /// Unsubscribes from listening topic
+    /// Unsubscribes from listening topic by name
     /// </summary>
     /// <param name="topicName">Subject name</param>
     public void Unsubscribe(string topicName)
@@ -48,6 +50,16 @@ public sealed class TopicListener : IDisposable
             _subscriptions.Remove(topicName);
             _messages.Remove(topicName);
         }
+    }
+    
+    /// <summary>
+    /// Unsubscribes from listening topic by Id
+    /// </summary>
+    /// <param name="subscriptionId">Subject name</param>
+    public void Unsubscribe(long subscriptionId)
+    {
+        var sub = _subscriptions.Single(x => x.Value == subscriptionId);
+        Unsubscribe(sub.Key);
     }
 
     /// <summary>
