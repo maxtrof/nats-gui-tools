@@ -26,6 +26,18 @@ public sealed class TopicListener : IDisposable
     }
 
     /// <summary>
+    /// Gets messages or returns null
+    /// </summary>
+    /// <param name="topicName">Subject name</param>
+    /// <returns>Messages</returns>
+    public List<IncomingMessageData>? GetMessages(string topicName)
+    {
+        return !_messages.TryGetValue(topicName, out var messages) 
+            ? null 
+            : messages;
+    }
+
+    /// <summary>
     /// Subscribes to a topic to listen
     /// </summary>
     /// <param name="topicName">Subject name</param>
