@@ -50,6 +50,7 @@ class Program
         builder.RegisterType<DataStorage>().As<IDataStorage>().SingleInstance();
         builder.RegisterType<NatsGate>().As<INatsGate>().SingleInstance();
         builder.RegisterType<PipelineBuilder>().AsSelf();
+        builder.RegisterType<RequestProcessor>().AsSelf();
         builder.RegisterType<MockEngine>().AsSelf().SingleInstance();
         builder.RegisterType<TopicListener>().AsSelf().SingleInstance();
         Container = builder.Build();
