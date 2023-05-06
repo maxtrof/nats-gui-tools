@@ -3,6 +3,6 @@
              x:Class="UI.App">
 
     <Application.Styles>
-        <FluentTheme Mode="Light"/>
+        <FluentTheme Mode="Dark"/>
     </Application.Styles>
 </Application>

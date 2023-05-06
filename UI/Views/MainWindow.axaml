@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="UI.Views.MainWindow"
+        WindowStartupLocation="CenterScreen"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="UI">
+        Title="Nats GUI Tools">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -16,7 +17,7 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="1*" ColumnDefinitions="4*,9*">
-        <Grid Grid.Column="0" RowDefinitions="50, 1*" ColumnDefinitions="1*" Background="WhiteSmoke" >
+        <Grid Grid.Column="0" RowDefinitions="50, 1*" ColumnDefinitions="1*" Background="DarkBlue" >
             <TextBox Grid.Row="0" Grid.Column="0" Watermark="Search" Name="MainSearchTextBox" Text="{Binding SearchText}"></TextBox>
             <TabControl Grid.Row="1" TabStripPlacement="Bottom">
                 <TabItem VerticalContentAlignment="Center">
@@ -24,14 +25,8 @@
                         <TextBlock VerticalAlignment="Center">Servers</TextBlock>
                     </TabItem.Header>
                     <StackPanel>
-                        <Button>Add new</Button>
-                        <ListBox Items="{Binding RequestTemplates}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <Button Name="AddNewServer" Command="{Binding AddNewServer}">Add new</Button>
+                        <ListBox></ListBox>
                     </StackPanel>
                 </TabItem>
                 <TabItem>
@@ -49,7 +44,13 @@
                     </TabItem.Header>
                     <StackPanel>
                         <Button>Add new</Button>
-                        <ListBox></ListBox>
+                        <ListBox Items="{Binding RequestTemplates}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </StackPanel>
                 </TabItem>
                 <TabItem>
@@ -63,7 +64,7 @@
                 </TabItem>
             </TabControl>
         </Grid>
-        <Grid Grid.Column="1" Background="White">
+        <Grid Grid.Column="1">
             
         </Grid>
     </Grid>
