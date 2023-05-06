@@ -46,6 +46,11 @@ public sealed class NatsGate : INatsGate, IDisposable
     /// <inheritdoc />
     public async Task Disconnect()
     {
+        foreach (var asyncSubscription in _subscriptions)
+        {
+            asyncSubscription.Dispose();
+        }
+        _subscriptions.Clear();
         await GetConnection().DrainAsync();
         GetConnection().Close();
         GetConnection().Dispose();
