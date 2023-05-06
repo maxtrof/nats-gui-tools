@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reactive;
 using Domain.Models;
@@ -13,6 +14,7 @@ public sealed class AddServerViewModel : ViewModelBase
     private string? _login;
     private string? _password;
     private bool _tls;
+    private bool _addButtonEnabled;
     public ReactiveCommand<Unit, NatsServerSettings?> AddServerCommand { get; }
 
     public AddServerViewModel()
@@ -28,6 +30,11 @@ public sealed class AddServerViewModel : ViewModelBase
         })!;
     }
 
+    public bool AddButtonEnabled
+    {
+        get => _addButtonEnabled;
+        set => this.RaiseAndSetIfChanged(ref _addButtonEnabled, value);
+    }
 
     /// <summary>
     /// Server name
@@ -36,7 +43,11 @@ public sealed class AddServerViewModel : ViewModelBase
     public string ServerName
     {
         get => _serverName;
-        set => this.RaiseAndSetIfChanged(ref _serverName, value);
+        set
+        {
+            AddButtonEnabled = IsModelValid();
+            this.RaiseAndSetIfChanged(ref _serverName, value);
+        }
     }
 
     /// <summary>
@@ -46,7 +57,11 @@ public sealed class AddServerViewModel : ViewModelBase
     public string Address
     {
         get => _address;
-        set => this.RaiseAndSetIfChanged(ref _address, value);
+        set
+        {
+            AddButtonEnabled = IsModelValid();
+            this.RaiseAndSetIfChanged(ref _address, value);
+        }
     }
 
     /// <summary>
@@ -56,7 +71,11 @@ public sealed class AddServerViewModel : ViewModelBase
     public int? Port
     {
         get => _port;
-        set => this.RaiseAndSetIfChanged(ref _port, value);
+        set
+        {
+            AddButtonEnabled = IsModelValid();
+            this.RaiseAndSetIfChanged(ref _port, value);
+        }
     }
 
     /// <summary>
@@ -84,5 +103,12 @@ public sealed class AddServerViewModel : ViewModelBase
     {
         get => _tls;
         set => this.RaiseAndSetIfChanged(ref _tls, value);
+    }
+
+    private bool IsModelValid()
+    {
+        return !string.IsNullOrWhiteSpace(ServerName)
+               && !string.IsNullOrWhiteSpace(Address)
+               && Port is null or > 0 and <= 65535;
     }
 }

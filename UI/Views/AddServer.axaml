@@ -45,7 +45,7 @@
         
         <CheckBox IsChecked="{Binding Tls}">Use TLS</CheckBox>
         
-        <Button Width="200" Name="AddServerButton" Command="{Binding AddServerCommand}">
+        <Button Width="200" Name="AddServerButton" Command="{Binding AddServerCommand}" IsEnabled="{Binding AddButtonEnabled}">
             <TextBlock HorizontalAlignment="Center">Add Server</TextBlock>
         </Button>
     </StackPanel>
