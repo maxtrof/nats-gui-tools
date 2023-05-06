@@ -1,6 +1,8 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reactive;
 using System.Text.RegularExpressions;
+using Avalonia.Data;
 using Domain.Models;
 using ReactiveUI;
 
@@ -26,7 +28,7 @@ public sealed class AddServerViewModel : ViewModelBase
             Name = ServerName,
             Address = Address,
             Login = Login,
-            Port = Port,
+            Port = _port,
             Password = Password,
             Tls = Tls
         })!;
@@ -71,12 +73,23 @@ public sealed class AddServerViewModel : ViewModelBase
     /// Port if provided
     /// </summary>
     [Range(0, 65535)]
-    public int? Port
+    public string Port
     {
-        get => _port;
+        get => _port.ToString() ?? "";
         set
         {
-            this.RaiseAndSetIfChanged(ref _port, value);
+            if (string.IsNullOrEmpty(value))
+            {
+                _port = null;
+                return;
+            }
+
+            if (!int.TryParse(value, out var parsed))
+            {
+                _port = null;
+                throw new DataValidationException("Port should be a valid number (value will be ignored)");
+            }
+            this.RaiseAndSetIfChanged(ref _port, parsed);
             AddButtonEnabled = IsModelValid();
         }
     }
@@ -113,6 +126,6 @@ public sealed class AddServerViewModel : ViewModelBase
         return !string.IsNullOrWhiteSpace(ServerName)
                && !string.IsNullOrWhiteSpace(Address)
                && Regex.IsMatch(Address, NoSpacesRegex)
-               && Port is null or > 0 and <= 65535;
+               && _port is null or > 0 and <= 65535;
     }
 }
