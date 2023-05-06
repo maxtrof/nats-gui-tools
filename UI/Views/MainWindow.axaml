@@ -15,6 +15,51 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Grid RowDefinitions="1*" ColumnDefinitions="4*,9*">
+        <Grid Grid.Column="0" RowDefinitions="50, 1*" ColumnDefinitions="1*" Background="WhiteSmoke" >
+            <TextBox Grid.Row="0" Grid.Column="0"></TextBox>
+            <TabControl Grid.Row="1" TabStripPlacement="Bottom">
+                <TabItem VerticalContentAlignment="Center">
+                    <TabItem.Header>
+                        <TextBlock VerticalAlignment="Center">Servers</TextBlock>
+                    </TabItem.Header>
+                    <StackPanel>
+                        <Button>Add new</Button>
+                        <ListBox></ListBox>
+                    </StackPanel>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <TextBlock VerticalAlignment="Center">Listeners</TextBlock>
+                    </TabItem.Header>
+                    <StackPanel>
+                        <Button>Add new</Button>
+                        <ListBox></ListBox>
+                    </StackPanel>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <TextBlock VerticalAlignment="Center">Requests</TextBlock>
+                    </TabItem.Header>
+                    <StackPanel>
+                        <Button>Add new</Button>
+                        <ListBox></ListBox>
+                    </StackPanel>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <TextBlock VerticalAlignment="Center">Mocks</TextBlock>
+                    </TabItem.Header>
+                    <StackPanel>
+                        <Button>Add new</Button>
+                        <ListBox></ListBox>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+        </Grid>
+        <Grid Grid.Column="1" Background="White">
+            
+        </Grid>
+    </Grid>
 
 </Window>
