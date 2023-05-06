@@ -7,6 +7,12 @@ namespace UI.ViewModels;
 
 public sealed class AddServerViewModel : ViewModelBase
 {
+    private string _serverName = default!;
+    private string _address = default!;
+    private int? _port;
+    private string? _login;
+    private string? _password;
+    private bool _tls;
     public ReactiveCommand<Unit, NatsServerSettings?> AddServerCommand { get; }
 
     public AddServerViewModel()
@@ -27,26 +33,56 @@ public sealed class AddServerViewModel : ViewModelBase
     /// Server name
     /// </summary>
     [Required]
-    private string ServerName { get; set; } = default!;
+    public string ServerName
+    {
+        get => _serverName;
+        set => this.RaiseAndSetIfChanged(ref _serverName, value);
+    }
+
     /// <summary>
     /// Server IP or name
     /// </summary>
     [Required]
-    private string Address { get; set; } = default!;
+    public string Address
+    {
+        get => _address;
+        set => this.RaiseAndSetIfChanged(ref _address, value);
+    }
+
     /// <summary>
     /// Port if provided
     /// </summary>
-    private int? Port { get; set; }
+    [Range(0, 65535)]
+    public int? Port
+    {
+        get => _port;
+        set => this.RaiseAndSetIfChanged(ref _port, value);
+    }
+
     /// <summary>
     /// Username if provided
     /// </summary>
-    private string? Login { get; set; }
+    public string? Login
+    {
+        get => _login;
+        set => this.RaiseAndSetIfChanged(ref _login, value);
+    }
+
     /// <summary>
     /// Password if provided
     /// </summary>
-    private string? Password { get; set; }
+    public string? Password
+    {
+        get => _password;
+        set => this.RaiseAndSetIfChanged(ref _password, value);
+    }
+
     /// <summary>
     /// Should use secure connection
     /// </summary>
-    private bool Tls { get; set; } 
+    public bool Tls
+    {
+        get => _tls;
+        set => this.RaiseAndSetIfChanged(ref _tls, value);
+    }
 }
