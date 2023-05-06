@@ -18,7 +18,7 @@ class Program
     /// Autofac Container
     /// </summary>
 #pragma warning disable CS8618
-    private static IContainer Container { get; set; }
+    public static IContainer Container { get; set; }
 #pragma warning restore CS8618
     
     

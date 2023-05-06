@@ -17,7 +17,7 @@
 
     <Grid RowDefinitions="1*" ColumnDefinitions="4*,9*">
         <Grid Grid.Column="0" RowDefinitions="50, 1*" ColumnDefinitions="1*" Background="WhiteSmoke" >
-            <TextBox Grid.Row="0" Grid.Column="0"></TextBox>
+            <TextBox Grid.Row="0" Grid.Column="0" Watermark="Search" Name="MainSearchTextBox" Text="{Binding SearchText}"></TextBox>
             <TabControl Grid.Row="1" TabStripPlacement="Bottom">
                 <TabItem VerticalContentAlignment="Center">
                     <TabItem.Header>
@@ -25,7 +25,13 @@
                     </TabItem.Header>
                     <StackPanel>
                         <Button>Add new</Button>
-                        <ListBox></ListBox>
+                        <ListBox Items="{Binding RequestTemplates}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </StackPanel>
                 </TabItem>
                 <TabItem>
