@@ -1,6 +1,6 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reactive;
+using System.Text.RegularExpressions;
 using Domain.Models;
 using ReactiveUI;
 
@@ -8,6 +8,8 @@ namespace UI.ViewModels;
 
 public sealed class AddServerViewModel : ViewModelBase
 {
+    private const string NoSpacesRegex = @"^\S*$";
+    
     private string _serverName = default!;
     private string _address = default!;
     private int? _port;
@@ -45,8 +47,8 @@ public sealed class AddServerViewModel : ViewModelBase
         get => _serverName;
         set
         {
-            AddButtonEnabled = IsModelValid();
             this.RaiseAndSetIfChanged(ref _serverName, value);
+            AddButtonEnabled = IsModelValid();
         }
     }
 
@@ -54,13 +56,14 @@ public sealed class AddServerViewModel : ViewModelBase
     /// Server IP or name
     /// </summary>
     [Required]
+    [RegularExpression(NoSpacesRegex, ErrorMessage = "No white space allowed")]
     public string Address
     {
         get => _address;
         set
         {
-            AddButtonEnabled = IsModelValid();
             this.RaiseAndSetIfChanged(ref _address, value);
+            AddButtonEnabled = IsModelValid();
         }
     }
 
@@ -73,8 +76,8 @@ public sealed class AddServerViewModel : ViewModelBase
         get => _port;
         set
         {
-            AddButtonEnabled = IsModelValid();
             this.RaiseAndSetIfChanged(ref _port, value);
+            AddButtonEnabled = IsModelValid();
         }
     }
 
@@ -109,6 +112,7 @@ public sealed class AddServerViewModel : ViewModelBase
     {
         return !string.IsNullOrWhiteSpace(ServerName)
                && !string.IsNullOrWhiteSpace(Address)
+               && Regex.IsMatch(Address, NoSpacesRegex)
                && Port is null or > 0 and <= 65535;
     }
 }

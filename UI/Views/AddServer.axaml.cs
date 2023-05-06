@@ -1,6 +1,5 @@
 using System;
 using Avalonia;
-using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
@@ -22,7 +21,6 @@ public partial class AddServerWindow : ReactiveWindow<AddServerViewModel>
     private void InitializeComponent()
     {
         AvaloniaXamlLoader.Load(this);
-        DataContext = new AddServerViewModel();
     }
 
 }
