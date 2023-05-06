@@ -19,7 +19,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         var dialog = new AddServerWindow
         {
-            DataContext = interaction.Input
+            DataContext = interaction.Input,
+            Width = 400.0,
+            MaxHeight = 500.0
         };
 
         var result = await dialog.ShowDialog<NatsServerSettings?>(this);

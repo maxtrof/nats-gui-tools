@@ -19,12 +19,12 @@
         </TextBlock>
         
         <TextBlock>
-            Server Name (Required)
+            Server Name
         </TextBlock>
         <TextBox Text="{Binding ServerName}" Margin="0,0,0,10"></TextBox>
         
         <TextBlock>
-            Server IP or Machine name (Required)
+            Server IP or Machine name
         </TextBlock>
         <TextBox Text="{Binding Address}" Margin="0,0,0,10"></TextBox>
         
