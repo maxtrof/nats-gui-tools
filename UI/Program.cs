@@ -53,6 +53,7 @@ class Program
         builder.RegisterType<RequestProcessor>().AsSelf();
         builder.RegisterType<MockEngine>().AsSelf().SingleInstance();
         builder.RegisterType<TopicListener>().AsSelf().SingleInstance();
+        builder.RegisterType<ConnectionManager>().AsSelf().SingleInstance();
         Container = builder.Build();
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Concurrency;
 using System.Windows.Input;
+using Application;
 using Autofac;
 using Domain.Interfaces;
 using Domain.Models;
@@ -17,6 +18,7 @@ public sealed class MainWindowViewModel : ViewModelBase
 {
     private readonly ILifetimeScope _scope;
     private readonly IDataStorage _storage;
+    private readonly ConnectionManager _connectionManager;
     private string _searchText = "";
     private bool _appLoaded;
 
@@ -26,6 +28,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     {
         _scope = Program.Container.BeginLifetimeScope();
         _storage = _scope.Resolve<IDataStorage>();
+        _connectionManager = _scope.Resolve<ConnectionManager>();
         
         RxApp.MainThreadScheduler.Schedule(LoadData);
 
@@ -34,16 +37,28 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             var vm = new AddServerViewModel();
             var result = await ShowAddNewServerDialog.Handle(vm);
-            Console.Write(result?.Name);
+            if (result is null) return;
+            _storage.AppSettings.Servers.Add(result);
+            SearchText = SearchText; // Force update search to fetch changes in UI
         });
     }
     
+    /// <summary>
+    /// Unified search field for different sections (Requests, Mocks, etc.)
+    /// </summary>
     public string SearchText
     {
         get => _searchText;
         set
         {
-            _searchText = value;
+            this.RaiseAndSetIfChanged(ref _searchText, value);
+            Servers.Clear();
+            var searchRequestInLower = value.ToLower();
+            // Searching for servers
+            Servers.AddRange(string.IsNullOrWhiteSpace(value)
+                ? _storage.AppSettings.Servers.ToViewModel(_connectionManager.GetCurrentServerName)
+                : _storage.AppSettings.Servers.Where(x => x.Name.ToLower().Contains(searchRequestInLower)).ToViewModel(_connectionManager.GetCurrentServerName)
+                );
         }
     }
 
@@ -53,6 +68,10 @@ public sealed class MainWindowViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _appLoaded, value);
     }
 
+    /// <summary>
+    /// Servers list
+    /// </summary>
+    public ObservableCollection<ServerListItemViewModel> Servers { get; set; } = new();
     public ObservableCollection<RequestTemplate> RequestTemplates { get; set; } = new (new List<RequestTemplate>());
 
     private async void LoadData()
