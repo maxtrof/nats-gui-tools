@@ -34,7 +34,7 @@
                             <ListBox Items="{Binding Servers}" Name="ServersListBox">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <controls:ServerListItemControl></controls:ServerListItemControl>
+                                        <controls:ServerListItemControl UpdateServersState="ServerListItemControl_OnUpdateServersState"></controls:ServerListItemControl>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>

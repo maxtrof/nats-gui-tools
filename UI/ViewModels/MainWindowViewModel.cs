@@ -52,14 +52,19 @@ public sealed class MainWindowViewModel : ViewModelBase
         set
         {
             this.RaiseAndSetIfChanged(ref _searchText, value);
-            Servers.Clear();
-            var searchRequestInLower = value.ToLower();
-            // Searching for servers
-            Servers.AddRange(string.IsNullOrWhiteSpace(value)
-                ? _storage.AppSettings.Servers.ToViewModel(_connectionManager.GetCurrentServerName)
-                : _storage.AppSettings.Servers.Where(x => x.Name.ToLower().Contains(searchRequestInLower)).ToViewModel(_connectionManager.GetCurrentServerName)
-                );
+            UpdateServersList();
         }
+    }
+
+    public void UpdateServersList()
+    {
+        Servers.Clear();
+        var searchRequestInLower = SearchText.ToLower();
+        // Filter servers
+        Servers.AddRange(string.IsNullOrWhiteSpace(SearchText)
+            ? _storage.AppSettings.Servers.ToViewModel(_connectionManager.GetCurrentServerName)
+            : _storage.AppSettings.Servers.Where(x => x.Name.ToLower().Contains(searchRequestInLower)).ToViewModel(_connectionManager.GetCurrentServerName)
+        );
     }
 
     public bool AppLoaded

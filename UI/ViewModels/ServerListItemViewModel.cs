@@ -1,5 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Application;
+using Autofac;
 using Domain.Models;
 using ReactiveUI;
 
@@ -7,19 +11,63 @@ namespace UI.ViewModels;
 
 public class ServerListItemViewModel : ViewModelBase
 {
-    private string _name;
+    private readonly ILifetimeScope _scope;
+    private readonly ConnectionManager _connectionManager; 
+    private NatsServerSettings _serverSettings;
     private bool _isConnected;
+    private string _buttonText;
 
-    public string Name
+    public ServerListItemViewModel()
     {
-        get => _name;
-        set => this.RaiseAndSetIfChanged(ref _name, value);
+        _scope = Program.Container.BeginLifetimeScope();
+        _connectionManager = _scope.Resolve<ConnectionManager>();
+    }
+
+    public NatsServerSettings ServerSettings
+    {
+        get => _serverSettings;
+        set => this.RaiseAndSetIfChanged(ref _serverSettings, value);
     }
 
     public bool IsConnected
     {
         get => _isConnected;
-        set => this.RaiseAndSetIfChanged(ref _isConnected, value);
+        set
+        {
+            ButtonText = value
+                ? "Disconnect"
+                : "Connect";
+            this.RaiseAndSetIfChanged(ref _isConnected, value);
+        }
+    }
+
+    public string ButtonText
+    {
+        get => _buttonText;
+        set => this.RaiseAndSetIfChanged(ref _buttonText, value);
+    }
+
+    public async Task<bool> ConnectOrDisconnectToAServer()
+    {
+        
+        try
+        {
+            if (IsConnected)
+            {
+                await _connectionManager.Disconnect();
+            }
+            else
+            {
+                await _connectionManager.Connect(ServerSettings);
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ButtonText = "Error";
+            return false;
+        }
     }
 }
 
@@ -29,8 +77,8 @@ public static class ServerListItemViewModelMapper
     {
         return new ServerListItemViewModel
         {
-            Name = settings.Name,
-            IsConnected = settings.Name == connectedServer
+            ServerSettings = settings,
+            IsConnected = settings.Address == connectedServer
         };
     }
 
