@@ -16,26 +16,22 @@
     <TabControl Items="{Binding Tabs}" TabStripPlacement="Top" BorderBrush="Aqua">
         <TabControl.ItemTemplate>
             <DataTemplate>
-                <TextBlock Text="{Binding TabTitle}" Cursor="Hand">
+                <TextBlock Text="{Binding Name}">
                     <TextBlock.Styles>
-                        <Style Selector="TextBlock.Text">
-                            <Setter Property="Foreground" Value="Aqua"></Setter>
+                        <Style Selector="TextBlock">
+                            <Setter Property="FontSize" Value="14"></Setter>
                         </Style>
                     </TextBlock.Styles>
                 </TextBlock>
             </DataTemplate>
         </TabControl.ItemTemplate>
-        
+
+
         <TabControl.ContentTemplate>
-            <DataTemplate>
-                <controls:RequestEditControl DataContext="{Binding (vm:RequestTab).Request}"/>
+            <DataTemplate DataType="vm:RequestEditViewModel">
+                <controls:RequestEditControl DataContext="{Binding  }" />
             </DataTemplate>
         </TabControl.ContentTemplate>
-        
-        <!-- <TabItem> -->
-        <!--     <TextBlock>sdc sdc</TextBlock> -->
-        <!--     ~1~ <Button Command="{Binding AddRequestTabCommand}">+</Button> @1@ -->
-        <!-- </TabItem> -->
     </TabControl>
 
 </UserControl>

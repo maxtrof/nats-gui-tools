@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:UI.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="UI.Controls.RequestEditControl">
+             x:Class="UI.Controls.RequestEditControl"
+             x:DataType="viewModels:RequestEditViewModel">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -13,7 +14,7 @@
     <Grid RowDefinitions="auto,*,*" Margin="5">
             <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8">
                 <TextBlock VerticalAlignment="Center">Topic: </TextBlock>
-                <TextBox MinWidth="200"></TextBox>
+                <TextBox MinWidth="200" Text="{Binding Topic}"></TextBox>
                 <TextBlock VerticalAlignment="Center">Type: </TextBlock>
                 
                 <ComboBox MinWidth="200" Cursor="Hand">
@@ -29,7 +30,8 @@
             </StackPanel>
 
             <Grid Grid.Row="1" Margin="0, 5">
-                <TextBox AcceptsReturn="True" TextWrapping="Wrap" Watermark="Request" HorizontalAlignment="Stretch" />
+                <TextBox AcceptsReturn="True" TextWrapping="Wrap" Watermark="Request" HorizontalAlignment="Stretch"
+                         Text="{Binding Body}"/>
             </Grid>
 
             <Grid Grid.Row="2" Margin="0, 5">
