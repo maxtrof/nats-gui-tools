@@ -22,7 +22,7 @@ public sealed class ConnectionManager
     public bool IsConnected => _connectedServer is not null && _natsGate.Connected;
 
     public string GetCurrentServerName => IsConnected
-        ? $"{_connectedServer?.Address}"
+        ? _connectedServer?.Address ?? ""
         : string.Empty;
 
     /// <summary>

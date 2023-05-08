@@ -31,7 +31,13 @@
                         </TabItem.Header>
                         <StackPanel>
                             <Button Name="AddNewServer" Command="{Binding AddNewServer}">Add new</Button>
-                            <ListBox></ListBox>
+                            <ListBox Items="{Binding Servers}" Name="ServersListBox">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <controls:ServerListItemControl UpdateServersState="ServerListItemControl_OnUpdateServersState"></controls:ServerListItemControl>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
                         </StackPanel>
                     </TabItem>
                     <TabItem>

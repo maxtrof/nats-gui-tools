@@ -52,8 +52,7 @@ public sealed class NatsGate : INatsGate, IDisposable
         }
         _subscriptions.Clear();
         await GetConnection().DrainAsync();
-        GetConnection().Close();
-        GetConnection().Dispose();
+        _connection?.Close();
         _connection = null;
     }
 
