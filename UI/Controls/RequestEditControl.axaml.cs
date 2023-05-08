@@ -1,11 +1,11 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace UI.Views.RequestView;
+namespace UI.Controls;
 
-public partial class RequestView : UserControl
+public partial class RequestEditControl : UserControl
 {
-    public RequestView()
+    public RequestEditControl()
     {
         InitializeComponent();
     }

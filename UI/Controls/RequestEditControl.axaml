@@ -2,15 +2,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:UI.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="UI.Views.RequestView.RequestView">
-        <Grid RowDefinitions="auto,*,*" Margin="5">
+             x:Class="UI.Controls.RequestEditControl">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <viewModels:RequestEditViewModel />
+    </Design.DataContext>
+    <Grid RowDefinitions="auto,*,*" Margin="5">
             <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8">
                 <TextBlock VerticalAlignment="Center">Topic: </TextBlock>
                 <TextBox MinWidth="200"></TextBox>
                 <TextBlock VerticalAlignment="Center">Type: </TextBlock>
-                <TextBox MinWidth="200"></TextBox>
-                <Button MinWidth="100" HorizontalAlignment="Left" BorderBrush="Aqua">
+                
+                <ComboBox MinWidth="200" Cursor="Hand">
+                    <ComboBoxItem >Request</ComboBoxItem>
+                    <ComboBoxItem >Request-Reply</ComboBoxItem>
+                </ComboBox>
+                
+                <Button MinWidth="100" HorizontalAlignment="Left" BorderBrush="Aqua" Cursor="Hand">
                     <Button.Content>
                         <TextBlock HorizontalAlignment="Center">Send</TextBlock>
                     </Button.Content>
@@ -22,6 +33,7 @@
             </Grid>
 
             <Grid Grid.Row="2" Margin="0, 5">
+                
                 <TextBox AcceptsReturn="True" TextWrapping="Wrap" Watermark="Response" HorizontalAlignment="Stretch" />
             </Grid>
         </Grid>
