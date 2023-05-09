@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:UI.Controls"
+        xmlns:templatedControls="clr-namespace:UI.TemplatedControls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="UI.Views.MainWindow"
         WindowStartupLocation="CenterScreen"
@@ -11,6 +12,10 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="Nats GUI Tools">
 
+  <Window.Styles>
+      <StyleInclude Source = "/TemplatedControls/MainContentControl.axaml" />
+  </Window.Styles>
+    
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -21,10 +26,13 @@
         <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="9999" Height="9999" IsVisible="{Binding !AppLoaded}">
             <controls:LoaderControl HorizontalAlignment="Center" VerticalAlignment="Center"></controls:LoaderControl>
         </DockPanel>
+        
         <Grid RowDefinitions="1*" ColumnDefinitions="4*,9*" IsVisible="{Binding AppLoaded}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid Grid.Column="0" RowDefinitions="50, 1*" ColumnDefinitions="1*" Background="DarkBlue">
                 <TextBox Grid.Row="0" Grid.Column="0" Watermark="Search" Name="MainSearchTextBox" Text="{Binding SearchText}"></TextBox>
-                <TabControl Grid.Row="1" TabStripPlacement="Bottom">
+                <TabControl x:Name="MainTabControl" Grid.Row="1"
+                            Name="MainTabControl"
+                            TabStripPlacement="Bottom">
                     <TabItem VerticalContentAlignment="Center">
                         <TabItem.Header>
                             <TextBlock VerticalAlignment="Center">Servers</TextBlock>
@@ -40,6 +48,7 @@
                             </ListBox>
                         </StackPanel>
                     </TabItem>
+                    
                     <TabItem>
                         <TabItem.Header>
                             <TextBlock VerticalAlignment="Center">Listeners</TextBlock>
@@ -49,6 +58,7 @@
                             <ListBox></ListBox>
                         </StackPanel>
                     </TabItem>
+                    
                     <TabItem>
                         <TabItem.Header>
                             <TextBlock VerticalAlignment="Center">Requests</TextBlock>
@@ -75,8 +85,10 @@
                     </TabItem>
                 </TabControl>
             </Grid>
-            <Grid Grid.Column="1">
 
+            <!-- Right panel -->
+            <Grid Grid.Column="1">
+                <templatedControls:MainContentControl SelectedTab="{Binding #MainTabControl.SelectedIndex}" />
             </Grid>
         </Grid>
 
