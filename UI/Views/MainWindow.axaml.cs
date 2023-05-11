@@ -1,3 +1,4 @@
+using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -14,6 +15,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         InitializeComponent();
         this.WhenActivated(d => d(ViewModel!.ShowAddNewServerDialog.RegisterHandler(DoShowAddServerDialogAsync)));
+        this.WhenActivated(d => d(ViewModel!.YesNoDialog.RegisterHandler(DoShowYesNoDialogDialogAsync)));
         
     }
     
@@ -28,6 +30,21 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
         var result = await dialog.ShowDialog<NatsServerSettings?>(this);
         interaction.SetOutput(result);
+    }
+
+    private async Task DoShowYesNoDialogDialogAsync(InteractionContext<YesNoDialogViewModel, DialogResult> interaction)
+    {
+        var dialog = new YesNoDialog
+        {
+            DataContext = interaction.Input,
+            Width = 600.0,
+            MaxHeight = 200.0
+        };
+        var result = await dialog.ShowDialog<DialogResult>(this);
+        interaction.SetOutput(result ?? new DialogResult()
+        {
+            Result = DialogResultEnum.None
+        });
     }
 
     private void ServerListItemControl_OnUpdateServersState(object? sender, RoutedEventArgs e)

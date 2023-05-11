@@ -26,6 +26,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     public ICommand AddNewRequest { get; }
     public ICommand DeleteRequest { get; }
     public Interaction<AddServerViewModel, NatsServerSettings?> ShowAddNewServerDialog { get; }
+    public Interaction<YesNoDialogViewModel, DialogResult> YesNoDialog { get; } = new ();
     public ObservableCollection<RequestTemplate> RequestTemplates { get; set; } = new (new List<RequestTemplate>());
 
     public MainWindowViewModel()
@@ -62,11 +63,19 @@ public sealed class MainWindowViewModel : ViewModelBase
             RequestTemplates.Add(newRequest);
         });
 
-        DeleteRequest = ReactiveCommand.Create<RequestTemplate>(requestTemplate =>
+        DeleteRequest = ReactiveCommand.CreateFromTask<RequestTemplate>(async requestTemplate =>
         {
-            //TODO: LIM: accept dialog
-            RequestTemplates.Remove(requestTemplate);
-            _storage.RequestTemplates.Remove(requestTemplate);
+            var result = await YesNoDialog.Handle(new YesNoDialogViewModel()
+            {
+                Title = "Delete?",
+                Text = "Request will be removed permanently?"
+            });
+            
+            if (result.Result == DialogResultEnum.Yes)
+            {
+                RequestTemplates.Remove(requestTemplate);
+                _storage.RequestTemplates.Remove(requestTemplate);
+            }
         });
     }
 
