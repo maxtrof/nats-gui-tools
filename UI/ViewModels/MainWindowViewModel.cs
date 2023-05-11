@@ -23,7 +23,11 @@ public sealed class MainWindowViewModel : ViewModelBase
     private bool _appLoaded;
 
     public ICommand AddNewServer { get; }
+    public ICommand AddNewRequest { get; }
+    public ICommand DeleteRequest { get; }
     public Interaction<AddServerViewModel, NatsServerSettings?> ShowAddNewServerDialog { get; }
+    public ObservableCollection<RequestTemplate> RequestTemplates { get; set; } = new (new List<RequestTemplate>());
+
     public MainWindowViewModel()
     {
         _scope = Program.Container.BeginLifetimeScope();
@@ -33,6 +37,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         RxApp.MainThreadScheduler.Schedule(LoadData);
 
         ShowAddNewServerDialog = new Interaction<AddServerViewModel, NatsServerSettings?>();
+        
         AddNewServer = ReactiveCommand.CreateFromTask(async () =>
         {
             var vm = new AddServerViewModel();
@@ -41,8 +46,30 @@ public sealed class MainWindowViewModel : ViewModelBase
             _storage.AppSettings.Servers.Add(result);
             SearchText = SearchText; // Force update search to fetch changes in UI
         });
+        
+        AddNewRequest = ReactiveCommand.Create(() =>
+        {
+            var i = 0;
+            string name;
+            var names = RequestTemplates.Select(x => x.Name).ToArray();
+            do
+            {
+                name = $"New request template {++i:000}";
+            } while (names.Contains(name));
+
+            var newRequest = new RequestTemplate {Name = name};
+            _storage.RequestTemplates.Add(newRequest);
+            RequestTemplates.Add(newRequest);
+        });
+
+        DeleteRequest = ReactiveCommand.Create<RequestTemplate>(requestTemplate =>
+        {
+            //TODO: LIM: accept dialog
+            RequestTemplates.Remove(requestTemplate);
+            _storage.RequestTemplates.Remove(requestTemplate);
+        });
     }
-    
+
     /// <summary>
     /// Unified search field for different sections (Requests, Mocks, etc.)
     /// </summary>
@@ -77,7 +104,6 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// Servers list
     /// </summary>
     public ObservableCollection<ServerListItemViewModel> Servers { get; set; } = new();
-    public ObservableCollection<RequestTemplate> RequestTemplates { get; set; } = new (new List<RequestTemplate>());
 
     private async void LoadData()
     {
