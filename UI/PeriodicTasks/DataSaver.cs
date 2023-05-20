@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using Application;
 using Avalonia.Threading;
 using Domain.Interfaces;
 
@@ -12,8 +11,10 @@ namespace UI.PeriodicTasks;
 /// Triggers OnDataSaved Event when data is saved and
 /// changes SavedAtMessage
 /// </summary>
-public class DataSaver : INotifyPropertyChanged
+public sealed class DataSaver : INotifyPropertyChanged
 {
+    private const int SavePeriodInSeconds = 10;
+    
     private readonly IDataStorage _dataStorage;
     private readonly DispatcherTimer _disTimer = new ();
 
@@ -31,7 +32,7 @@ public class DataSaver : INotifyPropertyChanged
     public DataSaver(IDataStorage dataStorage)
     {
         _dataStorage = dataStorage ?? throw new ArgumentNullException(nameof(dataStorage));
-        _disTimer.Interval = TimeSpan.FromSeconds(10);
+        _disTimer.Interval = TimeSpan.FromSeconds(SavePeriodInSeconds);
         _disTimer.Tick += DispatcherTimer_Tick;
         _disTimer.Start();
     }
@@ -49,5 +50,5 @@ public class DataSaver : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SavedAtMessage)));
     }
     
-    private static DateTime GetNextTick() => DateTime.Now.AddSeconds(10);
+    private static DateTime GetNextTick() => DateTime.Now.AddSeconds(SavePeriodInSeconds);
 }
