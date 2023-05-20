@@ -11,6 +11,7 @@ using Domain.Interfaces;
 using Domain.Models;
 using DynamicData;
 using ReactiveUI;
+using UI.PeriodicTasks;
 
 namespace UI.ViewModels;
 
@@ -32,6 +33,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         
         RxApp.MainThreadScheduler.Schedule(LoadData);
 
+        DataSaver = new DataSaver(_storage);
+
         ShowAddNewServerDialog = new Interaction<AddServerViewModel, NatsServerSettings?>();
         AddNewServer = ReactiveCommand.CreateFromTask(async () =>
         {
@@ -39,9 +42,15 @@ public sealed class MainWindowViewModel : ViewModelBase
             var result = await ShowAddNewServerDialog.Handle(vm);
             if (result is null) return;
             _storage.AppSettings.Servers.Add(result);
+            _storage.IncAppSettingsVersion();
             SearchText = SearchText; // Force update search to fetch changes in UI
         });
     }
+    
+    /// <summary>
+    /// Periodic data saver
+    /// </summary>
+    public DataSaver DataSaver { get; set; }
     
     /// <summary>
     /// Unified search field for different sections (Requests, Mocks, etc.)
@@ -83,5 +92,6 @@ public sealed class MainWindowViewModel : ViewModelBase
     {
         await _storage.InitializeAsync();
         AppLoaded = true;
+        SearchText = ""; // Force update search to fetch changes in UI
     }
 }

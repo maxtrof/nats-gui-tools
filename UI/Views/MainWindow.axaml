@@ -27,7 +27,7 @@
             <controls:LoaderControl HorizontalAlignment="Center" VerticalAlignment="Center"></controls:LoaderControl>
         </DockPanel>
         
-        <Grid RowDefinitions="1*" ColumnDefinitions="4*,9*" IsVisible="{Binding AppLoaded}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid RowDefinitions="1*,50" ColumnDefinitions="4*,9*" IsVisible="{Binding AppLoaded}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid Grid.Column="0" RowDefinitions="50, 1*" ColumnDefinitions="1*" Background="DarkBlue">
                 <TextBox Grid.Row="0" Grid.Column="0" Watermark="Search" Name="MainSearchTextBox" Text="{Binding SearchText}"></TextBox>
                 <TabControl x:Name="MainTabControl" Grid.Row="1"
@@ -89,6 +89,10 @@
             <!-- Right panel -->
             <Grid Grid.Column="1">
                 <templatedControls:MainContentControl SelectedTab="{Binding #MainTabControl.SelectedIndex}" />
+            </Grid>
+            
+            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" DataContext="{Binding DataSaver}">
+                <TextBlock Text="{Binding SavedAtMessage}"></TextBlock>
             </Grid>
         </Grid>
 
