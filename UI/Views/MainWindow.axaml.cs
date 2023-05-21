@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -14,6 +15,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         InitializeComponent();
         this.WhenActivated(d => d(ViewModel!.ShowAddNewServerDialog.RegisterHandler(DoShowAddServerDialogAsync)));
+        this.WhenActivated(d => d(ViewModel!.ShowSettingsWindowDialog.RegisterHandler(DoShowSettingsDialogAsync)));
         
     }
     
@@ -23,10 +25,25 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         {
             DataContext = interaction.Input,
             Width = 400.0,
-            MaxHeight = 500.0
+            MaxHeight = 500.0,
+            Height = 500.0
         };
 
         var result = await dialog.ShowDialog<NatsServerSettings?>(this);
+        interaction.SetOutput(result);
+    }
+    
+    private async Task DoShowSettingsDialogAsync(InteractionContext<SettingsViewModel, Dictionary<string, string>?> interaction)
+    {
+        var dialog = new Settings
+        {
+            DataContext = interaction.Input,
+            Width = 400.0,
+            MaxHeight = 500.0,
+            Height = 500.0
+        };
+
+        var result = await dialog.ShowDialog<Dictionary<string, string>?>(this);
         interaction.SetOutput(result);
     }
 
