@@ -34,10 +34,6 @@ public class DataStorageContainer<T> where T : notnull
             if (_data is null) throw new DataStorageIsNotInitializedException(typeof(T).FullName);
             return _data;
         }
-        set
-        {
-            IncrementVersion();
-            _data = value;
-        }
+        set => _data = value;
     }
 }
