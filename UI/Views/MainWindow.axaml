@@ -91,8 +91,21 @@
                 <templatedControls:MainContentControl SelectedTab="{Binding #MainTabControl.SelectedIndex}" />
             </Grid>
             
-            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" DataContext="{Binding DataSaver}">
-                <TextBlock Text="{Binding SavedAtMessage}"></TextBlock>
+            <Grid RowDefinitions="1*" ColumnDefinitions="1*,1*" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                <StackPanel Grid.Column="0" DataContext="{Binding DataSaver}">
+                    <TextBlock Grid.Column="0" Text="{Binding SavedAtMessage}"></TextBlock>    
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button>
+                        <Image Width="32" Height="32" Source="/Assets/folder.png"></Image>
+                    </Button>
+                    <Button>
+                        <Image Width="32" Height="32" Source="/Assets/save.png"></Image>
+                    </Button>
+                    <Button Command="{Binding ShowSettingsWindow}">
+                        <Image Width="32" Height="32" Source="/Assets/setting.png"></Image>
+                    </Button>
+                </StackPanel>
             </Grid>
         </Grid>
 

@@ -24,7 +24,9 @@ public sealed class MainWindowViewModel : ViewModelBase
     private bool _appLoaded;
 
     public ICommand AddNewServer { get; }
+    public ICommand ShowSettingsWindow { get; }
     public Interaction<AddServerViewModel, NatsServerSettings?> ShowAddNewServerDialog { get; }
+    public Interaction<SettingsViewModel, Dictionary<string, string>?> ShowSettingsWindowDialog { get; }
     public MainWindowViewModel()
     {
         _scope = Program.Container.BeginLifetimeScope();
@@ -44,6 +46,16 @@ public sealed class MainWindowViewModel : ViewModelBase
             _storage.AppSettings.Servers.Add(result);
             _storage.IncAppSettingsVersion();
             SearchText = SearchText; // Force update search to fetch changes in UI
+        });
+
+        ShowSettingsWindowDialog = new Interaction<SettingsViewModel, Dictionary<string, string>?>();
+        ShowSettingsWindow = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var vm = new SettingsViewModel(_storage.AppSettings.UserDictionary);
+            var result = await ShowSettingsWindowDialog.Handle(vm);
+            if (result is null) return;
+            _storage.AppSettings.UserDictionary = result;
+            _storage.IncAppSettingsVersion();
         });
     }
     
