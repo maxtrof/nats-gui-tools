@@ -96,10 +96,10 @@
                     <TextBlock Grid.Column="0" Text="{Binding SavedAtMessage}"></TextBlock>    
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button>
+                    <Button Command="{Binding ShowImportDialog}">
                         <Image Width="32" Height="32" Source="/Assets/folder.png"></Image>
                     </Button>
-                    <Button>
+                    <Button Command="{Binding ShowExportDialog}">
                         <Image Width="32" Height="32" Source="/Assets/save.png"></Image>
                     </Button>
                     <Button Command="{Binding ShowSettingsWindow}">

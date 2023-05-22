@@ -76,4 +76,24 @@ public sealed class DataStorage : IDataStorage
 
     /// <inheritdoc />
     public void IncMockTemplatesVersion() => _mockTemplates.IncrementVersion();
+
+    /// <inheritdoc />
+    public async Task ImportAsync(string fileName)
+    {
+        var data = await _appDataRepository.Import(fileName);
+        _mockTemplates.Data = data.MockTemplates;
+        IncMockTemplatesVersion();
+        _requestTemplates.Data = data.RequestTemplates;
+        IncRequestTemplatesVersion();
+    }
+
+    /// <inheritdoc />
+    public Task ExportAsync(string fileName)
+    {
+        return _appDataRepository.Export(fileName, new Export
+        {
+            MockTemplates = _mockTemplates.Data,
+            RequestTemplates = _requestTemplates.Data
+        });
+    }
 }

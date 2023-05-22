@@ -39,4 +39,15 @@ public interface IDataStorage
     /// Increments Mock Templates version (will trigger save on <see cref="SaveDataIfNeeded"/>)
     /// </summary>
     void IncMockTemplatesVersion();
+    /// <summary>
+    /// Imports data
+    /// </summary>
+    /// <param name="fileName">File</param>
+    Task ImportAsync(string fileName);
+
+    /// <summary>
+    /// Exports data
+    /// </summary>
+    /// <param name="fileName">File</param>
+    Task ExportAsync(string fileName);
 }

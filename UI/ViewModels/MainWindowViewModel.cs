@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Concurrency;
 using System.Windows.Input;
 using Application;
 using Autofac;
+using Avalonia.Controls;
 using Domain.Interfaces;
 using Domain.Models;
 using DynamicData;
@@ -25,8 +27,12 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     public ICommand AddNewServer { get; }
     public ICommand ShowSettingsWindow { get; }
+    public ICommand ShowExportDialog { get; }
+    public ICommand ShowImportDialog { get; }
     public Interaction<AddServerViewModel, NatsServerSettings?> ShowAddNewServerDialog { get; }
     public Interaction<SettingsViewModel, Dictionary<string, string>?> ShowSettingsWindowDialog { get; }
+    public Interaction<Unit, string?> ShowExportFileSaveDialog { get; }
+    public Interaction<Unit, string?> ShowImportFileLoadDialog { get; }
     public MainWindowViewModel()
     {
         _scope = Program.Container.BeginLifetimeScope();
@@ -37,6 +43,7 @@ public sealed class MainWindowViewModel : ViewModelBase
 
         DataSaver = new DataSaver(_storage);
 
+        // Add new Server
         ShowAddNewServerDialog = new Interaction<AddServerViewModel, NatsServerSettings?>();
         AddNewServer = ReactiveCommand.CreateFromTask(async () =>
         {
@@ -48,6 +55,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             SearchText = SearchText; // Force update search to fetch changes in UI
         });
 
+        // Settings
         ShowSettingsWindowDialog = new Interaction<SettingsViewModel, Dictionary<string, string>?>();
         ShowSettingsWindow = ReactiveCommand.CreateFromTask(async () =>
         {
@@ -56,6 +64,23 @@ public sealed class MainWindowViewModel : ViewModelBase
             if (result is null) return;
             _storage.AppSettings.UserDictionary = result;
             _storage.IncAppSettingsVersion();
+        });
+
+        // Import and export
+        ShowExportFileSaveDialog = new Interaction<Unit, string?>();
+        ShowExportDialog = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var result = await ShowExportFileSaveDialog.Handle(new Unit());
+            if (result is null) return;
+            await _storage.ExportAsync(result);
+        });
+        ShowImportFileLoadDialog = new Interaction<Unit, string?>();
+        ShowImportDialog = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var result = await ShowImportFileLoadDialog.Handle(new Unit());
+            if (result is null) return;
+            await _storage.ImportAsync(result);
+            SearchText = SearchText; // Force update search to fetch changes in UI
         });
     }
     

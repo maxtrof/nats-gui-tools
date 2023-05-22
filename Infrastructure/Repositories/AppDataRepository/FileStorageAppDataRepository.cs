@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Application.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
 using Infrastructure.Repositories.AppDataRepository.Dto;
@@ -65,11 +66,29 @@ public sealed class FileStorageAppDataRepository : IAppDataRepository
         return WriteJsonFile(MocksFileName, templates.ToDto());
     }
 
-    /// <param name="settings"></param>
     /// <inheritdoc />
     public Task SaveAppSettingsAsync(AppSettings settings)
     {
         return WriteJsonFile(SettingsFileName, settings.ToDto());
+    }
+
+    /// <inheritdoc />
+    public Task Export(string fileName, Export export)
+    {
+        var exportData = new ExportDto(export.MockTemplates.ToDto(), export.RequestTemplates.ToDto());
+        return WriteJsonFile(fileName, exportData);
+    }
+
+    /// <inheritdoc />
+    public async Task<Export> Import(string fileName)
+    {
+        var data = await LoadJsonFile<ExportDto>(fileName);
+        if (data is null) throw new ImportException("Failed to load file");
+        return new Export
+        {
+            MockTemplates = data.MockTemplates.ToDomain(),
+            RequestTemplates = data.RequestTemplates.ToDomain()
+        };
     }
 
     /// <summary>
