@@ -32,4 +32,17 @@ public interface IAppDataRepository
     /// Saves default application settings
     /// </summary>
     Task SaveAppSettingsAsync(AppSettings settings);
+
+    /// <summary>
+    /// Export Requests and Mocks
+    /// </summary>
+    /// <param name="fileName">File to save</param>
+    /// <param name="export">Data to export</param>
+    Task Export(string fileName, Export export);
+    /// <summary>
+    /// Loads Requests and Mock from file and replaces current Requests and Mocks 
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <returns>Loaded data</returns>
+    Task<Export> Import(string fileName);
 }
