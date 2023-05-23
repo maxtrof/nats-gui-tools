@@ -21,8 +21,12 @@
                     <ComboBoxItem >Request</ComboBoxItem>
                     <ComboBoxItem >Request-Reply</ComboBoxItem>
                 </ComboBox>
-                
-                <Button MinWidth="100" HorizontalAlignment="Left" BorderBrush="Aqua" Cursor="Hand">
+
+                <Button MinWidth="100"
+                        HorizontalAlignment="Left"
+                        BorderBrush="Aqua"
+                        Cursor="Hand"
+                        Command="{Binding ProcessRequest}" IsEnabled="True">
                     <Button.Content>
                         <TextBlock HorizontalAlignment="Center">Send</TextBlock>
                     </Button.Content>
@@ -36,7 +40,8 @@
 
             <Grid Grid.Row="2" Margin="0, 5">
                 
-                <TextBox AcceptsReturn="True" TextWrapping="Wrap" Watermark="Response" HorizontalAlignment="Stretch" />
+                <TextBox Text="{Binding ResponseText}"
+                    AcceptsReturn="True" TextWrapping="Wrap" Watermark="Response" HorizontalAlignment="Stretch" />
             </Grid>
         </Grid>
 </UserControl>

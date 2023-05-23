@@ -14,8 +14,6 @@ public class RequestsTabViewModel : ViewModelBase
     public ObservableCollection<RequestEditViewModel> Tabs { get; set; } = new();
     internal RequestEditViewModel? SelectedTab { get; set; }
 
-    //public ReactiveCommand<RequestEditViewModel, Unit> AddRequestTabCommand { get; }
-
     public RequestsTabViewModel()
     {
         MessageBus.Current.Listen<string>("onRequestSelected")
