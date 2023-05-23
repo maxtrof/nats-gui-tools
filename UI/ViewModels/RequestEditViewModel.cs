@@ -17,12 +17,7 @@ public class RequestEditViewModel : ViewModelBase
     public string Name
     {
         get => _name;
-        set{
-            if (value != _name)
-            {
-                this.RaiseAndSetIfChanged(ref _name, value);
-            } 
-        }
+        set => this.RaiseAndSetIfChanged(ref _name, value);
     }
 
     /// <summary>
@@ -30,12 +25,7 @@ public class RequestEditViewModel : ViewModelBase
     /// </summary>
     public string Topic {
         get => _topic;
-        set{
-            if (value != _topic)
-            {
-                this.RaiseAndSetIfChanged(ref _topic, value);
-            } 
-        }
+        set=> this.RaiseAndSetIfChanged(ref _topic, value);
     }
 
     /// <summary>
@@ -43,12 +33,7 @@ public class RequestEditViewModel : ViewModelBase
     /// </summary>
     public string Body {
         get => _body;
-        set{
-            if (value != _body)
-            {
-                this.RaiseAndSetIfChanged(ref _body, value);
-            } 
-        }
+        set => this.RaiseAndSetIfChanged(ref _body, value);
     }
     
     public RequestEditViewModel()

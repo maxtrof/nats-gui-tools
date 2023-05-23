@@ -24,6 +24,8 @@ public sealed class MainWindowViewModel : ViewModelBase
     private readonly ConnectionManager _connectionManager;
     private string _searchText = "";
     private bool _appLoaded;
+    private bool _isRequestsTabVisible;
+    private int _selectedTab;
 
     public ICommand AddNewServer { get; }
     public ICommand ShowSettingsWindow { get; }
@@ -37,6 +39,23 @@ public sealed class MainWindowViewModel : ViewModelBase
     public Interaction<Unit, string?> ShowImportFileLoadDialog { get; }
     public Interaction<YesNoDialogViewModel, DialogResult> YesNoDialog { get; } = new ();
     public ObservableCollection<RequestTemplate> RequestTemplates { get; set; } = new (new List<RequestTemplate>());
+
+
+    public bool IsRequestsTabVisible
+    {
+        get => _isRequestsTabVisible;
+        set => this.RaiseAndSetIfChanged(ref _isRequestsTabVisible, value);
+    }
+
+    public int SelectedTab
+    {
+        get => _selectedTab;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedTab, value);
+            IsRequestsTabVisible = value == 2;
+        }
+    }
 
     public MainWindowViewModel()
     {
@@ -102,6 +121,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             var newRequest = new RequestTemplate {Name = name};
             _storage.RequestTemplates.Add(newRequest);
             RequestTemplates.Add(newRequest);
+            MessageBus.Current.SendMessage<string>(name,"onRequestSelected");
         });
 
         DeleteRequest = ReactiveCommand.CreateFromTask<RequestTemplate>(async requestTemplate =>

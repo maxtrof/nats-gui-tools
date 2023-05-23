@@ -14,20 +14,16 @@ public class RequestsTabViewModel : ViewModelBase
     public ObservableCollection<RequestEditViewModel> Tabs { get; set; } = new();
     internal RequestEditViewModel? SelectedTab { get; set; }
 
-    public ReactiveCommand<RequestEditViewModel, Unit> AddRequestTabCommand { get; }
+    //public ReactiveCommand<RequestEditViewModel, Unit> AddRequestTabCommand { get; }
 
     public RequestsTabViewModel()
     {
-        AddRequestTabCommand = ReactiveCommand.Create<RequestEditViewModel>(AddRequestTab);
-        Tabs.Add(new RequestEditViewModel());
-        Tabs.Add(new RequestEditViewModel());
-        Tabs.Add(new RequestEditViewModel());
-
-        // Tabs.Add(new RequestTab(new RequestTemplate {Name = "Name 01"}));
-        // Tabs.Add(new RequestTab(new RequestTemplate {Name = "Name 02"}));
-        // Tabs.Add(new RequestTab(new RequestTemplate {Name = "Name 03"}));
-        // Tabs.Add(new RequestTab(new RequestTemplate {Name = "Name 03"}));
-        // Tabs.Add(new RequestTab(new RequestTemplate {Name = "Name 03"}));
+        MessageBus.Current.Listen<string>("onRequestSelected")
+            .Subscribe(name =>
+            {
+                var requestEditViewModel = new RequestEditViewModel(name);
+                AddRequestTab(requestEditViewModel);
+            });
     }
 
     private void AddRequestTab(RequestEditViewModel? request = null)
@@ -41,6 +37,7 @@ public class RequestsTabViewModel : ViewModelBase
                 n++;
                 newName = $"New_request_{n}";
             } while (Tabs.Any(x => x.Name == newName));
+
             request = new RequestEditViewModel(newName);
         }
 
