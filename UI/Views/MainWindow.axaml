@@ -27,7 +27,7 @@
             <controls:LoaderControl HorizontalAlignment="Center" VerticalAlignment="Center"></controls:LoaderControl>
         </DockPanel>
         
-        <Grid RowDefinitions="1*" ColumnDefinitions="4*,9*" IsVisible="{Binding AppLoaded}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid RowDefinitions="1*,50" ColumnDefinitions="4*,9*" IsVisible="{Binding AppLoaded}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid Grid.Column="0" RowDefinitions="50, 1*" ColumnDefinitions="1*" Background="DarkBlue">
                 <TextBox Grid.Row="0" Grid.Column="0" Watermark="Search" Name="MainSearchTextBox" Text="{Binding SearchText}"></TextBox>
                 <TabControl x:Name="MainTabControl" Grid.Row="1"
@@ -99,6 +99,23 @@
             <!-- Right panel -->
             <Grid Grid.Column="1">
                 <templatedControls:MainContentControl SelectedTab="{Binding #MainTabControl.SelectedIndex}" />
+            </Grid>
+            
+            <Grid RowDefinitions="1*" ColumnDefinitions="1*,1*" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                <StackPanel Grid.Column="0" DataContext="{Binding DataSaver}">
+                    <TextBlock Grid.Column="0" Text="{Binding SavedAtMessage}"></TextBlock>    
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Command="{Binding ShowImportDialog}">
+                        <Image Width="32" Height="32" Source="/Assets/folder.png"></Image>
+                    </Button>
+                    <Button Command="{Binding ShowExportDialog}">
+                        <Image Width="32" Height="32" Source="/Assets/save.png"></Image>
+                    </Button>
+                    <Button Command="{Binding ShowSettingsWindow}">
+                        <Image Width="32" Height="32" Source="/Assets/setting.png"></Image>
+                    </Button>
+                </StackPanel>
             </Grid>
         </Grid>
 

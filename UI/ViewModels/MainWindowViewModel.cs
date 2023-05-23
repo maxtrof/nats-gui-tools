@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Concurrency;
 using System.Windows.Input;
 using Application;
 using Autofac;
+using Avalonia.Controls;
 using Domain.Interfaces;
 using Domain.Models;
 using DynamicData;
 using ReactiveUI;
+using UI.PeriodicTasks;
 
 namespace UI.ViewModels;
 
@@ -23,9 +26,15 @@ public sealed class MainWindowViewModel : ViewModelBase
     private bool _appLoaded;
 
     public ICommand AddNewServer { get; }
+    public ICommand ShowSettingsWindow { get; }
+    public ICommand ShowExportDialog { get; }
+    public ICommand ShowImportDialog { get; }
     public ICommand AddNewRequest { get; }
     public ICommand DeleteRequest { get; }
     public Interaction<AddServerViewModel, NatsServerSettings?> ShowAddNewServerDialog { get; }
+    public Interaction<SettingsViewModel, Dictionary<string, string>?> ShowSettingsWindowDialog { get; }
+    public Interaction<Unit, string?> ShowExportFileSaveDialog { get; }
+    public Interaction<Unit, string?> ShowImportFileLoadDialog { get; }
     public Interaction<YesNoDialogViewModel, DialogResult> YesNoDialog { get; } = new ();
     public ObservableCollection<RequestTemplate> RequestTemplates { get; set; } = new (new List<RequestTemplate>());
 
@@ -37,6 +46,9 @@ public sealed class MainWindowViewModel : ViewModelBase
         
         RxApp.MainThreadScheduler.Schedule(LoadData);
 
+        DataSaver = new DataSaver(_storage);
+
+        // Add new Server
         ShowAddNewServerDialog = new Interaction<AddServerViewModel, NatsServerSettings?>();
         
         AddNewServer = ReactiveCommand.CreateFromTask(async () =>
@@ -45,6 +57,35 @@ public sealed class MainWindowViewModel : ViewModelBase
             var result = await ShowAddNewServerDialog.Handle(vm);
             if (result is null) return;
             _storage.AppSettings.Servers.Add(result);
+            _storage.IncAppSettingsVersion();
+            SearchText = SearchText; // Force update search to fetch changes in UI
+        });
+
+        // Settings
+        ShowSettingsWindowDialog = new Interaction<SettingsViewModel, Dictionary<string, string>?>();
+        ShowSettingsWindow = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var vm = new SettingsViewModel(_storage.AppSettings.UserDictionary);
+            var result = await ShowSettingsWindowDialog.Handle(vm);
+            if (result is null) return;
+            _storage.AppSettings.UserDictionary = result;
+            _storage.IncAppSettingsVersion();
+        });
+
+        // Import and export
+        ShowExportFileSaveDialog = new Interaction<Unit, string?>();
+        ShowExportDialog = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var result = await ShowExportFileSaveDialog.Handle(new Unit());
+            if (result is null) return;
+            await _storage.ExportAsync(result);
+        });
+        ShowImportFileLoadDialog = new Interaction<Unit, string?>();
+        ShowImportDialog = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var result = await ShowImportFileLoadDialog.Handle(new Unit());
+            if (result is null) return;
+            await _storage.ImportAsync(result);
             SearchText = SearchText; // Force update search to fetch changes in UI
         });
         
@@ -78,6 +119,12 @@ public sealed class MainWindowViewModel : ViewModelBase
             }
         });
     }
+    
+    /// <summary>
+    /// Periodic data saver
+    /// </summary>
+    public DataSaver DataSaver { get; set; }
+    
 
     /// <summary>
     /// Unified search field for different sections (Requests, Mocks, etc.)
@@ -118,5 +165,6 @@ public sealed class MainWindowViewModel : ViewModelBase
     {
         await _storage.InitializeAsync();
         AppLoaded = true;
+        SearchText = ""; // Force update search to fetch changes in UI
     }
 }

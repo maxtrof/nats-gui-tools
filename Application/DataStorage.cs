@@ -1,4 +1,3 @@
-using Application.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
 
@@ -10,18 +9,10 @@ namespace Application;
 public sealed class DataStorage : IDataStorage
 {
     private readonly IAppDataRepository _appDataRepository;
-    
-    private AppSettings? _appSettings;
-    private int _appSettingsVersion = 0;
-    private int _appSettingsSavedVersion = 0;
-    
-    private List<RequestTemplate>? _requestTemplates;
-    private int _requestTemplatesVersion = 0;
-    private int _requestTemplatesSavedVersion = 0;
-    
-    private List<MockTemplate>? _mockTemplates;
-    private int _mockTemplatesVersion = 0;
-    private int _mockTemplatesSavedVersion = 0;
+
+    private readonly DataStorageContainer<AppSettings> _appSettings = new ();
+    private readonly DataStorageContainer<List<RequestTemplate>> _requestTemplates = new ();
+    private readonly DataStorageContainer<List<MockTemplate>> _mockTemplates = new ();
 
     public DataStorage(IAppDataRepository appDataRepository)
     {
@@ -31,75 +22,78 @@ public sealed class DataStorage : IDataStorage
     /// <inheritdoc />
     public async Task InitializeAsync()
     {
-        _appSettings = await _appDataRepository.LoadAppSettingsAsync();
-        _requestTemplates = await _appDataRepository.LoadDefaultRequestTemplatesAsync();
-        _mockTemplates = await _appDataRepository.LoadDefaultMockTemplatesAsync();
+        _appSettings.Data = await _appDataRepository.LoadAppSettingsAsync();
+        _requestTemplates.Data = await _appDataRepository.LoadDefaultRequestTemplatesAsync();
+        _mockTemplates.Data = await _appDataRepository.LoadDefaultMockTemplatesAsync();
     }
 
     /// <inheritdoc />
     public async Task SaveDataIfNeeded()
     {
-        if (_appSettingsVersion > _appSettingsSavedVersion)
+        if (_appSettings.NeedsToBeSaved)
         {
-            await _appDataRepository.SaveAppSettingsAsync(AppSettings);
-            _appSettingsSavedVersion = _appSettingsVersion;
+            await _appDataRepository.SaveAppSettingsAsync(_appSettings.Data);
+            _appSettings.OnDataSaved();
         }
-
-        if (_requestTemplatesVersion > _requestTemplatesSavedVersion)
+        if (_requestTemplates.NeedsToBeSaved)
         {
-            await _appDataRepository.SaveDefaultRequestTemplatesAsync(RequestTemplates);
-            _requestTemplatesSavedVersion = _requestTemplatesVersion;
+            await _appDataRepository.SaveDefaultRequestTemplatesAsync(_requestTemplates.Data);
+            _requestTemplates.OnDataSaved();
         }
-
-        if (_mockTemplatesVersion > _mockTemplatesSavedVersion)
+        if (_mockTemplates.NeedsToBeSaved)
         {
-            await _appDataRepository.SaveDefaultMockTemplatesAsync(MockTemplates);
-            _mockTemplatesSavedVersion = _mockTemplatesVersion;
+            await _appDataRepository.SaveDefaultMockTemplatesAsync(_mockTemplates.Data);
+            _mockTemplates.OnDataSaved();
         }
     }
 
     /// <inheritdoc />
     public AppSettings AppSettings
     {
-        get
-        {
-            if (_appSettings is null) throw new DataStorageIsNotInitializedException(nameof(_appSettings));
-            return _appSettings;
-        }
-        set
-        {
-            _appSettings = value;
-            _appSettingsVersion++;
-        }
+        get => _appSettings.Data;
+        set => _appSettings.Data = value;
     }
 
     /// <inheritdoc />
     public List<RequestTemplate> RequestTemplates
     {
-        get
-        {
-            if (_requestTemplates is null) throw new DataStorageIsNotInitializedException(nameof(_requestTemplates));
-            return _requestTemplates;
-        }
-        set
-        {
-            _requestTemplates = value;
-            _requestTemplatesVersion++;
-        }
+        get => _requestTemplates.Data;
+        set => _requestTemplates.Data = value;
     }
 
     /// <inheritdoc />
     public List<MockTemplate> MockTemplates
     {
-        get
+        get => _mockTemplates.Data;
+        set => _mockTemplates.Data = value;
+    }
+    
+    /// <inheritdoc />
+    public void IncAppSettingsVersion() => _appSettings.IncrementVersion();
+
+    /// <inheritdoc />
+    public void IncRequestTemplatesVersion() => _requestTemplates.IncrementVersion();
+
+    /// <inheritdoc />
+    public void IncMockTemplatesVersion() => _mockTemplates.IncrementVersion();
+
+    /// <inheritdoc />
+    public async Task ImportAsync(string fileName)
+    {
+        var data = await _appDataRepository.Import(fileName);
+        _mockTemplates.Data = data.MockTemplates;
+        IncMockTemplatesVersion();
+        _requestTemplates.Data = data.RequestTemplates;
+        IncRequestTemplatesVersion();
+    }
+
+    /// <inheritdoc />
+    public Task ExportAsync(string fileName)
+    {
+        return _appDataRepository.Export(fileName, new Export
         {
-            if (_mockTemplates is null) throw new DataStorageIsNotInitializedException(nameof(_requestTemplates));
-            return _mockTemplates;
-        }
-        set
-        {
-            _mockTemplates = value;
-            _mockTemplatesVersion++;
-        }
+            MockTemplates = _mockTemplates.Data,
+            RequestTemplates = _requestTemplates.Data
+        });
     }
 }

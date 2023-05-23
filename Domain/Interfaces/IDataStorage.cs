@@ -27,4 +27,27 @@ public interface IDataStorage
     /// Mock templates
     /// </summary>
     List<MockTemplate> MockTemplates { get; set; }
+    /// <summary>
+    /// Increments App settings version (will trigger save on <see cref="SaveDataIfNeeded"/>)
+    /// </summary>
+    void IncAppSettingsVersion();
+    /// <summary>
+    /// Increments Request Templates version (will trigger save on <see cref="SaveDataIfNeeded"/>)
+    /// </summary>
+    void IncRequestTemplatesVersion();
+    /// <summary>
+    /// Increments Mock Templates version (will trigger save on <see cref="SaveDataIfNeeded"/>)
+    /// </summary>
+    void IncMockTemplatesVersion();
+    /// <summary>
+    /// Imports data
+    /// </summary>
+    /// <param name="fileName">File</param>
+    Task ImportAsync(string fileName);
+
+    /// <summary>
+    /// Exports data
+    /// </summary>
+    /// <param name="fileName">File</param>
+    Task ExportAsync(string fileName);
 }

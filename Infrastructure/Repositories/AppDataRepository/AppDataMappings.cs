@@ -63,6 +63,8 @@ internal static class AppDataMappings
         {
             var template = new MockTemplate();
             template.Type = mockTemplateDto.Type;
+            template.AnswerTemplate = mockTemplateDto.AnswerTemplate;
+            template.Topic = mockTemplateDto.Topic;
             list.Add(template);
         }
 
@@ -128,7 +130,9 @@ internal static class AppDataMappings
         foreach (var mockTemplate in templates)
         {
             var templateDto = new MockTemplateDto(
-                Type: mockTemplate.Type
+                Type: mockTemplate.Type,
+                AnswerTemplate: mockTemplate.AnswerTemplate,
+                Topic: mockTemplate.Topic
             );
             templatesDto.Add(templateDto);
         }
