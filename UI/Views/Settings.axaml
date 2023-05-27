@@ -13,6 +13,11 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <viewModels:SettingsViewModel/>
     </Design.DataContext>
+    <Window.Styles>
+        <Style Selector="TextBlock.Danger">
+            <Setter Property="Foreground" Value="Red"></Setter>
+        </Style>
+    </Window.Styles>
     <StackPanel Margin="10">
         <TextBlock FontSize="24" Margin="0,0,0,10">User dictionary</TextBlock>
         <Grid ColumnDefinitions="1*,1*" RowDefinitions="1*">
@@ -23,6 +28,7 @@
                 <TextBlock TextAlignment="Center">Save</TextBlock>
             </Button>
         </Grid>
+        <TextBlock Classes="Danger" IsVisible="{Binding ShowAllVariablesShouldBeUniqueError}">All variable names should be unique</TextBlock>
         <ScrollViewer MaxHeight="400">
             <ListBox Items="{Binding UserVariables}">
                 <ListBox.ItemTemplate>
