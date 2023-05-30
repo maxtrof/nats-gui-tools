@@ -5,12 +5,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reactive;
 using System.Windows.Input;
+using Avalonia.Data;
 using ReactiveUI;
 
 namespace UI.ViewModels;
 
 public sealed class SettingsViewModel : ViewModelBase
 {
+    private bool _showAllVariablesShouldBeUniqueError;
     public ObservableCollection<UserVariable> UserVariables { get; }
     public ReactiveCommand<Unit, Dictionary<string, string>> UpdateUserDictionaryCommand { get; }
     public ICommand CreateNewVariable { get; }
@@ -19,7 +21,12 @@ public sealed class SettingsViewModel : ViewModelBase
     {
        
     }
-   
+
+    public bool ShowAllVariablesShouldBeUniqueError
+    {
+        get => _showAllVariablesShouldBeUniqueError;
+        set => this.RaiseAndSetIfChanged(ref _showAllVariablesShouldBeUniqueError, value);
+    }
 
     public SettingsViewModel(Dictionary<string, string> userDictionary)
     {
@@ -31,9 +38,18 @@ public sealed class SettingsViewModel : ViewModelBase
         {
             UserVariables.Add(new UserVariable("","", RemoveEventHandler));
         });
-
+        
         UpdateUserDictionaryCommand = ReactiveCommand.Create(() =>
-            UserVariables.ToDictionary(keySelector: m => m.NameWithPrefix, elementSelector: m => m.Value));
+        {
+            // Check that all values are unique before saving
+            var variablesWithNames = UserVariables.Where(x => !string.IsNullOrWhiteSpace(x.Name)).ToList();
+            if (variablesWithNames.Select(x => x.Name).Distinct().Count() != variablesWithNames.Count)
+            {
+                ShowAllVariablesShouldBeUniqueError = true;
+                throw new ArgumentException(nameof(UserVariables));
+            }
+            return variablesWithNames.ToDictionary(keySelector: m => m.NameWithPrefix, elementSelector: m => m.Value);
+        });
     }
 
     private void RemoveEventHandler(object? o, string s) 
