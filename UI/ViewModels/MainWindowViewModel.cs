@@ -120,6 +120,7 @@ public sealed class MainWindowViewModel : ViewModelBase
 
             var newRequest = new RequestTemplate {Name = name};
             _storage.RequestTemplates.Add(newRequest);
+            _storage.IncRequestTemplatesVersion();
             RequestTemplates.Add(newRequest);
             MessageBus.Current.SendMessage<string>(name,"onRequestSelected");
         });
@@ -186,5 +187,6 @@ public sealed class MainWindowViewModel : ViewModelBase
         await _storage.InitializeAsync();
         AppLoaded = true;
         SearchText = ""; // Force update search to fetch changes in UI
+        RequestTemplates.AddRange(_storage.RequestTemplates);
     }
 }
