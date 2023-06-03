@@ -10,10 +10,6 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="Nats GUI Tools">
-
-  <Window.Styles>
-      <StyleInclude Source = "/TemplatedControls/MainContentControl.axaml" />
-  </Window.Styles>
     
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
