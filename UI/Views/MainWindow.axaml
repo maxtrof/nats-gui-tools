@@ -94,7 +94,8 @@
 
             <!-- Right panel -->
             <Grid Grid.Row="0" Grid.Column="1">
-                <controls:RequestsTabControl IsVisible="{Binding $parent.DataContext.IsRequestsTabVisible}"/>
+                <controls:RequestsTabControl IsVisible="{Binding $parent.DataContext.IsRequestsTabVisible}"
+                                             UpdateRequest="RequestsTabControl_OnUpdateRequest"/>
             </Grid>
             
             <!-- footer -->

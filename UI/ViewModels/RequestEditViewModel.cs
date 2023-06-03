@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Reactive;
 using System.Windows.Input;
 using Application.RequestProcessing;
 using Autofac;
-using Autofac.Core;
 using Domain.Models;
 using ReactiveUI;
 
@@ -12,16 +10,16 @@ namespace UI.ViewModels;
 public class RequestEditViewModel : ViewModelBase
 {
     private readonly RequestProcessor _requestProcessor;
-    private readonly RequestTemplate _requestTemplate;
 
-    private string _name;
-    private string _topic;
-    private string _body;
-    private readonly ILifetimeScope _scope;
-    private string _responseText;
+    private string _name = default!;
+    private string _topic = default!;
+    private string _body = default!;
+    private string _responseText = default!;
+
+    public readonly Guid RequestId = default!;
 
     /// <summary> Process request </summary>
-    public ICommand ProcessRequest { get; set; }
+    public ICommand ProcessRequest { get; set; } = default!;
 
     /// <summary>
     /// Template name
@@ -29,7 +27,11 @@ public class RequestEditViewModel : ViewModelBase
     public string Name
     {
         get => _name;
-        set => this.RaiseAndSetIfChanged(ref _name, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _name, value);
+            BroadcastRequestTemplateUpdated();
+        }
     }
 
     /// <summary>
@@ -38,7 +40,11 @@ public class RequestEditViewModel : ViewModelBase
     public string Topic
     {
         get => _topic;
-        set => this.RaiseAndSetIfChanged(ref _topic, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _topic, value);
+            BroadcastRequestTemplateUpdated();
+        }
     }
 
     /// <summary>
@@ -47,7 +53,11 @@ public class RequestEditViewModel : ViewModelBase
     public string Body
     {
         get => _body;
-        set => this.RaiseAndSetIfChanged(ref _body, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _body, value);
+            BroadcastRequestTemplateUpdated();
+        }
     }
 
     public string ResponseText
@@ -56,27 +66,36 @@ public class RequestEditViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _responseText, value);
     }
 
+    /// <summary>
+    /// Current request template data
+    /// </summary>
+    public RequestTemplate RequestTemplate =>
+        new()
+        {
+            Id = RequestId,
+            Name = Name,
+            Body = Body,
+            Topic = Topic
+        };
+
     public RequestEditViewModel()
     {
-        _scope = Program.Container.BeginLifetimeScope();
-        _requestProcessor = _scope.Resolve<RequestProcessor>();
-       
+        RequestId = Guid.NewGuid();
+        var scope = Program.Container.BeginLifetimeScope();
+        _requestProcessor = scope.Resolve<RequestProcessor>();
+
         InitCommands();
     }
 
-    public RequestEditViewModel(string name)
+    public RequestEditViewModel(RequestTemplate requestTemplate)
     {
-        _scope = Program.Container.BeginLifetimeScope();
-        _requestProcessor = _scope.Resolve<RequestProcessor>();
+        var scope = Program.Container.BeginLifetimeScope();
+        _requestProcessor = scope.Resolve<RequestProcessor>();
+        RequestId = requestTemplate.Id;
+        Name = requestTemplate.Name;
+        Topic = requestTemplate.Topic;
+        Body = requestTemplate.Body;
 
-        _requestTemplate = new RequestTemplate
-        {
-            Name = name
-        };
-        _name = _requestTemplate.Name;
-        _topic = _requestTemplate.Topic;
-        _body = _requestTemplate.Body;
-        
         InitCommands();
     }
 
@@ -90,20 +109,12 @@ public class RequestEditViewModel : ViewModelBase
                 Body = _body,
                 Topic = _topic
             });
-            this.ResponseText = result;
+            ResponseText = result;
         });
     }
 
-    public RequestEditViewModel(RequestTemplate requestTemplate)
+    private void BroadcastRequestTemplateUpdated()
     {
-        _scope = Program.Container.BeginLifetimeScope();
-        _requestProcessor = _scope.Resolve<RequestProcessor>();
-
-        _requestTemplate = requestTemplate;
-        _name = requestTemplate.Name;
-        _topic = requestTemplate.Topic;
-        _body = requestTemplate.Body;
-        
-        InitCommands();
+        MessageBus.Current.SendMessage(RequestTemplate, "request-updated");
     }
 }

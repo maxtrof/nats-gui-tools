@@ -13,16 +13,18 @@
         <vm:RequestsTabViewModel />
     </Design.DataContext>
 
-    <TabControl Items="{Binding Tabs}" TabStripPlacement="Top" BorderBrush="Aqua">
+    <TabControl Items="{Binding Tabs}" TabStripPlacement="Top" BorderBrush="Aqua" SelectedItem="{Binding SelectedTab}">
         <TabControl.ItemTemplate>
             <DataTemplate>
-                <TextBlock Text="{Binding Name}">
-                    <TextBlock.Styles>
+                <TextBox Name="editTitleField" Text="{Binding Name}" 
+                         GotFocus="EditTitleField_OnGotFocus" 
+                         LostFocus="EditTitleField_OnLostFocus">
+                    <TextBox.Styles>
                         <Style Selector="TextBlock">
-                            <Setter Property="FontSize" Value="14"></Setter>
+                            <Setter Property="FontSize" Value="14"/>
                         </Style>
-                    </TextBlock.Styles>
-                </TextBlock>
+                    </TextBox.Styles>
+                </TextBox>
             </DataTemplate>
         </TabControl.ItemTemplate>
 

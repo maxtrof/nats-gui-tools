@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -8,12 +7,12 @@ using System.Reactive.Concurrency;
 using System.Windows.Input;
 using Application;
 using Autofac;
-using Avalonia.Controls;
 using Domain.Interfaces;
 using Domain.Models;
 using DynamicData;
 using ReactiveUI;
 using UI.PeriodicTasks;
+using System;
 
 namespace UI.ViewModels;
 
@@ -70,6 +69,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         // Add new Server
         ShowAddNewServerDialog = new Interaction<AddServerViewModel, NatsServerSettings?>();
         
+        
+        
         AddNewServer = ReactiveCommand.CreateFromTask(async () =>
         {
             var vm = new AddServerViewModel();
@@ -122,7 +123,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             _storage.RequestTemplates.Add(newRequest);
             _storage.IncRequestTemplatesVersion();
             RequestTemplates.Add(newRequest);
-            MessageBus.Current.SendMessage<string>(name,"onRequestSelected");
+            MessageBus.Current.SendMessage(newRequest,"onRequestSelected");
         });
 
         DeleteRequest = ReactiveCommand.CreateFromTask<RequestTemplate>(async requestTemplate =>
@@ -139,6 +140,18 @@ public sealed class MainWindowViewModel : ViewModelBase
                 _storage.RequestTemplates.Remove(requestTemplate);
             }
         });
+        
+        MessageBus.Current.Listen<RequestTemplate>("request-updated")
+            .Subscribe((requestTemplate) =>
+            {
+                var exists = RequestTemplates.FirstOrDefault(x => x.Id == requestTemplate.Id);
+                if (exists is null) 
+                    return;
+                
+                RequestTemplates.Replace(exists, requestTemplate);
+                _storage.RequestTemplates = RequestTemplates.ToList();
+                _storage.IncRequestTemplatesVersion();
+            });
     }
     
     /// <summary>

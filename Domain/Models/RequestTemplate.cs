@@ -6,6 +6,10 @@ namespace Domain.Models;
 public sealed class RequestTemplate
 {
     /// <summary>
+    /// Id
+    /// </summary>
+    public Guid Id { get; set; }
+    /// <summary>
     /// Template name
     /// </summary>
     public string Name { get; set; } = default!;

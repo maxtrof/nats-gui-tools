@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
@@ -6,7 +7,9 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Domain.Models;
+using DynamicData;
 using ReactiveUI;
+using UI.EventArgs;
 using UI.ViewModels;
 
 namespace UI.Views;
@@ -102,5 +105,15 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     private void ServerListItemControl_OnUpdateServersState(object? sender, RoutedEventArgs e)
     {
         ViewModel!.UpdateServersList();
+    }
+
+    private void RequestsTabControl_OnUpdateRequest(object? sender, UpdateRequestRoutedEventArgs e)
+    {
+        var request = e.RequestTemplate;
+        var exists = ViewModel!.RequestTemplates.FirstOrDefault(x => x.Id == request.Id);
+        if (exists is not null)
+        {
+            ViewModel.RequestTemplates.Replace(exists, request);
+        }
     }
 }
