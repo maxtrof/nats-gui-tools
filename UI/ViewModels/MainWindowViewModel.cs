@@ -11,8 +11,9 @@ using Domain.Interfaces;
 using Domain.Models;
 using DynamicData;
 using ReactiveUI;
-using UI.PeriodicTasks;
 using System;
+using UI.MessagesBus;
+using UI.PeriodicTasks;
 
 namespace UI.ViewModels;
 
@@ -25,6 +26,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     private bool _appLoaded;
     private bool _isRequestsTabVisible;
     private int _selectedTab;
+    private RequestTemplate _selectedRequest;
 
     public ICommand AddNewServer { get; }
     public ICommand ShowSettingsWindow { get; }
@@ -36,8 +38,18 @@ public sealed class MainWindowViewModel : ViewModelBase
     public Interaction<SettingsViewModel, Dictionary<string, string>?> ShowSettingsWindowDialog { get; }
     public Interaction<Unit, string?> ShowExportFileSaveDialog { get; }
     public Interaction<Unit, string?> ShowImportFileLoadDialog { get; }
-    public Interaction<YesNoDialogViewModel, DialogResult> YesNoDialog { get; } = new ();
-    public ObservableCollection<RequestTemplate> RequestTemplates { get; set; } = new (new List<RequestTemplate>());
+    public Interaction<YesNoDialogViewModel, DialogResult> YesNoDialog { get; } = new();
+    public ObservableCollection<RequestTemplate> RequestTemplates { get; set; } = new(new List<RequestTemplate>());
+
+    public RequestTemplate SelectedRequest
+    {
+        get => _selectedRequest;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedRequest, value);
+            MessageBus.Current.SendMessage(SelectedRequest, BusEvents.RequestSelected);
+        }
+    }
 
 
     public bool IsRequestsTabVisible
@@ -124,7 +136,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             _storage.RequestTemplates.Add(newRequest);
             _storage.IncRequestTemplatesVersion();
             RequestTemplates.Add(newRequest);
-            MessageBus.Current.SendMessage(newRequest,"onRequestSelected");
+            MessageBus.Current.SendMessage(newRequest, BusEvents.RequestSelected);
         });
 
         DeleteRequest = ReactiveCommand.CreateFromTask<RequestTemplate>(async requestTemplate =>
@@ -134,32 +146,33 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Title = "Delete?",
                 Text = "Request will be removed permanently?"
             });
-            
+
             if (result.Result == DialogResultEnum.Yes)
             {
                 RequestTemplates.Remove(requestTemplate);
                 _storage.RequestTemplates.Remove(requestTemplate);
+                MessageBus.Current.SendMessage(requestTemplate, BusEvents.RequestDeleted);
             }
         });
-        
-        MessageBus.Current.Listen<RequestTemplate>("request-updated")
+
+        MessageBus.Current.Listen<RequestTemplate>(BusEvents.RequestUpdated)
             .Subscribe(requestTemplate =>
             {
                 var exists = RequestTemplates.FirstOrDefault(x => x.Id == requestTemplate.Id);
-                if (exists is null) 
+                if (exists is null)
                     return;
-                
+
                 RequestTemplates.Replace(exists, requestTemplate);
                 _storage.RequestTemplates = RequestTemplates.ToList();
                 _storage.IncRequestTemplatesVersion();
             });
     }
-    
+
     /// <summary>
     /// Periodic data saver
     /// </summary>
     public DataSaver DataSaver { get; set; }
-    
+
 
     /// <summary>
     /// Unified search field for different sections (Requests, Mocks, etc.)
@@ -181,7 +194,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         // Filter servers
         Servers.AddRange(string.IsNullOrWhiteSpace(SearchText)
             ? _storage.AppSettings.Servers.ToViewModel(_connectionManager.GetCurrentServerName)
-            : _storage.AppSettings.Servers.Where(x => x.Name.ToLower().Contains(searchRequestInLower)).ToViewModel(_connectionManager.GetCurrentServerName)
+            : _storage.AppSettings.Servers.Where(x => x.Name.ToLower().Contains(searchRequestInLower))
+                .ToViewModel(_connectionManager.GetCurrentServerName)
         );
     }
 

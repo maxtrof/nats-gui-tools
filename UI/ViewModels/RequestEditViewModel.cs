@@ -4,6 +4,7 @@ using Application.RequestProcessing;
 using Autofac;
 using Domain.Models;
 using ReactiveUI;
+using UI.MessagesBus;
 
 namespace UI.ViewModels;
 
@@ -115,6 +116,6 @@ public class RequestEditViewModel : ViewModelBase
 
     private void BroadcastRequestTemplateUpdated()
     {
-        MessageBus.Current.SendMessage(RequestTemplate, "request-updated");
+        MessageBus.Current.SendMessage(RequestTemplate, BusEvents.RequestUpdated);
     }
 }

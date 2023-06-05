@@ -63,11 +63,11 @@
                         <StackPanel>
                             <Button Name="BtnAddNewRequest" 
                                     Command="{Binding AddNewRequest}">Add new</Button>
-                            <ListBox Items="{Binding RequestTemplates}">
+                            <ListBox Items="{Binding RequestTemplates}" SelectedItem="{Binding SelectedRequest}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid ColumnDefinitions="*, auto" VerticalAlignment="Stretch">
-                                            <TextBlock Grid.Column="0" Text="{Binding Name}" />
+                                            <TextBlock Name="TxtRequestName" Grid.Column="0" Text="{Binding Name}"/>
                                             <Button Grid.Column="1" FontSize="10" ToolTip.Tip="Delete request"
                                                     Command="{Binding 
                                                     RelativeSource={RelativeSource AncestorType=Window},

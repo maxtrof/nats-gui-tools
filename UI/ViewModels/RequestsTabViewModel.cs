@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Domain.Models;
 using ReactiveUI;
+using UI.MessagesBus;
 
 namespace UI.ViewModels;
 
@@ -19,12 +20,7 @@ public class RequestsTabViewModel : ViewModelBase
 
     public RequestsTabViewModel()
     {
-        MessageBus.Current.Listen<RequestTemplate>("onRequestSelected")
-            .Subscribe(request =>
-            {
-                var requestEditViewModel = new RequestEditViewModel(request);
-                AddRequestTab(requestEditViewModel);
-            });
+        SubscribeToMessageBus();
     }
 
     public void SetSelectedTab(string name)
@@ -33,7 +29,7 @@ public class RequestsTabViewModel : ViewModelBase
         if (exists is not null)
             SelectedTab = exists;
     }
-    
+
     public void UpdateRequestName(Guid requestId, string name)
     {
         var exists = Tabs.FirstOrDefault(x => x.RequestTemplate.Id == requestId);
@@ -66,5 +62,23 @@ public class RequestsTabViewModel : ViewModelBase
         if (exists == null)
             Tabs.Add(request);
         SelectedTab = exists ?? request;
+    }
+
+    private void SubscribeToMessageBus()
+    {
+        MessageBus.Current.Listen<RequestTemplate>(BusEvents.RequestSelected)
+            .Subscribe(request =>
+            {
+                var requestEditViewModel = new RequestEditViewModel(request);
+                AddRequestTab(requestEditViewModel);
+            });
+        MessageBus.Current.Listen<RequestTemplate>(BusEvents.RequestDeleted)
+            .Subscribe(request =>
+            {
+                var exists = Tabs.FirstOrDefault(x => x.RequestId == request.Id);
+                if (exists is not null)
+                    Tabs.Remove(exists);
+                SelectedTab = Tabs.FirstOrDefault();
+            });
     }
 }
