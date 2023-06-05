@@ -69,8 +69,6 @@ public sealed class MainWindowViewModel : ViewModelBase
         // Add new Server
         ShowAddNewServerDialog = new Interaction<AddServerViewModel, NatsServerSettings?>();
         
-        
-        
         AddNewServer = ReactiveCommand.CreateFromTask(async () =>
         {
             var vm = new AddServerViewModel();
@@ -119,7 +117,10 @@ public sealed class MainWindowViewModel : ViewModelBase
                 name = $"New request template {++i:000}";
             } while (names.Contains(name));
 
-            var newRequest = new RequestTemplate {Name = name};
+            var newRequest = new RequestTemplate
+            {
+                Name = name
+            };
             _storage.RequestTemplates.Add(newRequest);
             _storage.IncRequestTemplatesVersion();
             RequestTemplates.Add(newRequest);
@@ -142,7 +143,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         });
         
         MessageBus.Current.Listen<RequestTemplate>("request-updated")
-            .Subscribe((requestTemplate) =>
+            .Subscribe(requestTemplate =>
             {
                 var exists = RequestTemplates.FirstOrDefault(x => x.Id == requestTemplate.Id);
                 if (exists is null) 

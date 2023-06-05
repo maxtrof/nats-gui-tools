@@ -8,15 +8,18 @@ public sealed class RequestTemplate
     /// <summary>
     /// Id
     /// </summary>
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
+
     /// <summary>
     /// Template name
     /// </summary>
     public string Name { get; set; } = default!;
+
     /// <summary>
     /// Topic to send Request
     /// </summary>
     public string Topic { get; set; } = default!;
+
     /// <summary>
     /// Request body
     /// </summary>
