@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Windows.Input;
 using Application.RequestProcessing;
 using Autofac;
@@ -18,6 +19,7 @@ public class RequestEditViewModel : ViewModelBase
     private string _responseText = default!;
 
     public readonly Guid RequestId = default!;
+    private string? _validationError;
 
     /// <summary> Process request </summary>
     public ICommand ProcessRequest { get; set; } = default!;
@@ -46,6 +48,12 @@ public class RequestEditViewModel : ViewModelBase
             this.RaiseAndSetIfChanged(ref _topic, value);
             BroadcastRequestTemplateUpdated();
         }
+    }
+
+    public string? ValidationError
+    {
+        get => _validationError;
+        set => this.RaiseAndSetIfChanged(ref _validationError, value);
     }
 
     /// <summary>
@@ -104,6 +112,9 @@ public class RequestEditViewModel : ViewModelBase
     {
         ProcessRequest = ReactiveCommand.CreateFromTask(async _ =>
         {
+            ValidationError = ValidateForm();
+            if(ValidationError!= null)
+                return;
             var result = await _requestProcessor.SendRequestReply(new RequestTemplate()
             {
                 Name = _name,
@@ -117,5 +128,13 @@ public class RequestEditViewModel : ViewModelBase
     private void BroadcastRequestTemplateUpdated()
     {
         MessageBus.Current.SendMessage(RequestTemplate, BusEvents.RequestUpdated);
+    }
+
+    private string? ValidateForm()
+    {
+        StringBuilder sb = new StringBuilder();
+        if (string.IsNullOrWhiteSpace(Topic)) sb.AppendLine("Topic is empty");
+        if (string.IsNullOrWhiteSpace(Body)) sb.AppendLine("Request body is empty");
+        return sb.Length > 0 ? sb.ToString() : null;
     }
 }

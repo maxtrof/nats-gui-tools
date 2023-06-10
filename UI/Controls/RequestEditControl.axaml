@@ -11,37 +11,41 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <viewModels:RequestEditViewModel />
     </Design.DataContext>
-    <Grid RowDefinitions="auto,*,*" Margin="5">
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8">
-                <TextBlock VerticalAlignment="Center">Topic: </TextBlock>
-                <TextBox MinWidth="200" Text="{Binding Topic}"></TextBox>
-                <TextBlock VerticalAlignment="Center">Type: </TextBlock>
-                
-                <ComboBox MinWidth="200" Cursor="Hand">
-                    <ComboBoxItem >Request</ComboBoxItem>
-                    <ComboBoxItem >Request-Reply</ComboBoxItem>
-                </ComboBox>
+    <Grid RowDefinitions="auto,auto,*,*" Margin="5">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8">
+            <TextBlock VerticalAlignment="Center">Topic: </TextBlock>
+            <TextBox MinWidth="200" Text="{Binding Topic}"></TextBox>
+            <TextBlock VerticalAlignment="Center">Type: </TextBlock>
 
-                <Button MinWidth="100"
-                        HorizontalAlignment="Left"
-                        BorderBrush="Aqua"
-                        Cursor="Hand"
-                        Command="{Binding ProcessRequest}" IsEnabled="True">
-                    <Button.Content>
-                        <TextBlock HorizontalAlignment="Center">Send</TextBlock>
-                    </Button.Content>
-                </Button>
-            </StackPanel>
+            <ComboBox MinWidth="200" Cursor="Hand">
+                <ComboBoxItem>Request</ComboBoxItem>
+                <ComboBoxItem>Request-Reply</ComboBoxItem>
+            </ComboBox>
 
-            <Grid Grid.Row="1" Margin="0, 5">
-                <TextBox AcceptsReturn="True" TextWrapping="Wrap" Watermark="Request" HorizontalAlignment="Stretch"
-                         Text="{Binding Body}"/>
-            </Grid>
+            <Button MinWidth="100"
+                    HorizontalAlignment="Left"
+                    BorderBrush="Aqua"
+                    Cursor="Hand"
+                    Command="{Binding ProcessRequest}" IsEnabled="True">
+                <Button.Content>
+                    <TextBlock HorizontalAlignment="Center">Send</TextBlock>
+                </Button.Content>
+            </Button>
+        </StackPanel>
 
-            <Grid Grid.Row="2" Margin="0, 5">
-                
-                <TextBox Text="{Binding ResponseText}"
-                    AcceptsReturn="True" TextWrapping="Wrap" Watermark="Response" HorizontalAlignment="Stretch" />
-            </Grid>
+        <Grid Grid.Row="1">
+            <TextBlock Text="{Binding ValidationError}" Foreground="Brown" />
         </Grid>
+
+        <Grid Grid.Row="2" Margin="0, 5">
+            <TextBox AcceptsReturn="True" TextWrapping="Wrap" Watermark="Request" HorizontalAlignment="Stretch"
+                     Text="{Binding Body}" />
+        </Grid>
+
+        <Grid Grid.Row="3" Margin="0, 5">
+
+            <TextBox Text="{Binding ResponseText}"
+                     AcceptsReturn="True" TextWrapping="Wrap" Watermark="Response" HorizontalAlignment="Stretch" />
+        </Grid>
+    </Grid>
 </UserControl>

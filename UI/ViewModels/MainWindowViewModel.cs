@@ -151,6 +151,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             {
                 RequestTemplates.Remove(requestTemplate);
                 _storage.RequestTemplates.Remove(requestTemplate);
+                _storage.IncRequestTemplatesVersion();
                 MessageBus.Current.SendMessage(requestTemplate, BusEvents.RequestDeleted);
             }
         });
