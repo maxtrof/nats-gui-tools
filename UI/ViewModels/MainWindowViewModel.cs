@@ -310,8 +310,8 @@ public sealed class MainWindowViewModel : ViewModelBase
     private async void LoadData()
     {
         await _storage.InitializeAsync();
-        AppLoaded = true;
         UpdateListsFromStorage();
+        AppLoaded = true;
     }
 
     private void UpdateListsFromStorage()
