@@ -15,7 +15,7 @@ using UI.MessagesBus;
 
 namespace UI.ViewModels;
 
-public class ListenerEditViewModel : ViewModelBase
+public class ListenerEditViewModel : ViewModelBase, IDisposable
 {
     private readonly TopicListener _topicListener;
 
@@ -138,7 +138,8 @@ public class ListenerEditViewModel : ViewModelBase
 
     private void MessageReceived(object? sender, IncomingMessageData data)
     {
-        Dispatcher.UIThread.Post(() => Messages.Add(data));
+        if(data.Topic == Topic)
+            Dispatcher.UIThread.Post(() => Messages.Add(data));
     }
 
     private void BroadcastListenerUpdated()
@@ -151,5 +152,10 @@ public class ListenerEditViewModel : ViewModelBase
         var sb = new StringBuilder();
         if (string.IsNullOrWhiteSpace(Topic)) sb.AppendLine("Topic is empty");
         return sb.Length > 0 ? sb.ToString() : null;
+    }
+
+    public void Dispose()
+    {
+        _topicListener.OnMessageReceived -= MessageReceived;
     }
 }
