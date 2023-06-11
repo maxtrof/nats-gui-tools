@@ -24,6 +24,7 @@
         <Style Selector="FlyoutPresenter.Error">
             <Setter Property="Background" Value="Red" />
             <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+            <Setter Property="MaxWidth" Value="500"></Setter>
         </Style>
     </Window.Styles>
     <Design.DataContext>
@@ -34,6 +35,10 @@
 
     
     <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Menu DockPanel.Dock="Top" Name="MainMenu">
+            <MenuItem Header="_About" Name="AboutMenuItem" Click="AboutMenuItem_OnClick"/>
+        </Menu>
+        
         <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="9999" Height="9999" IsVisible="{Binding !AppLoaded}">
             <controls:LoaderControl HorizontalAlignment="Center" VerticalAlignment="Center"></controls:LoaderControl>
         </DockPanel>

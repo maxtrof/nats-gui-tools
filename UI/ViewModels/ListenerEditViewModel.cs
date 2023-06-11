@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Windows.Input;
-using Application.Exceptions;
-using Application.RequestProcessing;
 using Application.TopicListener;
 using Autofac;
 using Avalonia.Threading;
 using Domain.Models;
 using ReactiveUI;
+using UI.Helpers;
 using UI.MessagesBus;
 
 namespace UI.ViewModels;
@@ -129,7 +127,7 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
             }
             catch (Exception ex)
             {
-                MessageBus.Current.SendMessage(ex.Message, BusEvents.ErrorThrown);
+                ErrorHelper.ShowError(ex.Message);
             }
         });
         StopListen = ReactiveCommand.Create<Unit>(_ =>
@@ -145,7 +143,7 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
             }
             catch (Exception ex)
             {
-                MessageBus.Current.SendMessage(ex.Message, BusEvents.ErrorThrown);
+                ErrorHelper.ShowError(ex.Message);
             }
         });
     }

@@ -24,4 +24,9 @@ public partial class App : Avalonia.Application
 
         base.OnFrameworkInitializationCompleted();
     }
+
+    private void AboutNativeMenuItem_OnClick(object? sender, System.EventArgs e)
+    {
+        Program.OpenGitInBrowser();
+    }
 }

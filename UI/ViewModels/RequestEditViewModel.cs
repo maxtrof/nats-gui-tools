@@ -5,6 +5,7 @@ using Application.RequestProcessing;
 using Autofac;
 using Domain.Models;
 using ReactiveUI;
+using UI.Helpers;
 using UI.MessagesBus;
 
 namespace UI.ViewModels;
@@ -127,7 +128,7 @@ public class RequestEditViewModel : ViewModelBase
             }
             catch (Exception ex)
             {
-                MessageBus.Current.SendMessage(ex.Message, BusEvents.ErrorThrown);
+                ErrorHelper.ShowError(ex.Message);
             }
         });
     }

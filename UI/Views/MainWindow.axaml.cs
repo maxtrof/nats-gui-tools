@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using Domain.Models;
 using DynamicData;
@@ -30,6 +31,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     public MainWindow()
     {
         InitializeComponent();
+        var platform = AvaloniaLocator.Current.GetService<IRuntimePlatform>()?.GetRuntimeInfo().OperatingSystem;
+        if (platform == OperatingSystemType.OSX)
+            MainMenu.IsVisible = false;
         this.WhenActivated(d => d(ViewModel!.ShowAddNewServerDialog.RegisterHandler(DoShowAddServerDialogAsync)));
         this.WhenActivated(d => d(ViewModel!.YesNoDialog.RegisterHandler(DoShowYesNoDialogDialogAsync)));
 
@@ -125,4 +129,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         var listener = e.Listener;
         ViewModel!._listeners.AddOrUpdate(listener);
     }
+
+    private void AboutMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        Program.OpenGitInBrowser();
+    }
+
+    
 }
