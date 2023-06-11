@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -8,11 +7,12 @@ using System.Reactive.Concurrency;
 using System.Windows.Input;
 using Application;
 using Autofac;
-using Avalonia.Controls;
 using Domain.Interfaces;
 using Domain.Models;
 using DynamicData;
 using ReactiveUI;
+using System;
+using UI.MessagesBus;
 using UI.PeriodicTasks;
 
 namespace UI.ViewModels;
@@ -24,15 +24,50 @@ public sealed class MainWindowViewModel : ViewModelBase
     private readonly ConnectionManager _connectionManager;
     private string _searchText = "";
     private bool _appLoaded;
+    private bool _isRequestsTabVisible;
+    private int _selectedTab;
+    private RequestTemplate _selectedRequest;
 
     public ICommand AddNewServer { get; }
     public ICommand ShowSettingsWindow { get; }
     public ICommand ShowExportDialog { get; }
     public ICommand ShowImportDialog { get; }
+    public ICommand AddNewRequest { get; }
+    public ICommand DeleteRequest { get; }
     public Interaction<AddServerViewModel, NatsServerSettings?> ShowAddNewServerDialog { get; }
     public Interaction<SettingsViewModel, Dictionary<string, string>?> ShowSettingsWindowDialog { get; }
     public Interaction<Unit, string?> ShowExportFileSaveDialog { get; }
     public Interaction<Unit, string?> ShowImportFileLoadDialog { get; }
+    public Interaction<YesNoDialogViewModel, DialogResult> YesNoDialog { get; } = new();
+    public ObservableCollection<RequestTemplate> RequestTemplates { get; set; } = new(new List<RequestTemplate>());
+
+    public RequestTemplate SelectedRequest
+    {
+        get => _selectedRequest;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedRequest, value);
+            MessageBus.Current.SendMessage(SelectedRequest, BusEvents.RequestSelected);
+        }
+    }
+
+
+    public bool IsRequestsTabVisible
+    {
+        get => _isRequestsTabVisible;
+        set => this.RaiseAndSetIfChanged(ref _isRequestsTabVisible, value);
+    }
+
+    public int SelectedTab
+    {
+        get => _selectedTab;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedTab, value);
+            IsRequestsTabVisible = value == 2;
+        }
+    }
+
     public MainWindowViewModel()
     {
         _scope = Program.Container.BeginLifetimeScope();
@@ -45,6 +80,7 @@ public sealed class MainWindowViewModel : ViewModelBase
 
         // Add new Server
         ShowAddNewServerDialog = new Interaction<AddServerViewModel, NatsServerSettings?>();
+        
         AddNewServer = ReactiveCommand.CreateFromTask(async () =>
         {
             var vm = new AddServerViewModel();
@@ -82,13 +118,63 @@ public sealed class MainWindowViewModel : ViewModelBase
             await _storage.ImportAsync(result);
             SearchText = SearchText; // Force update search to fetch changes in UI
         });
+        
+        AddNewRequest = ReactiveCommand.Create(() =>
+        {
+            var i = 0;
+            string name;
+            var names = RequestTemplates.Select(x => x.Name).ToArray();
+            do
+            {
+                name = $"New request template {++i:000}";
+            } while (names.Contains(name));
+
+            var newRequest = new RequestTemplate
+            {
+                Name = name
+            };
+            _storage.RequestTemplates.Add(newRequest);
+            _storage.IncRequestTemplatesVersion();
+            RequestTemplates.Add(newRequest);
+            MessageBus.Current.SendMessage(newRequest, BusEvents.RequestSelected);
+        });
+
+        DeleteRequest = ReactiveCommand.CreateFromTask<RequestTemplate>(async requestTemplate =>
+        {
+            var result = await YesNoDialog.Handle(new YesNoDialogViewModel()
+            {
+                Title = "Delete?",
+                Text = "Request will be removed permanently?"
+            });
+
+            if (result.Result == DialogResultEnum.Yes)
+            {
+                RequestTemplates.Remove(requestTemplate);
+                _storage.RequestTemplates.Remove(requestTemplate);
+                _storage.IncRequestTemplatesVersion();
+                MessageBus.Current.SendMessage(requestTemplate, BusEvents.RequestDeleted);
+            }
+        });
+
+        MessageBus.Current.Listen<RequestTemplate>(BusEvents.RequestUpdated)
+            .Subscribe(requestTemplate =>
+            {
+                var exists = RequestTemplates.FirstOrDefault(x => x.Id == requestTemplate.Id);
+                if (exists is null)
+                    return;
+
+                RequestTemplates.Replace(exists, requestTemplate);
+                _storage.RequestTemplates = RequestTemplates.ToList();
+                _storage.IncRequestTemplatesVersion();
+            });
     }
-    
+
     /// <summary>
     /// Periodic data saver
     /// </summary>
     public DataSaver DataSaver { get; set; }
-    
+
+
     /// <summary>
     /// Unified search field for different sections (Requests, Mocks, etc.)
     /// </summary>
@@ -109,7 +195,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         // Filter servers
         Servers.AddRange(string.IsNullOrWhiteSpace(SearchText)
             ? _storage.AppSettings.Servers.ToViewModel(_connectionManager.GetCurrentServerName)
-            : _storage.AppSettings.Servers.Where(x => x.Name.ToLower().Contains(searchRequestInLower)).ToViewModel(_connectionManager.GetCurrentServerName)
+            : _storage.AppSettings.Servers.Where(x => x.Name.ToLower().Contains(searchRequestInLower))
+                .ToViewModel(_connectionManager.GetCurrentServerName)
         );
     }
 
@@ -123,12 +210,12 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// Servers list
     /// </summary>
     public ObservableCollection<ServerListItemViewModel> Servers { get; set; } = new();
-    public ObservableCollection<RequestTemplate> RequestTemplates { get; set; } = new (new List<RequestTemplate>());
 
     private async void LoadData()
     {
         await _storage.InitializeAsync();
         AppLoaded = true;
         SearchText = ""; // Force update search to fetch changes in UI
+        RequestTemplates.AddRange(_storage.RequestTemplates);
     }
 }

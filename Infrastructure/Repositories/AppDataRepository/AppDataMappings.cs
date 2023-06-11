@@ -44,6 +44,7 @@ internal static class AppDataMappings
         foreach (var requestTemplateDto in dto.Templates)
         {
             var template = new RequestTemplate();
+            template.Id = Guid.NewGuid();
             template.Name = requestTemplateDto.Name;
             template.Body = requestTemplateDto.Body;
             template.Topic = requestTemplateDto.Topic;

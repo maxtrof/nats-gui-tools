@@ -4,17 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:UI.Controls"
-        xmlns:templatedControls="clr-namespace:UI.TemplatedControls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="UI.Views.MainWindow"
         WindowStartupLocation="CenterScreen"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="Nats GUI Tools">
-
-  <Window.Styles>
-      <StyleInclude Source = "/TemplatedControls/MainContentControl.axaml" />
-  </Window.Styles>
     
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -32,7 +27,9 @@
                 <TextBox Grid.Row="0" Grid.Column="0" Watermark="Search" Name="MainSearchTextBox" Text="{Binding SearchText}"></TextBox>
                 <TabControl x:Name="MainTabControl" Grid.Row="1"
                             Name="MainTabControl"
-                            TabStripPlacement="Bottom">
+                            TabStripPlacement="Bottom"
+                            SelectedIndex="{Binding SelectedTab}">
+                    
                     <TabItem VerticalContentAlignment="Center">
                         <TabItem.Header>
                             <TextBlock VerticalAlignment="Center">Servers</TextBlock>
@@ -64,16 +61,25 @@
                             <TextBlock VerticalAlignment="Center">Requests</TextBlock>
                         </TabItem.Header>
                         <StackPanel>
-                            <Button>Add new</Button>
-                            <ListBox Items="{Binding RequestTemplates}">
+                            <Button Name="BtnAddNewRequest" 
+                                    Command="{Binding AddNewRequest}">Add new</Button>
+                            <ListBox Items="{Binding RequestTemplates}" SelectedItem="{Binding SelectedRequest}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Name}" />
+                                        <Grid ColumnDefinitions="*, auto" VerticalAlignment="Stretch">
+                                            <TextBlock Name="TxtRequestName" Grid.Column="0" Text="{Binding Name}"/>
+                                            <Button Grid.Column="1" FontSize="10" ToolTip.Tip="Delete request"
+                                                    Command="{Binding 
+                                                    RelativeSource={RelativeSource AncestorType=Window},
+                                                    Path=DataContext.DeleteRequest}"
+                                                    CommandParameter="{Binding .}">x</Button>
+                                        </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
                         </StackPanel>
                     </TabItem>
+                    
                     <TabItem>
                         <TabItem.Header>
                             <TextBlock VerticalAlignment="Center">Mocks</TextBlock>
@@ -87,10 +93,12 @@
             </Grid>
 
             <!-- Right panel -->
-            <Grid Grid.Column="1">
-                <templatedControls:MainContentControl SelectedTab="{Binding #MainTabControl.SelectedIndex}" />
+            <Grid Grid.Row="0" Grid.Column="1">
+                <controls:RequestsTabControl IsVisible="{Binding $parent.DataContext.IsRequestsTabVisible}"
+                                             UpdateRequest="RequestsTabControl_OnUpdateRequest"/>
             </Grid>
             
+            <!-- footer -->
             <Grid RowDefinitions="1*" ColumnDefinitions="1*,1*" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                 <StackPanel Grid.Column="0" DataContext="{Binding DataSaver}">
                     <TextBlock Grid.Column="0" Text="{Binding SavedAtMessage}"></TextBlock>    

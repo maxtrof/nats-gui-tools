@@ -37,7 +37,7 @@ public sealed class DataSaver : INotifyPropertyChanged
         _disTimer.Start();
     }
 
-    private void DispatcherTimer_Tick(object? sender, EventArgs e)
+    private void DispatcherTimer_Tick(object? sender, System.EventArgs e)
     {
         Task.Run(_dataStorage.SaveDataIfNeeded);
         var now = DateTime.Now;
