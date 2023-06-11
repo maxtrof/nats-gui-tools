@@ -12,6 +12,8 @@ using Domain.Models;
 using DynamicData;
 using ReactiveUI;
 using System;
+using System.Reactive.Subjects;
+using DynamicData.Binding;
 using UI.Helpers;
 using UI.MessagesBus;
 using UI.PeriodicTasks;
@@ -45,8 +47,28 @@ public sealed class MainWindowViewModel : ViewModelBase
     public Interaction<Unit, string?> ShowExportFileSaveDialog { get; }
     public Interaction<Unit, string?> ShowImportFileLoadDialog { get; }
     public Interaction<YesNoDialogViewModel, DialogResult> YesNoDialog { get; } = new();
-    public ObservableCollection<RequestTemplate> RequestTemplates { get; set; } = new(new List<RequestTemplate>());
-    public ObservableCollection<Listener> Listeners { get; set; } = new(new List<Listener>());
+    
+    // Source caches for lists
+    public SourceCache<RequestTemplate, Guid> _requestTemplates { get; set; } = new(x => x.Id);
+    public SourceCache<Listener, Guid> _listeners { get; set; } = new(x => x.Id);
+    public SourceCache<ServerListItemViewModel, Guid> _servers { get; set; } = new(x => x.Id);
+    
+    // Filtered data for lists
+    private readonly ReadOnlyObservableCollection<RequestTemplate> _requestTemplatesFiltered;
+    public ReadOnlyObservableCollection<RequestTemplate> RequestTemplates => _requestTemplatesFiltered;
+    
+    
+    private readonly ReadOnlyObservableCollection<ServerListItemViewModel> _serversFiltered;
+    public ReadOnlyObservableCollection<ServerListItemViewModel> Servers => _serversFiltered;
+    
+
+    private readonly ReadOnlyObservableCollection<Listener> _listenersFiltered;
+    public ReadOnlyObservableCollection<Listener> Listeners => _listenersFiltered;
+    
+    /// <summary>
+    /// Periodic data saver
+    /// </summary>
+    public DataSaver DataSaver { get; set; }
 
     public RequestTemplate SelectedRequest
     {
@@ -98,6 +120,27 @@ public sealed class MainWindowViewModel : ViewModelBase
             IsServersTabVisible = value == 0;
         }
     }
+    
+    /// <summary>
+    /// Unified search field for different sections (Requests, Mocks, etc.)
+    /// </summary>
+    public string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _searchText, value);
+        }
+    }
+    
+    /// <summary>
+    /// True if app is loaded
+    /// </summary>
+    public bool AppLoaded
+    {
+        get => _appLoaded;
+        set => this.RaiseAndSetIfChanged(ref _appLoaded, value);
+    }
 
     public MainWindowViewModel()
     {
@@ -108,6 +151,27 @@ public sealed class MainWindowViewModel : ViewModelBase
         RxApp.MainThreadScheduler.Schedule(LoadData);
 
         DataSaver = new DataSaver(_storage);
+        
+        // Search
+        _servers.Connect()
+            .AutoRefreshOnObservable(_ => this.ObservableForProperty(x => x.SearchText))
+            .Sort(SortExpressionComparer<ServerListItemViewModel>.Ascending(t => t.ServerSettings.Name))
+            .Filter(x =>
+                string.IsNullOrWhiteSpace(SearchText) || x.ServerSettings.Name.ToLower().Contains(SearchText.ToLower()))
+            .Bind(out _serversFiltered)
+            .Subscribe();
+        _listeners.Connect()
+            .AutoRefreshOnObservable(_ => this.ObservableForProperty(x => x.SearchText))
+            .Sort(SortExpressionComparer<Listener>.Ascending(t => t.Name))
+            .Filter(x => string.IsNullOrWhiteSpace(SearchText) || x.Name.ToLower().Contains(SearchText.ToLower()))
+            .Bind(out _listenersFiltered)
+            .Subscribe();
+        _requestTemplates.Connect()
+            .AutoRefreshOnObservable(_ => this.ObservableForProperty(x => x.SearchText))
+            .Sort(SortExpressionComparer<RequestTemplate>.Ascending(t => t.Name))
+            .Filter(x => string.IsNullOrWhiteSpace(SearchText) || x.Name.ToLower().Contains(SearchText.ToLower()))
+            .Bind(out _requestTemplatesFiltered)
+            .Subscribe();
 
         // Add new Server
         ShowAddNewServerDialog = new Interaction<AddServerViewModel, NatsServerSettings?>();
@@ -119,7 +183,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             if (result is null) return;
             _storage.AppSettings.Servers.Add(result);
             _storage.IncAppSettingsVersion();
-            SearchText = SearchText; // Force update search to fetch changes in UI
+            UpdateServersList(); // Force update search to fetch changes in UI
         });
 
         // Settings
@@ -147,7 +211,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             var result = await ShowImportFileLoadDialog.Handle(new Unit());
             if (result is null) return;
             await _storage.ImportAsync(result);
-            SearchText = SearchText; // Force update search to fetch changes in UI
+            UpdateListsFromStorage(); // Force update search to fetch changes in UI
         });
         
         AddNewRequest = ReactiveCommand.Create(() =>
@@ -158,7 +222,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             };
             _storage.RequestTemplates.Add(newRequest);
             _storage.IncRequestTemplatesVersion();
-            RequestTemplates.Add(newRequest);
+            _requestTemplates.AddOrUpdate(newRequest);
             MessageBus.Current.SendMessage(newRequest, BusEvents.RequestSelected);
         });
 
@@ -172,7 +236,7 @@ public sealed class MainWindowViewModel : ViewModelBase
 
             if (result.Result == DialogResultEnum.Yes)
             {
-                RequestTemplates.Remove(requestTemplate);
+                _requestTemplates.Remove(requestTemplate);
                 _storage.RequestTemplates.Remove(requestTemplate);
                 _storage.IncRequestTemplatesVersion();
                 MessageBus.Current.SendMessage(requestTemplate, BusEvents.RequestDeleted);
@@ -187,7 +251,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             };
             _storage.Listeners.Add(newListener);
             _storage.IncListenersVersion();
-            Listeners.Add(newListener);
+            _listeners.AddOrUpdate(newListener);
             MessageBus.Current.SendMessage(newListener, BusEvents.ListenerSelected);
         });
 
@@ -201,86 +265,67 @@ public sealed class MainWindowViewModel : ViewModelBase
 
             if (result.Result == DialogResultEnum.Yes)
             {
-                Listeners.Remove(listener);
+                _listeners.Remove(listener);
                 _storage.Listeners.Remove(listener);
                 _storage.IncListenersVersion();
-                MessageBus.Current.SendMessage(listener, BusEvents.RequestDeleted);
+                MessageBus.Current.SendMessage(listener, BusEvents.ListenerDeleted);
             }
         });
 
         MessageBus.Current.Listen<RequestTemplate>(BusEvents.RequestUpdated)
             .Subscribe(requestTemplate =>
             {
-                var exists = RequestTemplates.FirstOrDefault(x => x.Id == requestTemplate.Id);
+                var exists = _storage.RequestTemplates.FirstOrDefault(x => x.Id == requestTemplate.Id);
                 if (exists is null)
                     return;
 
-                RequestTemplates.Replace(exists, requestTemplate);
-                _storage.RequestTemplates = RequestTemplates.ToList();
+                _storage.RequestTemplates.Replace(exists, requestTemplate);
+                _requestTemplates.AddOrUpdate(requestTemplate);
                 _storage.IncRequestTemplatesVersion();
             });
 
         MessageBus.Current.Listen<Listener>(BusEvents.ListenerUpdated)
-            .Subscribe(listeners =>
+            .Subscribe(listener =>
             {
-                var exists = Listeners.FirstOrDefault(x => x.Id == listeners.Id);
+                var exists = _storage.Listeners.FirstOrDefault(x => x.Id == listener.Id);
                 if (exists is null)
                     return;
 
-                Listeners.Replace(exists, listeners);
-                _storage.Listeners = Listeners.ToList();
-                _storage.IncRequestTemplatesVersion();
+                _storage.Listeners.Replace(exists, listener);
+                _listeners.AddOrUpdate(listener);
+                _storage.IncListenersVersion();
             });
-    }
-
-    /// <summary>
-    /// Periodic data saver
-    /// </summary>
-    public DataSaver DataSaver { get; set; }
-
-
-    /// <summary>
-    /// Unified search field for different sections (Requests, Mocks, etc.)
-    /// </summary>
-    public string SearchText
-    {
-        get => _searchText;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _searchText, value);
-            UpdateServersList();
-        }
     }
 
     public void UpdateServersList()
     {
-        Servers.Clear();
-        var searchRequestInLower = SearchText.ToLower();
-        // Filter servers
-        Servers.AddRange(string.IsNullOrWhiteSpace(SearchText)
-            ? _storage.AppSettings.Servers.ToViewModel(_connectionManager.GetCurrentServerName)
-            : _storage.AppSettings.Servers.Where(x => x.Name.ToLower().Contains(searchRequestInLower))
-                .ToViewModel(_connectionManager.GetCurrentServerName)
-        );
+        _servers.Clear();
+        var serversVms = _storage.AppSettings.Servers.ToViewModel(_connectionManager.GetCurrentServerName);
+        foreach (var serverListItemViewModel in serversVms)
+        {
+            _servers.AddOrUpdate(serverListItemViewModel);
+        }
     }
-
-    public bool AppLoaded
-    {
-        get => _appLoaded;
-        set => this.RaiseAndSetIfChanged(ref _appLoaded, value);
-    }
-
-    /// <summary>
-    /// Servers list
-    /// </summary>
-    public ObservableCollection<ServerListItemViewModel> Servers { get; set; } = new();
 
     private async void LoadData()
     {
         await _storage.InitializeAsync();
         AppLoaded = true;
-        SearchText = ""; // Force update search to fetch changes in UI
-        RequestTemplates.AddRange(_storage.RequestTemplates);
-        Listeners.AddRange(_storage.Listeners);
+        UpdateListsFromStorage();
+    }
+
+    private void UpdateListsFromStorage()
+    {
+        UpdateServersList();
+        _requestTemplates.Clear();
+        foreach (var storageRequestTemplate in _storage.RequestTemplates)
+        {
+            _requestTemplates.AddOrUpdate(storageRequestTemplate);
+        }
+        _listeners.Clear();
+        foreach (var storageListener in _storage.Listeners)
+        {
+            _listeners.AddOrUpdate(storageListener);
+        }
     }
 }

@@ -17,6 +17,8 @@ public class ServerListItemViewModel : ViewModelBase
     private bool _isConnected;
     private string _buttonText;
 
+    public Guid Id { get; set; } = Guid.NewGuid();
+
     public ServerListItemViewModel()
     {
         _scope = Program.Container.BeginLifetimeScope();

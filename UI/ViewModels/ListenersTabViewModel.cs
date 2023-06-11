@@ -65,7 +65,7 @@ public class ListenersTabViewModel : ViewModelBase
                 var listenerEditViewModel = new ListenerEditViewModel(listener);
                 AddListenerTab(listenerEditViewModel);
             });
-        MessageBus.Current.Listen<Listener>(BusEvents.RequestDeleted)
+        MessageBus.Current.Listen<Listener>(BusEvents.ListenerDeleted)
             .Subscribe(request =>
             {
                 var exists = Tabs.FirstOrDefault(x => x.ListenerId == request.Id);

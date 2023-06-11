@@ -111,20 +111,12 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     private void RequestsTabControl_OnUpdateRequest(object? sender, UpdateRequestRoutedEventArgs e)
     {
         var request = e.RequestTemplate;
-        var exists = ViewModel!.RequestTemplates.FirstOrDefault(x => x.Id == request.Id);
-        if (exists is not null)
-        {
-            ViewModel.RequestTemplates.Replace(exists, request);
-        }
+        ViewModel!._requestTemplates.AddOrUpdate(request);
     }
 
     private void ListenersTabControl_OnUpdateRequest(object? sender, UpdateListenerRoutedEventArgs e)
     {
-        var request = e.Listener;
-        var exists = ViewModel!.Listeners.FirstOrDefault(x => x.Id == request.Id);
-        if (exists is not null)
-        {
-            ViewModel.Listeners.Replace(exists, request);
-        }
+        var listener = e.Listener;
+        ViewModel!._listeners.AddOrUpdate(listener);
     }
 }
