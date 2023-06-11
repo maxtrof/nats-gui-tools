@@ -6,6 +6,7 @@ using Application;
 using Autofac;
 using Domain.Models;
 using ReactiveUI;
+using UI.MessagesBus;
 
 namespace UI.ViewModels;
 
@@ -68,6 +69,7 @@ public class ServerListItemViewModel : ViewModelBase
         catch (Exception ex)
         {
             ButtonText = "Error";
+            MessageBus.Current.SendMessage(ex.Message, BusEvents.ErrorThrown);
             return false;
         }
     }

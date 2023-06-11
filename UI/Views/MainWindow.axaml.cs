@@ -11,6 +11,7 @@ using Domain.Models;
 using DynamicData;
 using ReactiveUI;
 using UI.EventArgs;
+using UI.MessagesBus;
 using UI.ViewModels;
 
 namespace UI.Views;
@@ -35,6 +36,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         this.WhenActivated(d => d(ViewModel!.ShowSettingsWindowDialog.RegisterHandler(DoShowSettingsDialogAsync)));
         this.WhenActivated(d => d(ViewModel!.ShowExportFileSaveDialog.RegisterHandler(DoShowExportDialogAsync)));
         this.WhenActivated(d => d(ViewModel!.ShowImportFileLoadDialog.RegisterHandler(DoShowImportDialogAsync)));
+        MessageBus.Current.Listen<string>(BusEvents.ErrorThrown)
+            .Subscribe(text =>
+            {
+                ErrorButton.Flyout.ShowAt(ErrorButton);
+            });
     }
 
     private async Task DoShowAddServerDialogAsync(

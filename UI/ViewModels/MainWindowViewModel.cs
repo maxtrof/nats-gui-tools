@@ -31,6 +31,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     private bool _isListenersTabVisible;
     private bool _isServersTabVisible = true;
     private int _selectedTab;
+    private string? _errorMessage;
     private RequestTemplate _selectedRequest;
     private Listener _selectedListener;
 
@@ -127,12 +128,18 @@ public sealed class MainWindowViewModel : ViewModelBase
     public string SearchText
     {
         get => _searchText;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _searchText, value);
-        }
+        set => this.RaiseAndSetIfChanged(ref _searchText, value);
     }
-    
+
+    /// <summary>
+    /// Global error message
+    /// </summary>
+    public string? ErrorMessage
+    {
+        get => _errorMessage;
+        set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
+    }
+
     /// <summary>
     /// True if app is loaded
     /// </summary>
@@ -271,6 +278,12 @@ public sealed class MainWindowViewModel : ViewModelBase
                 MessageBus.Current.SendMessage(listener, BusEvents.ListenerDeleted);
             }
         });
+        
+        MessageBus.Current.Listen<string>(BusEvents.ErrorThrown)
+            .Subscribe(text =>
+            {
+                ErrorMessage = text;
+            });
 
         MessageBus.Current.Listen<RequestTemplate>(BusEvents.RequestUpdated)
             .Subscribe(requestTemplate =>

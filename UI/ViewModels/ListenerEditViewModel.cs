@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Windows.Input;
+using Application.Exceptions;
 using Application.RequestProcessing;
 using Application.TopicListener;
 using Autofac;
@@ -115,14 +116,20 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
 
     private void InitCommands()
     {
-        // TODO: Catch errors and show messages to user (UI)
         StartListen = ReactiveCommand.Create<Unit>(_ =>
         {
             ValidationError = ValidateForm();
             if(ValidationError is not null)
                 return;
+            try
+            {
+                _topicId = _topicListener.SubscribeToListen(Topic);
+            }
+            catch (Exception ex)
+            {
+                MessageBus.Current.SendMessage(ex.Message, BusEvents.ErrorThrown);
+            }
             _topicListener.OnMessageReceived += MessageReceived;
-            _topicId = _topicListener.SubscribeToListen(Topic);
             Listening = true;
         });
         StopListen = ReactiveCommand.Create<Unit>(_ =>
@@ -131,7 +138,14 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
             if(ValidationError is not null || _topicId is null)
                 return;
             _topicListener.OnMessageReceived -= MessageReceived;
-            _topicListener.Unsubscribe(_topicId.Value);
+            try
+            {
+                _topicListener.Unsubscribe(_topicId.Value);
+            }
+            catch (Exception ex)
+            {
+                MessageBus.Current.SendMessage(ex.Message, BusEvents.ErrorThrown);
+            }
             Listening = false;
         });
     }

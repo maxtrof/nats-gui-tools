@@ -94,7 +94,7 @@ public sealed class NatsGate : INatsGate, IDisposable
             GetConnection().Publish(response.TopicToResponse ?? args.Message.Reply, Encoding.UTF8.GetBytes(response.Body));
         };
         var sub = GetConnection().SubscribeAsync(topicName, h);
-        if (sub is null) throw new FailedToSubscribeToTopicException("Connection is null");
+        if (sub is null) throw new FailedToSubscribeToTopicException("Not connected to a server");
         _subscriptions.Add(sub);
         
         return sub.Sid;

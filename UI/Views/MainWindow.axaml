@@ -21,8 +21,11 @@
             <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
             <Setter Property="Margin" Value="10"></Setter>
         </Style>
+        <Style Selector="FlyoutPresenter.Error">
+            <Setter Property="Background" Value="Red" />
+            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+        </Style>
     </Window.Styles>
-    
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -153,6 +156,13 @@
                     </Button>
                     <Button Command="{Binding ShowSettingsWindow}">
                         <Image Width="32" Height="32" Source="/Assets/setting.png"></Image>
+                    </Button>
+                    <Button Name="ErrorButton" IsVisible="False">
+                        <Button.Flyout>
+                            <Flyout FlyoutPresenterClasses="Error">
+                                <TextBlock Text="{Binding ErrorMessage}"></TextBlock>
+                            </Flyout>
+                        </Button.Flyout>
                     </Button>
                 </StackPanel>
             </Grid>

@@ -110,19 +110,25 @@ public class RequestEditViewModel : ViewModelBase
 
     private void InitCommands()
     {
-        // TODO: Catch errors and show messages to user (UI)
         ProcessRequest = ReactiveCommand.CreateFromTask(async _ =>
         {
             ValidationError = ValidateForm();
             if(ValidationError!= null)
                 return;
-            var result = await _requestProcessor.SendRequestReply(new RequestTemplate()
+            try
             {
-                Name = _name,
-                Body = _body,
-                Topic = _topic
-            });
-            ResponseText = result;
+                var result = await _requestProcessor.SendRequestReply(new RequestTemplate()
+                {
+                    Name = _name,
+                    Body = _body,
+                    Topic = _topic
+                });
+                ResponseText = result;
+            }
+            catch (Exception ex)
+            {
+                MessageBus.Current.SendMessage(ex.Message, BusEvents.ErrorThrown);
+            }
         });
     }
 

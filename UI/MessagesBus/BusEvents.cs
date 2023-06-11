@@ -10,4 +10,6 @@ public static class BusEvents
     public const string ListenerSelected = nameof(ListenerSelected);
     public const string ListenerUpdated = nameof(ListenerUpdated);
     public const string ListenerDeleted = nameof(ListenerDeleted);
+    // Error
+    public const string ErrorThrown = nameof(ErrorThrown);
 }
