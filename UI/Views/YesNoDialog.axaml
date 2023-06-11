@@ -5,28 +5,32 @@
         xmlns:viewModels="clr-namespace:UI.ViewModels"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="UI.Views.YesNoDialog"
-        Width="600" Height="300" WindowStartupLocation="CenterScreen" ShowInTaskbar="False"
+        Width="400" SizeToContent="Height" WindowStartupLocation="CenterScreen" ShowInTaskbar="False"
         Title="{Binding Title}"
         x:DataType="viewModels:YesNoDialogViewModel">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <viewModels:YesNoDialogViewModel Title="Title" Text="Some important text"/>
+        <viewModels:YesNoDialogViewModel Title="Title" Text="Some important text. ome important text. ome important text. ome important text. ome important text. ome important text22"/>
     </Design.DataContext>
     
     <StackPanel Margin="10">
-        <TextBlock Text="{Binding Text}" Margin="0,0,0,10"></TextBlock>
-        <StackPanel Orientation="Horizontal">
-            <Button Name="BtnYes" Cursor="Hand" IsEnabled="True"
+        <TextBlock TextWrapping="Wrap" Text="{Binding Text}" FontSize="20" Margin="0,0,0,10" Name="DialogMessageText"></TextBlock>
+        <Grid RowDefinitions="1*" ColumnDefinitions="1*,1*">
+            <Button Grid.Column="0" HorizontalAlignment="Stretch" Name="BtnYes" Cursor="Hand" IsEnabled="True"
                     Command="{Binding SetResult}"
                     CommandParameter="{x:Static viewModels:DialogResultEnum.Yes}">
-                Yes
+                <TextBlock HorizontalAlignment="Center">
+                    Yes
+                </TextBlock>
             </Button>
-            <Button Name="BtnNo" Cursor="Hand" IsEnabled="True"
+            <Button Grid.Column="1" HorizontalAlignment="Stretch" Name="BtnNo" Cursor="Hand" IsEnabled="True"
                     Command="{Binding SetResult}"
                     CommandParameter="{x:Static viewModels:DialogResultEnum.No}">
-                No
+                <TextBlock HorizontalAlignment="Center">
+                    No
+                </TextBlock>
             </Button>
-        </StackPanel>
+        </Grid>
     </StackPanel>
 </Window>

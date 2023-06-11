@@ -52,10 +52,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         var dialog = new AddServerWindow
         {
-            DataContext = interaction.Input,
-            Width = 400.0,
-            MaxHeight = 500.0,
-            Height = 500.0
+            DataContext = interaction.Input
         };
 
         var result = await dialog.ShowDialog<NatsServerSettings?>(this);
@@ -68,9 +65,6 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         var dialog = new Settings
         {
             DataContext = interaction.Input,
-            Width = 400.0,
-            MaxHeight = 500.0,
-            Height = 500.0
         };
 
         var result = await dialog.ShowDialog<Dictionary<string, string>?>(this);
@@ -102,9 +96,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         var dialog = new YesNoDialog
         {
-            DataContext = interaction.Input,
-            Width = 600.0,
-            MaxHeight = 200.0
+            DataContext = interaction.Input
         };
         var result = await dialog.ShowDialog<DialogResult>(this);
         interaction.SetOutput(result ?? new DialogResult()

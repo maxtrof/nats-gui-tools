@@ -50,6 +50,7 @@
                                 <TextBlock Width="250" TextAlignment="Center" Background="DarkCyan" Text="{Binding Received}"></TextBlock>
                                 <Border Padding="1" Background="DarkCyan"></Border>
                                 <TextBlock
+                                    TextWrapping="Wrap"
                                     Background="DarkBlue"
                                     Text="{Binding Body}"
                                     ToolTip.Tip="Click to copy"

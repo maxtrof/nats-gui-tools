@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:UI.ViewModels"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+        Width="400" SizeToContent="Height"
         x:Class="UI.Views.AddServerWindow"
         WindowStartupLocation="CenterScreen"
         Title="Add new server"
