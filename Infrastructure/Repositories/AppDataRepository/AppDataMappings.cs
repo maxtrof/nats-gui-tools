@@ -71,7 +71,24 @@ internal static class AppDataMappings
 
         return list;
     }
-    
+
+    /// <summary>
+    /// Maps <see cref="ListenersDto"/> to a list of <see cref="Listener"/>
+    /// </summary>
+    public static List<Listener> ToDomain(this ListenersDto dto)
+    {
+        var list = new List<Listener>(dto.Listeners.Count);
+        foreach (var dtoListener in dto.Listeners)
+        {
+            var listener = new Listener();
+            listener.Topic = dtoListener.Topic;
+            listener.Name = dtoListener.Name;
+            list.Add(listener);
+        }
+
+        return list;
+    }
+
     /// <summary>
     /// Maps <see cref="AppSettingsDto"/> to <see cref="AppSettings"/>
     /// </summary>
@@ -140,6 +157,27 @@ internal static class AppDataMappings
 
         return new MockTemplatesDto(
             Templates: templatesDto,
+            Version: CurrentFileFormatVersion
+        );
+    }
+
+    /// <summary>
+    /// Maps a list of <see cref="Listener"/> to <see cref="ListenersDto"/>
+    /// </summary>
+    public static ListenersDto ToDto(this List<Listener> listeners)
+    {
+        var listenersDto = new List<ListenerDto>(listeners.Count);
+        foreach (var listener in listeners)
+        {
+            var listenerDto = new ListenerDto(
+                Name: listener.Name,
+                Topic: listener.Topic
+            );
+            listenersDto.Add(listenerDto);
+        }
+
+        return new ListenersDto(
+            Listeners: listenersDto,
             Version: CurrentFileFormatVersion
         );
     }

@@ -13,6 +13,7 @@ public sealed class DataStorage : IDataStorage
     private readonly DataStorageContainer<AppSettings> _appSettings = new ();
     private readonly DataStorageContainer<List<RequestTemplate>> _requestTemplates = new ();
     private readonly DataStorageContainer<List<MockTemplate>> _mockTemplates = new ();
+    private readonly DataStorageContainer<List<Listener>> _listeners = new();
 
     public DataStorage(IAppDataRepository appDataRepository)
     {
@@ -25,6 +26,7 @@ public sealed class DataStorage : IDataStorage
         _appSettings.Data = await _appDataRepository.LoadAppSettingsAsync();
         _requestTemplates.Data = await _appDataRepository.LoadDefaultRequestTemplatesAsync();
         _mockTemplates.Data = await _appDataRepository.LoadDefaultMockTemplatesAsync();
+        _listeners.Data = await _appDataRepository.LoadDefaultListenersAsync();
     }
 
     /// <inheritdoc />
@@ -44,6 +46,11 @@ public sealed class DataStorage : IDataStorage
         {
             await _appDataRepository.SaveDefaultMockTemplatesAsync(_mockTemplates.Data);
             _mockTemplates.OnDataSaved();
+        }
+        if (_listeners.NeedsToBeSaved)
+        {
+            await _appDataRepository.SaveDefaultListenersAsync(_listeners.Data);
+            _listeners.OnDataSaved();
         }
     }
 
@@ -67,7 +74,13 @@ public sealed class DataStorage : IDataStorage
         get => _mockTemplates.Data;
         set => _mockTemplates.Data = value;
     }
-    
+
+    public List<Listener> Listeners
+    {
+        get => _listeners.Data;
+        set => _listeners.Data = value;
+    }
+
     /// <inheritdoc />
     public void IncAppSettingsVersion() => _appSettings.IncrementVersion();
 
@@ -78,6 +91,9 @@ public sealed class DataStorage : IDataStorage
     public void IncMockTemplatesVersion() => _mockTemplates.IncrementVersion();
 
     /// <inheritdoc />
+    public void IncListenersVersion() => _listeners.IncrementVersion();
+
+    /// <inheritdoc />
     public async Task ImportAsync(string fileName)
     {
         var data = await _appDataRepository.Import(fileName);
@@ -85,6 +101,8 @@ public sealed class DataStorage : IDataStorage
         IncMockTemplatesVersion();
         _requestTemplates.Data = data.RequestTemplates;
         IncRequestTemplatesVersion();
+        _listeners.Data = data.Listeners;
+        IncListenersVersion();
     }
 
     /// <inheritdoc />
@@ -93,7 +111,8 @@ public sealed class DataStorage : IDataStorage
         return _appDataRepository.Export(fileName, new Export
         {
             MockTemplates = _mockTemplates.Data,
-            RequestTemplates = _requestTemplates.Data
+            RequestTemplates = _requestTemplates.Data,
+            Listeners = _listeners.Data
         });
     }
 }

@@ -13,4 +13,8 @@ public class Export
     /// Requests
     /// </summary>
     public List<RequestTemplate> RequestTemplates { get; set; } = default!;
+    /// <summary>
+    /// Listeners
+    /// </summary>
+    public List<Listener> Listeners { get; set; } = default!;
 }

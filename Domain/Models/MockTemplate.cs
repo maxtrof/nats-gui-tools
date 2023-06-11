@@ -8,6 +8,11 @@ namespace Domain.Models;
 public sealed class MockTemplate
 {
     /// <summary>
+    /// Id
+    /// </summary>
+    public Guid Id { get; set; } = Guid.NewGuid();
+    
+    /// <summary>
     /// Type of a Mock
     /// </summary>
     public MockTypes Type { get; set; }

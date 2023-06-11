@@ -110,6 +110,7 @@ public class RequestEditViewModel : ViewModelBase
 
     private void InitCommands()
     {
+        // TODO: Catch errors and show messages to user (UI)
         ProcessRequest = ReactiveCommand.CreateFromTask(async _ =>
         {
             ValidationError = ValidateForm();
@@ -132,7 +133,7 @@ public class RequestEditViewModel : ViewModelBase
 
     private string? ValidateForm()
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         if (string.IsNullOrWhiteSpace(Topic)) sb.AppendLine("Topic is empty");
         if (string.IsNullOrWhiteSpace(Body)) sb.AppendLine("Request body is empty");
         return sb.Length > 0 ? sb.ToString() : null;

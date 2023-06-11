@@ -16,10 +16,14 @@ public interface IAppDataRepository
     /// </summary>
     Task<List<MockTemplate>> LoadDefaultMockTemplatesAsync();
     /// <summary>
+    /// Loads default Listeners (so user can have same state on app open)
+    /// </summary>
+    Task<List<Listener>> LoadDefaultListenersAsync();
+    /// <summary>
     /// Loads default application settings
     /// </summary>
     Task<AppSettings> LoadAppSettingsAsync();
-    
+
     /// <summary>
     /// Saves default Request Templates (so user can have same state on app open)
     /// </summary>
@@ -28,6 +32,10 @@ public interface IAppDataRepository
     /// Saves default Mock Templates (so user can have same state on app open)
     /// </summary>
     Task SaveDefaultMockTemplatesAsync(List<MockTemplate> templates);
+    /// <summary>
+    /// Saves default Listeners (so user can have same state on app open)
+    /// </summary>
+    Task SaveDefaultListenersAsync(List<Listener> templates);
     /// <summary>
     /// Saves default application settings
     /// </summary>

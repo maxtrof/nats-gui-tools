@@ -6,5 +6,6 @@ namespace Domain.Models;
 public sealed record IncomingMessageData(
     string Topic,
     string Body,
-    string? TopicToReply
+    string? TopicToReply,
+    DateTime Received
 );

@@ -24,6 +24,11 @@ public sealed class TopicListener : IDisposable
     {
         _natsGate = natsGate;
     }
+    
+    /// <summary>
+    /// Event, firing on message received
+    /// </summary>
+    public event EventHandler<IncomingMessageData> OnMessageReceived;
 
     /// <summary>
     /// Gets messages or returns null
@@ -91,6 +96,7 @@ public sealed class TopicListener : IDisposable
             });
         }
 
+        OnMessageReceived.Invoke(this, messageData);
         return null;
     }
 

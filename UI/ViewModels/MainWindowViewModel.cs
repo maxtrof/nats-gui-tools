@@ -12,6 +12,7 @@ using Domain.Models;
 using DynamicData;
 using ReactiveUI;
 using System;
+using UI.Helpers;
 using UI.MessagesBus;
 using UI.PeriodicTasks;
 
@@ -25,8 +26,11 @@ public sealed class MainWindowViewModel : ViewModelBase
     private string _searchText = "";
     private bool _appLoaded;
     private bool _isRequestsTabVisible;
+    private bool _isListenersTabVisible;
+    private bool _isServersTabVisible = true;
     private int _selectedTab;
     private RequestTemplate _selectedRequest;
+    private Listener _selectedListener;
 
     public ICommand AddNewServer { get; }
     public ICommand ShowSettingsWindow { get; }
@@ -34,12 +38,15 @@ public sealed class MainWindowViewModel : ViewModelBase
     public ICommand ShowImportDialog { get; }
     public ICommand AddNewRequest { get; }
     public ICommand DeleteRequest { get; }
+    public ICommand AddNewListener { get; }
+    public ICommand DeleteListener { get; }
     public Interaction<AddServerViewModel, NatsServerSettings?> ShowAddNewServerDialog { get; }
     public Interaction<SettingsViewModel, Dictionary<string, string>?> ShowSettingsWindowDialog { get; }
     public Interaction<Unit, string?> ShowExportFileSaveDialog { get; }
     public Interaction<Unit, string?> ShowImportFileLoadDialog { get; }
     public Interaction<YesNoDialogViewModel, DialogResult> YesNoDialog { get; } = new();
     public ObservableCollection<RequestTemplate> RequestTemplates { get; set; } = new(new List<RequestTemplate>());
+    public ObservableCollection<Listener> Listeners { get; set; } = new(new List<Listener>());
 
     public RequestTemplate SelectedRequest
     {
@@ -50,12 +57,34 @@ public sealed class MainWindowViewModel : ViewModelBase
             MessageBus.Current.SendMessage(SelectedRequest, BusEvents.RequestSelected);
         }
     }
+    
+    public Listener SelectedListener
+    {
+        get => _selectedListener;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedListener, value);
+            MessageBus.Current.SendMessage(SelectedListener, BusEvents.ListenerSelected);
+        }
+    }
 
 
     public bool IsRequestsTabVisible
     {
         get => _isRequestsTabVisible;
         set => this.RaiseAndSetIfChanged(ref _isRequestsTabVisible, value);
+    }
+    
+    public bool IsListenersTabVisible
+    {
+        get => _isListenersTabVisible;
+        set => this.RaiseAndSetIfChanged(ref _isListenersTabVisible, value);
+    }
+    
+    public bool IsServersTabVisible
+    {
+        get => _isServersTabVisible;
+        set => this.RaiseAndSetIfChanged(ref _isServersTabVisible, value);
     }
 
     public int SelectedTab
@@ -65,6 +94,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             this.RaiseAndSetIfChanged(ref _selectedTab, value);
             IsRequestsTabVisible = value == 2;
+            IsListenersTabVisible = value == 1;
+            IsServersTabVisible = value == 0;
         }
     }
 
@@ -121,17 +152,9 @@ public sealed class MainWindowViewModel : ViewModelBase
         
         AddNewRequest = ReactiveCommand.Create(() =>
         {
-            var i = 0;
-            string name;
-            var names = RequestTemplates.Select(x => x.Name).ToArray();
-            do
-            {
-                name = $"New request template {++i:000}";
-            } while (names.Contains(name));
-
             var newRequest = new RequestTemplate
             {
-                Name = name
+                Name = $"Request {NameGenerator.GetRandomName()}"
             };
             _storage.RequestTemplates.Add(newRequest);
             _storage.IncRequestTemplatesVersion();
@@ -156,6 +179,35 @@ public sealed class MainWindowViewModel : ViewModelBase
             }
         });
 
+        AddNewListener = ReactiveCommand.Create(() =>
+        {
+            var newListener = new Listener
+            {
+                Name = $"Listener {NameGenerator.GetRandomName()}"
+            };
+            _storage.Listeners.Add(newListener);
+            _storage.IncListenersVersion();
+            Listeners.Add(newListener);
+            MessageBus.Current.SendMessage(newListener, BusEvents.ListenerSelected);
+        });
+
+        DeleteListener = ReactiveCommand.CreateFromTask<Listener>(async listener =>
+        {
+            var result = await YesNoDialog.Handle(new YesNoDialogViewModel()
+            {
+                Title = "Delete?",
+                Text = "Listener will be removed permanently?"
+            });
+
+            if (result.Result == DialogResultEnum.Yes)
+            {
+                Listeners.Remove(listener);
+                _storage.Listeners.Remove(listener);
+                _storage.IncListenersVersion();
+                MessageBus.Current.SendMessage(listener, BusEvents.RequestDeleted);
+            }
+        });
+
         MessageBus.Current.Listen<RequestTemplate>(BusEvents.RequestUpdated)
             .Subscribe(requestTemplate =>
             {
@@ -165,6 +217,18 @@ public sealed class MainWindowViewModel : ViewModelBase
 
                 RequestTemplates.Replace(exists, requestTemplate);
                 _storage.RequestTemplates = RequestTemplates.ToList();
+                _storage.IncRequestTemplatesVersion();
+            });
+
+        MessageBus.Current.Listen<Listener>(BusEvents.ListenerUpdated)
+            .Subscribe(listeners =>
+            {
+                var exists = Listeners.FirstOrDefault(x => x.Id == listeners.Id);
+                if (exists is null)
+                    return;
+
+                Listeners.Replace(exists, listeners);
+                _storage.Listeners = Listeners.ToList();
                 _storage.IncRequestTemplatesVersion();
             });
     }
@@ -217,5 +281,6 @@ public sealed class MainWindowViewModel : ViewModelBase
         AppLoaded = true;
         SearchText = ""; // Force update search to fetch changes in UI
         RequestTemplates.AddRange(_storage.RequestTemplates);
+        Listeners.AddRange(_storage.Listeners);
     }
 }

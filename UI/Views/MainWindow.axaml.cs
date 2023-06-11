@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -114,6 +115,16 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         if (exists is not null)
         {
             ViewModel.RequestTemplates.Replace(exists, request);
+        }
+    }
+
+    private void ListenersTabControl_OnUpdateRequest(object? sender, UpdateListenerRoutedEventArgs e)
+    {
+        var request = e.Listener;
+        var exists = ViewModel!.Listeners.FirstOrDefault(x => x.Id == request.Id);
+        if (exists is not null)
+        {
+            ViewModel.Listeners.Replace(exists, request);
         }
     }
 }
