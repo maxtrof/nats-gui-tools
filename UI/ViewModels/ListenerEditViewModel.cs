@@ -119,34 +119,34 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
         StartListen = ReactiveCommand.Create<Unit>(_ =>
         {
             ValidationError = ValidateForm();
-            if(ValidationError is not null)
+            if (ValidationError is not null)
                 return;
             try
             {
                 _topicId = _topicListener.SubscribeToListen(Topic);
+                _topicListener.OnMessageReceived += MessageReceived;
+                Listening = true;
             }
             catch (Exception ex)
             {
                 MessageBus.Current.SendMessage(ex.Message, BusEvents.ErrorThrown);
             }
-            _topicListener.OnMessageReceived += MessageReceived;
-            Listening = true;
         });
         StopListen = ReactiveCommand.Create<Unit>(_ =>
         {
             ValidationError = ValidateForm();
-            if(ValidationError is not null || _topicId is null)
+            if (ValidationError is not null || _topicId is null)
                 return;
-            _topicListener.OnMessageReceived -= MessageReceived;
             try
             {
                 _topicListener.Unsubscribe(_topicId.Value);
+                _topicListener.OnMessageReceived -= MessageReceived;
+                Listening = false;
             }
             catch (Exception ex)
             {
                 MessageBus.Current.SendMessage(ex.Message, BusEvents.ErrorThrown);
             }
-            Listening = false;
         });
     }
 
