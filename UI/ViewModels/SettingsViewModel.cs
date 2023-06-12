@@ -30,9 +30,8 @@ public sealed class SettingsViewModel : ViewModelBase
 
     public SettingsViewModel(Dictionary<string, string> userDictionary)
     {
-        // Removing first symbol from name ($ symbol)
         UserVariables = new ObservableCollection<UserVariable>
-            (userDictionary.Select(x => new UserVariable(x.Key[1..], x.Value, RemoveEventHandler)).ToList());
+            (userDictionary.Select(x => new UserVariable(x.Key, x.Value, RemoveEventHandler)).ToList());
 
         CreateNewVariable = ReactiveCommand.Create(() =>
         {
@@ -48,7 +47,7 @@ public sealed class SettingsViewModel : ViewModelBase
                 ShowAllVariablesShouldBeUniqueError = true;
                 throw new ArgumentException(nameof(UserVariables));
             }
-            return variablesWithNames.ToDictionary(keySelector: m => m.NameWithPrefix, elementSelector: m => m.Value);
+            return variablesWithNames.ToDictionary(keySelector: m => m.Name, elementSelector: m => m.Value);
         });
     }
 
@@ -89,8 +88,6 @@ public sealed class UserVariable : ViewModelBase
         get => _value;
         set => this.RaiseAndSetIfChanged(ref _value, value);
     }
-
-    public string NameWithPrefix => $"${Name}";
 
     public event EventHandler<string> RemoveMeHandler;
 }

@@ -8,16 +8,13 @@ namespace Application.RequestProcessing;
 /// </summary>
 public sealed class RequestProcessor
 {
-    private readonly Pipeline _pipeline;
+    private readonly PipelineBuilder _builder;
     private readonly INatsGate _natsGate;
 
     public RequestProcessor(PipelineBuilder pipelineBuilder, INatsGate natsGate)
     {
-        if (pipelineBuilder is null) throw new ArgumentNullException(nameof(pipelineBuilder));
+        _builder = pipelineBuilder ?? throw new ArgumentNullException(nameof(pipelineBuilder));
         _natsGate = natsGate ?? throw new ArgumentNullException(nameof(natsGate));
-        // Lets build a pipeline
-        pipelineBuilder.AddReplaceUserVariablesBlock();
-        _pipeline = pipelineBuilder.Build();
     }
 
     /// <summary>
@@ -27,7 +24,8 @@ public sealed class RequestProcessor
     public async Task SendRequest(RequestTemplate template)
     {
         var req = BuildRequest(template);
-        await _pipeline.Run(req);
+        var pipe = _builder.BuildDefault();
+        await pipe.Run(req);
         _natsGate.SendRequest(req);
     }
 
@@ -39,7 +37,8 @@ public sealed class RequestProcessor
     public async Task<T> SendRequestReply<T>(RequestTemplate template)
     {
         var req = BuildRequest(template);
-        await _pipeline.Run(req);
+        var pipe = _builder.BuildDefault();
+        await pipe.Run(req);
         return await _natsGate.SendRequestReply<T>(req);
     }
     
@@ -50,7 +49,8 @@ public sealed class RequestProcessor
     public async Task<string> SendRequestReply(RequestTemplate template)
     {
         var req = BuildRequest(template);
-        await _pipeline.Run(req);
+        var pipe = _builder.BuildDefault();
+        await pipe.Run(req);
         return await _natsGate.SendRequestReply(req);
     }
     

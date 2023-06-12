@@ -27,4 +27,10 @@ public sealed class PipelineBuilder
     /// Return final pipeline
     /// </summary>
     public Pipeline Build() => _pipeline;
+
+    public Pipeline BuildDefault()
+    {
+        AddReplaceUserVariablesBlock();
+        return Build();
+    }
 }
