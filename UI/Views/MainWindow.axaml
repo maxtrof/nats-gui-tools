@@ -148,11 +148,14 @@
             </Grid>
             
             <!-- footer -->
-            <Grid RowDefinitions="1*" ColumnDefinitions="1*,1*" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid RowDefinitions="1*" ColumnDefinitions="1*,1*,1*" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                 <StackPanel Grid.Column="0" DataContext="{Binding DataSaver}">
                     <TextBlock Grid.Column="0" Text="{Binding SavedAtMessage}"></TextBlock>    
                 </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <StackPanel Grid.Column="1">
+                    <CheckBox HorizontalAlignment="Center" IsChecked="{Binding FormatJson}">Format JSON</CheckBox>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Command="{Binding ShowImportDialog}">
                         <Image Width="32" Height="32" Source="/Assets/folder.png"></Image>
                     </Button>

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Windows.Input;
 using Application.TopicListener;
 using Autofac;
 using Avalonia.Threading;
+using Domain.Interfaces;
 using Domain.Models;
 using ReactiveUI;
 using UI.Helpers;
@@ -17,6 +19,7 @@ namespace UI.ViewModels;
 public class ListenerEditViewModel : ViewModelBase, IDisposable
 {
     private readonly TopicListener _topicListener;
+    private readonly IDataStorage _storage;
 
     private long? _topicId = null; 
 
@@ -94,6 +97,7 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
         ListenerId = Guid.NewGuid();
         var scope = Program.Container.BeginLifetimeScope();
         _topicListener = scope.Resolve<TopicListener>();
+        _storage = scope.Resolve<IDataStorage>();
         Messages = new();
 
         InitCommands();
@@ -103,6 +107,7 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
     {
         var scope = Program.Container.BeginLifetimeScope();
         _topicListener = scope.Resolve<TopicListener>();
+        _storage = scope.Resolve<IDataStorage>();
         ListenerId = listener.Id;
         Name = listener.Name;
         Topic = listener.Topic;
@@ -150,8 +155,13 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
 
     private void MessageReceived(object? sender, IncomingMessageData data)
     {
-        if(data.Topic == Topic)
-            Dispatcher.UIThread.Post(() => Messages.Add(data));
+        if (data.Topic == Topic)
+        {
+            var messageToAdd = _storage.AppSettings.FormatJson
+                ? data with { Body = JsonFormatter.TryFormatJson(data.Body) }
+                : data;
+            Dispatcher.UIThread.Post(() => Messages.Insert(0, messageToAdd));
+        }
     }
 
     private void BroadcastListenerUpdated()
