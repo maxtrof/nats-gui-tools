@@ -10,7 +10,7 @@ namespace Application.TopicListener;
 public sealed class TopicListener : IDisposable
 {
     private readonly INatsGate _natsGate;
-
+    
     /// <summary>
     /// Contains pairs of Topics and Received messages
     /// </summary>

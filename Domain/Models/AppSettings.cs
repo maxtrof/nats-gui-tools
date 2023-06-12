@@ -13,6 +13,10 @@ public sealed class AppSettings
     /// User's dictionary
     /// </summary>
     public Dictionary<string, string> UserDictionary { get; set; } = default!;
+    /// <summary>
+    /// Should we try format JSON responses from NATS
+    /// </summary>
+    public bool FormatJson { get; set; }
 
     public static AppSettings InitDefaults()
     {

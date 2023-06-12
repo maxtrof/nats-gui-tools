@@ -3,6 +3,7 @@ using System.Text;
 using System.Windows.Input;
 using Application.RequestProcessing;
 using Autofac;
+using Domain.Interfaces;
 using Domain.Models;
 using ReactiveUI;
 using UI.Helpers;
@@ -13,6 +14,7 @@ namespace UI.ViewModels;
 public class RequestEditViewModel : ViewModelBase
 {
     private readonly RequestProcessor _requestProcessor;
+    private readonly IDataStorage _storage;
 
     private string _name = default!;
     private string _topic = default!;
@@ -93,6 +95,7 @@ public class RequestEditViewModel : ViewModelBase
         RequestId = Guid.NewGuid();
         var scope = Program.Container.BeginLifetimeScope();
         _requestProcessor = scope.Resolve<RequestProcessor>();
+        _storage = scope.Resolve<IDataStorage>();
 
         InitCommands();
     }
@@ -101,6 +104,7 @@ public class RequestEditViewModel : ViewModelBase
     {
         var scope = Program.Container.BeginLifetimeScope();
         _requestProcessor = scope.Resolve<RequestProcessor>();
+        _storage = scope.Resolve<IDataStorage>();
         RequestId = requestTemplate.Id;
         Name = requestTemplate.Name;
         Topic = requestTemplate.Topic;
@@ -124,7 +128,9 @@ public class RequestEditViewModel : ViewModelBase
                     Body = _body,
                     Topic = _topic
                 });
-                ResponseText = result;
+                ResponseText = _storage.AppSettings.FormatJson
+                    ? JsonFormatter.TryFormatJson(result)
+                    : result;
             }
             catch (Exception ex)
             {
