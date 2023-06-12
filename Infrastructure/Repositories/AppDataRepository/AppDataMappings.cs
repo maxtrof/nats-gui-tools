@@ -17,6 +17,7 @@ internal static class AppDataMappings
         var settings = new AppSettings();
         settings.Servers = dto.Servers.Select(x => x.ToDomain()).ToList();
         settings.UserDictionary = dto.UserDictionary;
+        settings.FormatJson = dto.FormatJson;
         return settings;
     }
 
@@ -99,6 +100,7 @@ internal static class AppDataMappings
         return new AppSettingsDto(
             Servers: serversDto,
             UserDictionary: settings.UserDictionary,
+            FormatJson: settings.FormatJson,
             Version: CurrentFileFormatVersion
         );
     }

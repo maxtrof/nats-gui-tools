@@ -30,6 +30,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     private bool _isRequestsTabVisible;
     private bool _isListenersTabVisible;
     private bool _isServersTabVisible = true;
+    private bool _formatJson;
     private int _selectedTab;
     private string? _errorMessage;
     private RequestTemplate _selectedRequest;
@@ -138,6 +139,23 @@ public sealed class MainWindowViewModel : ViewModelBase
     {
         get => _errorMessage;
         set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
+    }
+
+    /// <summary>
+    /// If true - we'll try to format JSON responses/subscriptions
+    /// </summary>
+    public bool FormatJson
+    {
+        get => _formatJson;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _formatJson, value);
+            if (_storage.AppSettings.FormatJson != value)
+            {
+                _storage.AppSettings.FormatJson = value;
+                _storage.IncAppSettingsVersion();   
+            }
+        }
     }
 
     /// <summary>
@@ -324,6 +342,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     {
         await _storage.InitializeAsync();
         UpdateListsFromStorage();
+        FormatJson = _storage.AppSettings.FormatJson;
         AppLoaded = true;
     }
 
