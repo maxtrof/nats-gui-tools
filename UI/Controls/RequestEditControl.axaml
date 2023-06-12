@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:UI.ViewModels"
+             xmlns:enums="clr-namespace:Domain.Enums;assembly=Domain"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="UI.Controls.RequestEditControl"
              x:DataType="viewModels:RequestEditViewModel">
@@ -17,9 +18,12 @@
             <TextBox MinWidth="200" Text="{Binding Topic}"></TextBox>
             <TextBlock VerticalAlignment="Center">Type: </TextBlock>
 
-            <ComboBox MinWidth="200" Cursor="Hand">
-                <ComboBoxItem>Request</ComboBoxItem>
-                <ComboBoxItem>Request-Reply</ComboBoxItem>
+            <ComboBox MinWidth="200" Cursor="Hand" SelectedIndex="{Binding RequestType}" Name="RequestTypeComboBox">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="enums:RequestType">
+                        <TextBlock Text="{Binding }"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
             </ComboBox>
 
             <Button MinWidth="100"
@@ -37,12 +41,12 @@
             <TextBlock Text="{Binding ValidationError}" Foreground="Brown" />
         </Grid>
 
-        <Grid Grid.Row="2" Margin="0, 5">
+        <Grid Grid.Row="2" Margin="0, 5" RowSpan="{Binding RequestRowSpan}">
             <TextBox AcceptsReturn="True" TextWrapping="Wrap" Watermark="Request" HorizontalAlignment="Stretch"
                      Text="{Binding Body}" />
         </Grid>
 
-        <Grid Grid.Row="3" Margin="0, 5">
+        <Grid Grid.Row="3" Margin="0, 5" IsVisible="{Binding ShowReplySection}">
             <TextBox Text="{Binding ResponseText}"
                      AcceptsReturn="True" TextWrapping="Wrap" Watermark="Response" HorizontalAlignment="Stretch" />
         </Grid>

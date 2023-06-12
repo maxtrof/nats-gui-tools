@@ -3,6 +3,7 @@ using System.Text;
 using System.Windows.Input;
 using Application.RequestProcessing;
 using Autofac;
+using Domain.Enums;
 using Domain.Interfaces;
 using Domain.Models;
 using ReactiveUI;
@@ -23,6 +24,9 @@ public class RequestEditViewModel : ViewModelBase
 
     public readonly Guid RequestId = default!;
     private string? _validationError;
+    private RequestType _requestType;
+    private bool _showReplySection;
+    private int _requestRowSpan;
 
     /// <summary> Process request </summary>
     public ICommand ProcessRequest { get; set; } = default!;
@@ -78,6 +82,35 @@ public class RequestEditViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _responseText, value);
     }
 
+    public RequestType RequestType
+    {
+        get => _requestType;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _requestType, value);
+            ShowReplySection = value == RequestType.RequestReply;
+            BroadcastRequestTemplateUpdated();
+        }
+    }
+
+    public bool ShowReplySection
+    {
+        get => _showReplySection;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _showReplySection, value);
+            RequestRowSpan = value
+                    ? 1
+                    : 2;
+        }
+    }
+
+    public int RequestRowSpan
+    {
+        get => _requestRowSpan;
+        set => this.RaiseAndSetIfChanged(ref _requestRowSpan, value);
+    }
+
     /// <summary>
     /// Current request template data
     /// </summary>
@@ -87,7 +120,8 @@ public class RequestEditViewModel : ViewModelBase
             Id = RequestId,
             Name = Name,
             Body = Body,
-            Topic = Topic
+            Topic = Topic,
+            Type = RequestType
         };
 
     public RequestEditViewModel()
@@ -96,6 +130,7 @@ public class RequestEditViewModel : ViewModelBase
         var scope = Program.Container.BeginLifetimeScope();
         _requestProcessor = scope.Resolve<RequestProcessor>();
         _storage = scope.Resolve<IDataStorage>();
+        RequestType = RequestType.Publish;
 
         InitCommands();
     }
@@ -109,6 +144,7 @@ public class RequestEditViewModel : ViewModelBase
         Name = requestTemplate.Name;
         Topic = requestTemplate.Topic;
         Body = requestTemplate.Body;
+        RequestType = requestTemplate.Type;
 
         InitCommands();
     }
@@ -122,15 +158,20 @@ public class RequestEditViewModel : ViewModelBase
                 return;
             try
             {
-                var result = await _requestProcessor.SendRequestReply(new RequestTemplate()
+                switch (RequestType)
                 {
-                    Name = _name,
-                    Body = _body,
-                    Topic = _topic
-                });
-                ResponseText = _storage.AppSettings.FormatJson
-                    ? JsonFormatter.TryFormatJson(result)
-                    : result;
+                    case RequestType.Publish:
+                        await _requestProcessor.SendRequest(RequestTemplate);
+                        break;
+                    case RequestType.RequestReply:
+                        var result = await _requestProcessor.SendRequestReply(RequestTemplate);
+                        ResponseText = _storage.AppSettings.FormatJson
+                            ? JsonFormatter.TryFormatJson(result)
+                            : result;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("Unknown request type");
+                }
             }
             catch (Exception ex)
             {

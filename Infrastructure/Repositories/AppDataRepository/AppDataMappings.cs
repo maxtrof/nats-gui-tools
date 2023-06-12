@@ -49,6 +49,7 @@ internal static class AppDataMappings
             template.Name = requestTemplateDto.Name;
             template.Body = requestTemplateDto.Body;
             template.Topic = requestTemplateDto.Topic;
+            template.Type = requestTemplateDto.Type;
             list.Add(template);
         }
 
@@ -130,7 +131,8 @@ internal static class AppDataMappings
             var templateDto = new RequestTemplateDto(
                 Name: requestTemplate.Name,
                 Topic: requestTemplate.Topic,
-                Body: requestTemplate.Body
+                Body: requestTemplate.Body,
+                Type: requestTemplate.Type
             );
             templatesDto.Add(templateDto);
         }
