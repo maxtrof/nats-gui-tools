@@ -162,6 +162,7 @@ public class RequestEditViewModel : ViewModelBase
                 {
                     case RequestType.Publish:
                         await _requestProcessor.SendRequest(RequestTemplate);
+                        ResponseText = "";
                         break;
                     case RequestType.RequestReply:
                         var result = await _requestProcessor.SendRequestReply(RequestTemplate);
