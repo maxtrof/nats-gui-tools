@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Domain.Models;
 
 /// <summary>
@@ -24,4 +26,6 @@ public sealed class RequestTemplate
     /// Request body
     /// </summary>
     public string Body { get; set; } = default!;
+
+    public RequestType Type { get; set; } = RequestType.Publish;
 }

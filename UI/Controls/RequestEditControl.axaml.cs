@@ -1,8 +1,8 @@
 ﻿using System;
-using Application.RequestProcessing;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Domain.Enums;
 
 namespace UI.Controls;
 
@@ -19,6 +19,8 @@ public partial class RequestEditControl : UserControl
     public RequestEditControl()
     {
         InitializeComponent();
+        var requestTypeComboBox = this.FindControl<ComboBox>("RequestTypeComboBox");
+        requestTypeComboBox.Items = Enum.GetNames(typeof(RequestType));
     }
 
     private void InitializeComponent()
