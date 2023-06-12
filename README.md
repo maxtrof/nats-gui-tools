@@ -1,5 +1,5 @@
 # nats-gui-tools
-### Looking for something similar to Postman, but for NATS? You've found it!
+### Looking for something similar to Postman, but for NATS? You've found it! Cross-platform and free.
 
 ## Features:
 
