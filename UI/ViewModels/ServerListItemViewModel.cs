@@ -6,6 +6,7 @@ using Application;
 using Autofac;
 using Domain.Models;
 using ReactiveUI;
+using UI.Helpers;
 
 namespace UI.ViewModels;
 
@@ -16,6 +17,8 @@ public class ServerListItemViewModel : ViewModelBase
     private NatsServerSettings _serverSettings;
     private bool _isConnected;
     private string _buttonText;
+
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     public ServerListItemViewModel()
     {
@@ -66,6 +69,7 @@ public class ServerListItemViewModel : ViewModelBase
         catch (Exception ex)
         {
             ButtonText = "Error";
+            ErrorHelper.ShowError(ex.Message);
             return false;
         }
     }

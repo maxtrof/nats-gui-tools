@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:UI.ViewModels"
              xmlns:controls="clr-namespace:UI.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="UI.Controls.RequestsTabControl"
+             x:Class="UI.Controls.ListenersTabControl"
              x:DataType="vm:RequestsTabViewModel">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -28,10 +28,12 @@
             </DataTemplate>
         </TabControl.ItemTemplate>
 
+
         <TabControl.ContentTemplate>
-            <DataTemplate DataType="vm:RequestEditViewModel">
-                <controls:RequestEditControl DataContext="{Binding  }" />
+            <DataTemplate DataType="vm:ListenerEditViewModel">
+                <controls:ListenerEditControl DataContext="{Binding  }" />
             </DataTemplate>
         </TabControl.ContentTemplate>
     </TabControl>
+
 </UserControl>

@@ -32,4 +32,13 @@
       <ProjectReference Include="..\Domain\Domain.csproj" />
       <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Controls\ListenerEditControl.axaml.cs">
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Controls\ListenersTabControl.axaml.cs">
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@ using Application.RequestProcessing;
 using Autofac;
 using Domain.Models;
 using ReactiveUI;
+using UI.Helpers;
 using UI.MessagesBus;
 
 namespace UI.ViewModels;
@@ -115,13 +116,20 @@ public class RequestEditViewModel : ViewModelBase
             ValidationError = ValidateForm();
             if(ValidationError!= null)
                 return;
-            var result = await _requestProcessor.SendRequestReply(new RequestTemplate()
+            try
             {
-                Name = _name,
-                Body = _body,
-                Topic = _topic
-            });
-            ResponseText = result;
+                var result = await _requestProcessor.SendRequestReply(new RequestTemplate()
+                {
+                    Name = _name,
+                    Body = _body,
+                    Topic = _topic
+                });
+                ResponseText = result;
+            }
+            catch (Exception ex)
+            {
+                ErrorHelper.ShowError(ex.Message);
+            }
         });
     }
 
@@ -132,7 +140,7 @@ public class RequestEditViewModel : ViewModelBase
 
     private string? ValidateForm()
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         if (string.IsNullOrWhiteSpace(Topic)) sb.AppendLine("Topic is empty");
         if (string.IsNullOrWhiteSpace(Body)) sb.AppendLine("Request body is empty");
         return sb.Length > 0 ? sb.ToString() : null;

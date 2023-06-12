@@ -8,18 +8,18 @@ using UI.MessagesBus;
 
 namespace UI.ViewModels;
 
-public class RequestsTabViewModel : ViewModelBase
+public class ListenersTabViewModel : ViewModelBase
 {
-    private RequestEditViewModel? _selectedTab;
-    public ObservableCollection<RequestEditViewModel> Tabs { get; set; } = new();
+    private ListenerEditViewModel? _selectedTab;
+    public ObservableCollection<ListenerEditViewModel> Tabs { get; set; } = new();
 
-    internal RequestEditViewModel? SelectedTab
+    internal ListenerEditViewModel? SelectedTab
     {
         get => _selectedTab;
         set => this.RaiseAndSetIfChanged(ref _selectedTab, value);
     }
 
-    public RequestsTabViewModel()
+    public ListenersTabViewModel()
     {
         SubscribeToMessageBus();
     }
@@ -33,7 +33,7 @@ public class RequestsTabViewModel : ViewModelBase
 
     public void UpdateRequestName(Guid requestId, string name)
     {
-        var exists = Tabs.FirstOrDefault(x => x.RequestTemplate.Id == requestId);
+        var exists = Tabs.FirstOrDefault(x => x.Listener.Id == requestId);
         if (exists is not null)
         {
             exists.Name = name;
@@ -41,13 +41,13 @@ public class RequestsTabViewModel : ViewModelBase
         }
     }
 
-    private void AddRequestTab(RequestEditViewModel? request = null)
+    private void AddListenerTab(ListenerEditViewModel? request = null)
     {
         if (request == null)
         {
-            request = new RequestEditViewModel()
+            request = new ListenerEditViewModel
             {
-                Name = $"request_{NameGenerator.GetRandomName()}"
+                Name = $"listener_{NameGenerator.GetRandomName()}"
             };
         }
 
@@ -59,16 +59,16 @@ public class RequestsTabViewModel : ViewModelBase
 
     private void SubscribeToMessageBus()
     {
-        MessageBus.Current.Listen<RequestTemplate>(BusEvents.RequestSelected)
-            .Subscribe(request =>
+        MessageBus.Current.Listen<Listener>(BusEvents.ListenerSelected)
+            .Subscribe(listener =>
             {
-                var requestEditViewModel = new RequestEditViewModel(request);
-                AddRequestTab(requestEditViewModel);
+                var listenerEditViewModel = new ListenerEditViewModel(listener);
+                AddListenerTab(listenerEditViewModel);
             });
-        MessageBus.Current.Listen<RequestTemplate>(BusEvents.RequestDeleted)
+        MessageBus.Current.Listen<Listener>(BusEvents.ListenerDeleted)
             .Subscribe(request =>
             {
-                var exists = Tabs.FirstOrDefault(x => x.RequestId == request.Id);
+                var exists = Tabs.FirstOrDefault(x => x.ListenerId == request.Id);
                 if (exists is not null)
                     Tabs.Remove(exists);
                 SelectedTab = Tabs.FirstOrDefault();

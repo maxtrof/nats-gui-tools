@@ -4,20 +4,41 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:UI.Controls"
+        xmlns:views="clr-namespace:UI.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="UI.Views.MainWindow"
         WindowStartupLocation="CenterScreen"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="Nats GUI Tools">
-    
+    <Window.Styles>
+        <Style Selector="TextBlock.TabText">
+            <Setter Property="FontSize" Value="17"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            <Setter Property="FontWeight" Value="Bold"></Setter>
+        </Style>
+        <Style Selector="Button.AddNewItem">
+            <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+            <Setter Property="Margin" Value="10"></Setter>
+        </Style>
+        <Style Selector="FlyoutPresenter.Error">
+            <Setter Property="Background" Value="Red" />
+            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+            <Setter Property="MaxWidth" Value="500"></Setter>
+        </Style>
+    </Window.Styles>
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
+    
     <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Menu DockPanel.Dock="Top" Name="MainMenu">
+            <MenuItem Header="_About" Name="AboutMenuItem" Click="AboutMenuItem_OnClick"/>
+        </Menu>
+        
         <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="9999" Height="9999" IsVisible="{Binding !AppLoaded}">
             <controls:LoaderControl HorizontalAlignment="Center" VerticalAlignment="Center"></controls:LoaderControl>
         </DockPanel>
@@ -32,10 +53,12 @@
                     
                     <TabItem VerticalContentAlignment="Center">
                         <TabItem.Header>
-                            <TextBlock VerticalAlignment="Center">Servers</TextBlock>
+                            <TextBlock Classes="TabText">Servers</TextBlock>
                         </TabItem.Header>
                         <StackPanel>
-                            <Button Name="AddNewServer" Command="{Binding AddNewServer}">Add new</Button>
+                            <Button Name="AddNewServer" Command="{Binding AddNewServer}" Classes="AddNewItem">
+                                <TextBlock HorizontalAlignment="Center">Add new</TextBlock>
+                            </Button>
                             <ListBox Items="{Binding Servers}" Name="ServersListBox">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
@@ -48,21 +71,38 @@
                     
                     <TabItem>
                         <TabItem.Header>
-                            <TextBlock VerticalAlignment="Center">Listeners</TextBlock>
+                            <TextBlock Classes="TabText">Listeners</TextBlock>
                         </TabItem.Header>
                         <StackPanel>
-                            <Button>Add new</Button>
-                            <ListBox></ListBox>
+                            <Button Command="{Binding AddNewListener}" Classes="AddNewItem">
+                                <TextBlock HorizontalAlignment="Center">Add new</TextBlock>
+                            </Button>
+                            <ListBox Items="{Binding Listeners}" SelectedItem="{Binding SelectedListener}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="*, auto" VerticalAlignment="Stretch">
+                                            <TextBlock Name="TxtListenerName" Grid.Column="0" Text="{Binding Name}"/>
+                                            <Button Grid.Column="1" FontSize="10" ToolTip.Tip="Delete listener"
+                                                    Command="{Binding 
+                                                    RelativeSource={RelativeSource AncestorType=Window},
+                                                    Path=DataContext.DeleteListener}"
+                                                    CommandParameter="{Binding .}">x</Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
                         </StackPanel>
                     </TabItem>
                     
                     <TabItem>
                         <TabItem.Header>
-                            <TextBlock VerticalAlignment="Center">Requests</TextBlock>
+                            <TextBlock Classes="TabText">Requests</TextBlock>
                         </TabItem.Header>
                         <StackPanel>
                             <Button Name="BtnAddNewRequest" 
-                                    Command="{Binding AddNewRequest}">Add new</Button>
+                                    Command="{Binding AddNewRequest}" Classes="AddNewItem">
+                                <TextBlock HorizontalAlignment="Center">Add new</TextBlock>
+                            </Button>
                             <ListBox Items="{Binding RequestTemplates}" SelectedItem="{Binding SelectedRequest}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
@@ -82,10 +122,12 @@
                     
                     <TabItem>
                         <TabItem.Header>
-                            <TextBlock VerticalAlignment="Center">Mocks</TextBlock>
+                            <TextBlock Classes="TabText">Mocks</TextBlock>
                         </TabItem.Header>
                         <StackPanel>
-                            <Button>Add new</Button>
+                            <Button Classes="AddNewItem">
+                                <TextBlock HorizontalAlignment="Center">Add new</TextBlock>
+                            </Button>
                             <ListBox></ListBox>
                         </StackPanel>
                     </TabItem>
@@ -94,8 +136,15 @@
 
             <!-- Right panel -->
             <Grid Grid.Row="0" Grid.Column="1">
-                <controls:RequestsTabControl IsVisible="{Binding $parent.DataContext.IsRequestsTabVisible}"
+                <controls:RequestsTabControl IsVisible="{Binding $parent[views:MainWindow].ViewModel.IsRequestsTabVisible}"
                                              UpdateRequest="RequestsTabControl_OnUpdateRequest"/>
+                <controls:ListenersTabControl IsVisible="{Binding $parent[views:MainWindow].ViewModel.IsListenersTabVisible}"
+                                              UpdateRequest="ListenersTabControl_OnUpdateRequest"/>
+                <StackPanel IsVisible="{Binding IsServersTabVisible}" HorizontalAlignment="Stretch">
+                    <TextBlock FontSize="24" Margin="50" HorizontalAlignment="Center">
+                        Connect to a server or create a new one.
+                    </TextBlock>
+                </StackPanel>
             </Grid>
             
             <!-- footer -->
@@ -112,6 +161,13 @@
                     </Button>
                     <Button Command="{Binding ShowSettingsWindow}">
                         <Image Width="32" Height="32" Source="/Assets/setting.png"></Image>
+                    </Button>
+                    <Button Name="ErrorButton" IsVisible="False">
+                        <Button.Flyout>
+                            <Flyout FlyoutPresenterClasses="Error">
+                                <TextBlock Text="{Binding ErrorMessage}"></TextBlock>
+                            </Flyout>
+                        </Button.Flyout>
                     </Button>
                 </StackPanel>
             </Grid>

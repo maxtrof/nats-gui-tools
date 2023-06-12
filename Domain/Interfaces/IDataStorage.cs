@@ -28,6 +28,10 @@ public interface IDataStorage
     /// </summary>
     List<MockTemplate> MockTemplates { get; set; }
     /// <summary>
+    /// Listeners
+    /// </summary>
+    List<Listener> Listeners { get; set; }
+    /// <summary>
     /// Increments App settings version (will trigger save on <see cref="SaveDataIfNeeded"/>)
     /// </summary>
     void IncAppSettingsVersion();
@@ -39,6 +43,10 @@ public interface IDataStorage
     /// Increments Mock Templates version (will trigger save on <see cref="SaveDataIfNeeded"/>)
     /// </summary>
     void IncMockTemplatesVersion();
+    /// <summary>
+    /// Increments Listeners version (will trigger save on <see cref="SaveDataIfNeeded"/>)
+    /// </summary>
+    void IncListenersVersion();
     /// <summary>
     /// Imports data
     /// </summary>

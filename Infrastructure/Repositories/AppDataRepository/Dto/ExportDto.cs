@@ -9,4 +9,5 @@ namespace Infrastructure.Repositories.AppDataRepository.Dto;
 internal record ExportDto(
     MockTemplatesDto MockTemplates,
     RequestTemplatesDto RequestTemplates,
+    ListenersDto Listeners,
     int Version = 1);

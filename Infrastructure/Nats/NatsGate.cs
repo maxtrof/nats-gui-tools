@@ -88,13 +88,13 @@ public sealed class NatsGate : INatsGate, IDisposable
         EventHandler<MsgHandlerEventArgs> h = (sender, args) =>
         {
             var body = Encoding.UTF8.GetString(args.Message.Data);
-            var response = handler.Invoke(new IncomingMessageData(topicName, body, string.IsNullOrWhiteSpace(args.Message.Reply) ? null : args.Message.Reply));
+            var response = handler.Invoke(new IncomingMessageData(topicName, body, string.IsNullOrWhiteSpace(args.Message.Reply) ? null : args.Message.Reply, DateTime.Now));
             if (response is null) return;
             
             GetConnection().Publish(response.TopicToResponse ?? args.Message.Reply, Encoding.UTF8.GetBytes(response.Body));
         };
         var sub = GetConnection().SubscribeAsync(topicName, h);
-        if (sub is null) throw new FailedToSubscribeToTopicException("Connection is null");
+        if (sub is null) throw new FailedToSubscribeToTopicException("Not connected to a server");
         _subscriptions.Add(sub);
         
         return sub.Sid;

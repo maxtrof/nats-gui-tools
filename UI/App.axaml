@@ -1,7 +1,12 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Name="Nats Gui Tools"
              x:Class="UI.App">
-
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="About" Click="AboutNativeMenuItem_OnClick"/>
+        </NativeMenu>
+    </NativeMenu.Menu>
     <Application.Styles>
         <FluentTheme Mode="Dark"/>
     </Application.Styles>

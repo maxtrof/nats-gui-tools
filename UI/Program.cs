@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Application;
 using Application.MockEngine;
 using Application.RequestProcessing;
@@ -9,6 +11,7 @@ using Autofac;
 using Domain.Interfaces;
 using Infrastructure.Nats;
 using Infrastructure.Repositories.AppDataRepository;
+using UI.Helpers;
 
 namespace UI;
 
@@ -55,5 +58,36 @@ class Program
         builder.RegisterType<TopicListener>().AsSelf().SingleInstance();
         builder.RegisterType<ConnectionManager>().AsSelf().SingleInstance();
         Container = builder.Build();
+    }
+    
+    /// <summary>
+    /// Opens project git
+    /// </summary>
+    internal static void OpenGitInBrowser()
+    {
+        const string gitUrl = "https://github.com/maxtrof/nats-gui-tools";
+        try
+        {
+            Process.Start(gitUrl);
+        }
+        catch
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Process.Start(new ProcessStartInfo(gitUrl.Replace("&", "^&")) { UseShellExecute = true });
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                Process.Start("xdg-open", gitUrl);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Process.Start("open", gitUrl);
+            }
+            else
+            {
+                ErrorHelper.ShowError($"Error on opening browser. Please visit \n {gitUrl}");
+            }
+        }
     }
 }

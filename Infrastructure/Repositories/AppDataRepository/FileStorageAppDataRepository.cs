@@ -13,7 +13,10 @@ public sealed class FileStorageAppDataRepository : IAppDataRepository
 {
     private const string SettingsFileName = "settings.json";
     private const string MocksFileName = "mocks.json";
+    private const string ListenersFileName = "listeners.json";
     private const string RequestsFileName = "requests.json";
+
+    private const int CurrentExportVersion = 1;
     
     /// <summary>
     /// Folder for saving local files
@@ -47,6 +50,14 @@ public sealed class FileStorageAppDataRepository : IAppDataRepository
     }
 
     /// <inheritdoc />
+    public async Task<List<Listener>> LoadDefaultListenersAsync()
+    {
+        var listeners = await LoadJsonFile<ListenersDto>(ListenersFileName);
+        if (listeners is null) return new List<Listener>();
+        return listeners.ToDomain();
+    }
+
+    /// <inheritdoc />
     public async Task<AppSettings> LoadAppSettingsAsync()
     {
         var settings = await LoadJsonFile<AppSettingsDto>(SettingsFileName);
@@ -67,6 +78,12 @@ public sealed class FileStorageAppDataRepository : IAppDataRepository
     }
 
     /// <inheritdoc />
+    public Task SaveDefaultListenersAsync(List<Listener> templates)
+    {
+        return WriteJsonFile(ListenersFileName, templates.ToDto());
+    }
+
+    /// <inheritdoc />
     public Task SaveAppSettingsAsync(AppSettings settings)
     {
         return WriteJsonFile(SettingsFileName, settings.ToDto());
@@ -75,7 +92,12 @@ public sealed class FileStorageAppDataRepository : IAppDataRepository
     /// <inheritdoc />
     public Task Export(string fileName, Export export)
     {
-        var exportData = new ExportDto(export.MockTemplates.ToDto(), export.RequestTemplates.ToDto());
+        var exportData = new ExportDto(
+            MockTemplates: export.MockTemplates.ToDto(),
+            RequestTemplates: export.RequestTemplates.ToDto(),
+            Listeners: export.Listeners.ToDto(),
+            Version: CurrentExportVersion
+        );
         return WriteJsonFile(fileName, exportData);
     }
 
@@ -87,7 +109,8 @@ public sealed class FileStorageAppDataRepository : IAppDataRepository
         return new Export
         {
             MockTemplates = data.MockTemplates.ToDomain(),
-            RequestTemplates = data.RequestTemplates.ToDomain()
+            RequestTemplates = data.RequestTemplates.ToDomain(),
+            Listeners = data.Listeners.ToDomain()
         };
     }
 

@@ -43,7 +43,6 @@
         </Grid>
 
         <Grid Grid.Row="3" Margin="0, 5">
-
             <TextBox Text="{Binding ResponseText}"
                      AcceptsReturn="True" TextWrapping="Wrap" Watermark="Response" HorizontalAlignment="Stretch" />
         </Grid>

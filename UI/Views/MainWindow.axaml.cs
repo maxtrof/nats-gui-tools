@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using Domain.Models;
 using DynamicData;
 using ReactiveUI;
 using UI.EventArgs;
+using UI.MessagesBus;
 using UI.ViewModels;
 
 namespace UI.Views;
@@ -28,12 +31,20 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     public MainWindow()
     {
         InitializeComponent();
+        var platform = AvaloniaLocator.Current.GetService<IRuntimePlatform>()?.GetRuntimeInfo().OperatingSystem;
+        if (platform == OperatingSystemType.OSX)
+            MainMenu.IsVisible = false;
         this.WhenActivated(d => d(ViewModel!.ShowAddNewServerDialog.RegisterHandler(DoShowAddServerDialogAsync)));
         this.WhenActivated(d => d(ViewModel!.YesNoDialog.RegisterHandler(DoShowYesNoDialogDialogAsync)));
 
         this.WhenActivated(d => d(ViewModel!.ShowSettingsWindowDialog.RegisterHandler(DoShowSettingsDialogAsync)));
         this.WhenActivated(d => d(ViewModel!.ShowExportFileSaveDialog.RegisterHandler(DoShowExportDialogAsync)));
         this.WhenActivated(d => d(ViewModel!.ShowImportFileLoadDialog.RegisterHandler(DoShowImportDialogAsync)));
+        MessageBus.Current.Listen<string>(BusEvents.ErrorThrown)
+            .Subscribe(text =>
+            {
+                ErrorButton.Flyout.ShowAt(ErrorButton);
+            });
     }
 
     private async Task DoShowAddServerDialogAsync(
@@ -41,10 +52,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         var dialog = new AddServerWindow
         {
-            DataContext = interaction.Input,
-            Width = 400.0,
-            MaxHeight = 500.0,
-            Height = 500.0
+            DataContext = interaction.Input
         };
 
         var result = await dialog.ShowDialog<NatsServerSettings?>(this);
@@ -57,9 +65,6 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         var dialog = new Settings
         {
             DataContext = interaction.Input,
-            Width = 400.0,
-            MaxHeight = 500.0,
-            Height = 500.0
         };
 
         var result = await dialog.ShowDialog<Dictionary<string, string>?>(this);
@@ -91,9 +96,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         var dialog = new YesNoDialog
         {
-            DataContext = interaction.Input,
-            Width = 600.0,
-            MaxHeight = 200.0
+            DataContext = interaction.Input
         };
         var result = await dialog.ShowDialog<DialogResult>(this);
         interaction.SetOutput(result ?? new DialogResult()
@@ -110,10 +113,19 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     private void RequestsTabControl_OnUpdateRequest(object? sender, UpdateRequestRoutedEventArgs e)
     {
         var request = e.RequestTemplate;
-        var exists = ViewModel!.RequestTemplates.FirstOrDefault(x => x.Id == request.Id);
-        if (exists is not null)
-        {
-            ViewModel.RequestTemplates.Replace(exists, request);
-        }
+        ViewModel!._requestTemplates.AddOrUpdate(request);
     }
+
+    private void ListenersTabControl_OnUpdateRequest(object? sender, UpdateListenerRoutedEventArgs e)
+    {
+        var listener = e.Listener;
+        ViewModel!._listeners.AddOrUpdate(listener);
+    }
+
+    private void AboutMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        Program.OpenGitInBrowser();
+    }
+
+    
 }
