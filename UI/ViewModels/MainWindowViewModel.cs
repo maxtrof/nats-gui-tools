@@ -17,6 +17,7 @@ using DynamicData.Binding;
 using UI.Helpers;
 using UI.MessagesBus;
 using UI.PeriodicTasks;
+using System.Threading.Tasks;
 
 namespace UI.ViewModels;
 
@@ -336,6 +337,13 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             _servers.AddOrUpdate(serverListItemViewModel);
         }
+    }
+
+    public void SaveData()
+    {
+        IDataStorage dataStorage = _storage;
+        dataStorage = dataStorage ?? throw new ArgumentNullException(nameof(dataStorage));
+        Task.Run(dataStorage.SaveDataIfNeeded);
     }
 
     private async void LoadData()
