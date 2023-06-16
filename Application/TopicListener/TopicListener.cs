@@ -31,6 +31,11 @@ public sealed class TopicListener : IDisposable
     public event EventHandler<IncomingMessageData> OnMessageReceived;
 
     /// <summary>
+    /// Event, firing on disconnect, passing topic name
+    /// </summary>
+    public event EventHandler<string> OnUnsubscribed;
+
+    /// <summary>
     /// Gets messages or returns null
     /// </summary>
     /// <param name="topicName">Subject name</param>
@@ -66,6 +71,14 @@ public sealed class TopicListener : IDisposable
     }
 
     /// <summary>
+    /// Clears all messages from all topics
+    /// </summary>
+    public void ClearAll()
+    {
+        _messages.Clear();
+    }
+
+    /// <summary>
     /// Unsubscribes from listening topic by name
     /// </summary>
     /// <param name="topicName">Subject name</param>
@@ -76,6 +89,7 @@ public sealed class TopicListener : IDisposable
             _natsGate.Unsubscribe(sub);
             _subscriptions.Remove(topicName);
             _messages.Remove(topicName);
+            OnUnsubscribed.Invoke(this, topicName);
         }
     }
     
@@ -87,6 +101,20 @@ public sealed class TopicListener : IDisposable
     {
         var sub = _subscriptions.Single(x => x.Value == subscriptionId);
         Unsubscribe(sub.Key);
+    }
+
+    /// <summary>
+    /// Unsubscribes from all topics and clears all messages
+    /// </summary>
+    public void UnsubscribeAll()
+    {
+        foreach (var (name, id) in _subscriptions)
+        {
+            _natsGate.Unsubscribe(id);
+            _messages.Remove(name);
+            OnUnsubscribed.Invoke(this, name);
+        }
+        _subscriptions.Clear();
     }
 
     /// <summary>

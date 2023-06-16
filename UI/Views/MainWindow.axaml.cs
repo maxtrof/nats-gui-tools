@@ -130,7 +130,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     protected override void OnClosing(CancelEventArgs e)
     {
-        ViewModel!.SaveData();
+        ViewModel!.SaveDataAndExit();
         base.OnClosing(e);
     }
 }

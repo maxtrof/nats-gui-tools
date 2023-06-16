@@ -40,6 +40,7 @@
                     BorderBrush="DarkOrange"
                     Cursor="Hand"
                     Margin="10, 0, 0, 0"
+                    IsEnabled="{Binding Messages.Count}"
                     Command="{Binding ClearMessages}">
                 <Button.Content>
                     <TextBlock HorizontalAlignment="Center">Remove all</TextBlock>

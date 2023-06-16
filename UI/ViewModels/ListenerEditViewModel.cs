@@ -101,6 +101,7 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
         _topicListener = scope.Resolve<TopicListener>();
         _storage = scope.Resolve<IDataStorage>();
         Messages = new();
+        _topicListener.OnUnsubscribed += OnUnsubscribe;
 
         InitCommands();
     }
@@ -113,6 +114,7 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
         ListenerId = listener.Id;
         Name = listener.Name;
         Topic = listener.Topic;
+        _topicListener.OnUnsubscribed += OnUnsubscribe;
         
         Messages = new (_topicListener.GetMessages(listener.Topic) ?? new List<IncomingMessageData>());
 
@@ -178,6 +180,16 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
         }
     }
 
+    private void OnUnsubscribe(object? sender, string topicName)
+    {
+        if (topicName == Topic)
+        {
+            Listening = false;
+            _topicListener.OnMessageReceived -= MessageReceived;
+            Messages.Clear();
+        }
+    }
+
     private void BroadcastListenerUpdated()
     {
         MessageBus.Current.SendMessage(Listener, BusEvents.ListenerUpdated);
@@ -193,5 +205,6 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
     public void Dispose()
     {
         _topicListener.OnMessageReceived -= MessageReceived;
+        _topicListener.OnUnsubscribed -= OnUnsubscribe;
     }
 }

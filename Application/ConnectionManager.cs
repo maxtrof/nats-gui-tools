@@ -9,11 +9,13 @@ namespace Application;
 public sealed class ConnectionManager
 {
     private readonly INatsGate _natsGate;
+    private readonly TopicListener.TopicListener _topicListener;
     private NatsServerSettings? _connectedServer;
 
-    public ConnectionManager(INatsGate natsGate)
+    public ConnectionManager(INatsGate natsGate, TopicListener.TopicListener topicListener)
     {
         _natsGate = natsGate ?? throw new ArgumentNullException(nameof(natsGate));
+        _topicListener = topicListener;
     }
 
     /// <summary>
@@ -29,8 +31,11 @@ public sealed class ConnectionManager
     /// Connects to a server. If there's active connection - closes it and opens a new one
     /// </summary>
     /// <param name="settings">Server settings</param>
-    public async Task Connect(NatsServerSettings settings)
+    /// <param name="clearTopics">Clears all topics</param>
+    public async Task Connect(NatsServerSettings settings, bool clearTopics = true)
     {
+        if (clearTopics)
+            _topicListener.UnsubscribeAll();
         if (_natsGate.Connected)
             await _natsGate.Disconnect();
         _natsGate.ConnectToServer(settings);
