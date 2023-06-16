@@ -56,6 +56,16 @@ public sealed class TopicListener : IDisposable
     }
 
     /// <summary>
+    /// Clears messages from given topic
+    /// </summary>
+    /// <param name="topicName">Topic to clear</param>
+    public void Clear(string topicName)
+    {
+        if (!_subscriptions.ContainsKey(topicName)) return;
+        _messages[topicName].Clear();
+    }
+
+    /// <summary>
     /// Unsubscribes from listening topic by name
     /// </summary>
     /// <param name="topicName">Subject name</param>
