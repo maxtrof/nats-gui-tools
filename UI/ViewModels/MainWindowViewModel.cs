@@ -16,6 +16,7 @@ using DynamicData.Binding;
 using UI.Helpers;
 using UI.MessagesBus;
 using UI.PeriodicTasks;
+using System.Threading.Tasks;
 
 namespace UI.ViewModels;
 
@@ -171,9 +172,10 @@ public sealed class MainWindowViewModel : ViewModelBase
         _scope = Program.Container.BeginLifetimeScope();
         _storage = _scope.Resolve<IDataStorage>();
         _connectionManager = _scope.Resolve<ConnectionManager>();
-        
+
         RxApp.MainThreadScheduler.Schedule(LoadData);
 
+        _storage = _storage ?? throw new ArgumentNullException(nameof(_storage));
         DataSaver = new DataSaver(_storage);
         
         // Search
@@ -335,6 +337,11 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             _servers.AddOrUpdate(serverListItemViewModel);
         }
+    }
+
+    public async Task SaveData()
+    {
+        await _storage.SaveDataIfNeeded();
     }
 
     private async void LoadData()

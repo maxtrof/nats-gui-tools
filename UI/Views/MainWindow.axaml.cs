@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
@@ -127,5 +128,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         Program.OpenGitInBrowser();
     }
 
-    
+    protected override void OnClosing(CancelEventArgs e)
+    {
+        ViewModel!.SaveData().Wait();
+        base.OnClosing(e);
+    }
 }

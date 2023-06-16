@@ -48,3 +48,6 @@ publish/
 
 # Visual Studio Code
 .vscode/
+
+# Visual Studio cache/options directory
+.vs/
