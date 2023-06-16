@@ -35,6 +35,8 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
     public ICommand StartListen { get; set; } = default!;
     /// <summary> Stops listening </summary>
     public ICommand StopListen { get; set; } = default!;
+    /// <summary> Clears messages </summary>
+    public ICommand ClearMessages { get; set; } = default!;
 
     /// <summary>
     /// Template name
@@ -145,6 +147,18 @@ public class ListenerEditViewModel : ViewModelBase, IDisposable
                 _topicListener.Unsubscribe(_topicId.Value);
                 _topicListener.OnMessageReceived -= MessageReceived;
                 Listening = false;
+            }
+            catch (Exception ex)
+            {
+                ErrorHelper.ShowError(ex.Message);
+            }
+        });
+        ClearMessages = ReactiveCommand.Create<Unit>(_ =>
+        {
+            try
+            {
+                _topicListener.Clear(Topic);
+                Messages.Clear();
             }
             catch (Exception ex)
             {

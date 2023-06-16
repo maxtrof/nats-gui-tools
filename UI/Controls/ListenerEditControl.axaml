@@ -35,6 +35,16 @@
                     <TextBlock HorizontalAlignment="Center">Stop</TextBlock>
                 </Button.Content>
             </Button>
+            <Button MinWidth="100"
+                    HorizontalAlignment="Left"
+                    BorderBrush="DarkOrange"
+                    Cursor="Hand"
+                    Margin="10, 0, 0, 0"
+                    Command="{Binding ClearMessages}">
+                <Button.Content>
+                    <TextBlock HorizontalAlignment="Center">Remove all</TextBlock>
+                </Button.Content>
+            </Button>
         </StackPanel>
 
         <Grid Grid.Row="1">
