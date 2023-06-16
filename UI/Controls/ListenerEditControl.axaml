@@ -55,6 +55,7 @@
                                     Text="{Binding Body}"
                                     ToolTip.Tip="Click to copy"
                                     PointerPressed="MessageTextBlock_OnPointerPressed"
+                                    FontFamily="Cascadia Code,Consolas,Menlo,Monospace"
                                     Name="MessageTextBlock"/>
                             </StackPanel>
                         </DataTemplate>

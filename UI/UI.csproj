@@ -24,21 +24,24 @@
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.19" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.19" />
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.10.12.2" />
+        <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.19" />
+
         <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Application\Application.csproj" />
-      <ProjectReference Include="..\Domain\Domain.csproj" />
-      <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+        <ProjectReference Include="..\Application\Application.csproj" />
+        <ProjectReference Include="..\Domain\Domain.csproj" />
+        <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Controls\ListenerEditControl.axaml.cs">
-        <SubType>Code</SubType>
-      </Compile>
-      <Compile Update="Controls\ListenersTabControl.axaml.cs">
-        <SubType>Code</SubType>
-      </Compile>
+        <Compile Update="Controls\ListenerEditControl.axaml.cs">
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\ListenersTabControl.axaml.cs">
+            <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 </Project>

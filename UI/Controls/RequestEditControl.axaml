@@ -4,9 +4,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:UI.ViewModels"
              xmlns:enums="clr-namespace:Domain.Enums;assembly=Domain"
+             xmlns:avaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+             xmlns:helpers="clr-namespace:UI.Helpers"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="UI.Controls.RequestEditControl"
              x:DataType="viewModels:RequestEditViewModel">
+    <UserControl.Styles>
+        <Style Selector="avaloniaEdit|TextEditor.Editor">
+            <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Visible"/>
+            <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,Monospace"/>
+            <Setter Property="Background" Value="#1f1f1f"/>
+            <Setter Property="ShowLineNumbers" Value="True"/>
+        </Style>
+    </UserControl.Styles>
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -42,13 +53,19 @@
         </Grid>
 
         <Grid Grid.Row="2" Margin="0, 5" RowSpan="{Binding RequestRowSpan}">
-            <TextBox AcceptsReturn="True" TextWrapping="Wrap" Watermark="Request" HorizontalAlignment="Stretch"
-                     Text="{Binding Body}" />
+            <avaloniaEdit:TextEditor Classes="Editor" Name="RequestEditor" >
+                <Interaction.Behaviors>
+                    <helpers:DocumentTextBindingBehavior Text="{Binding Body, Mode=TwoWay}"/>
+                </Interaction.Behaviors>
+            </avaloniaEdit:TextEditor>
         </Grid>
 
         <Grid Grid.Row="3" Margin="0, 5" IsVisible="{Binding ShowReplySection}">
-            <TextBox Text="{Binding ResponseText}"
-                     AcceptsReturn="True" TextWrapping="Wrap" Watermark="Response" HorizontalAlignment="Stretch" />
+            <avaloniaEdit:TextEditor Classes="Editor" Name="ReplyEditor">
+                <Interaction.Behaviors>
+                    <helpers:DocumentTextBindingBehavior Text="{Binding  ResponseText, Mode=TwoWay}"/>
+                </Interaction.Behaviors>
+            </avaloniaEdit:TextEditor>
         </Grid>
     </Grid>
 </UserControl>

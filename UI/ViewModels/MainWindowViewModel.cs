@@ -12,7 +12,6 @@ using Domain.Models;
 using DynamicData;
 using ReactiveUI;
 using System;
-using System.Reactive.Subjects;
 using DynamicData.Binding;
 using UI.Helpers;
 using UI.MessagesBus;
@@ -343,6 +342,10 @@ public sealed class MainWindowViewModel : ViewModelBase
         await _storage.InitializeAsync();
         UpdateListsFromStorage();
         FormatJson = _storage.AppSettings.FormatJson;
+        
+        // Load json highlighting
+        JsonHighlighter.LoadJsonHighlighter();
+
         AppLoaded = true;
     }
 

@@ -59,7 +59,7 @@ class Program
         builder.RegisterType<ConnectionManager>().AsSelf().SingleInstance();
         Container = builder.Build();
     }
-    
+
     /// <summary>
     /// Opens project git
     /// </summary>
