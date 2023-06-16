@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace UI.Helpers;
 
@@ -17,26 +18,26 @@ internal static class NameGenerator
     /// <param name="advanced">If true - generates a name with two words and digits</param>
     public static string GetRandomName(bool advanced = false)
     {
-        string name = "";
-        name += Consonants[Rnd.Next(Consonants.Length)].ToUpper();
-        name += Vowels[Rnd.Next(Vowels.Length)];
+        var name = new StringBuilder();
+        name.Append(Consonants[Rnd.Next(Consonants.Length)].ToUpper());
+        name.Append(Vowels[Rnd.Next(Vowels.Length)]);
         int b = 2;
         var lenght = advanced
             ? Rnd.Next(4, 8)
             : Rnd.Next(2, 4);
         while (b < lenght)
         {
-            name += Consonants[Rnd.Next(Consonants.Length)];
+            name.Append(Consonants[Rnd.Next(Consonants.Length)]);
             b++;
-            name += Vowels[Rnd.Next(Vowels.Length)];
+            name.Append(Vowels[Rnd.Next(Vowels.Length)]);
             b++;
         }
 
-        if (!advanced) return name;
+        if (!advanced) return name.ToString();
         
-        if (Rnd.Next(0, 100) > 50) name += GetRandomName();
-        if (Rnd.Next(0, 30) > 20) name += Rnd.Next(1, 999);
+        if (Rnd.Next(0, 100) > 50) name.Append(GetRandomName());
+        if (Rnd.Next(0, 30) > 20) name.Append(Rnd.Next(1, 999));
 
-        return name;
+        return name.ToString();
     }
 }
