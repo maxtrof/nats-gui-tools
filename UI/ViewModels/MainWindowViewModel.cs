@@ -339,9 +339,11 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
     }
 
-    public async Task SaveData()
+    public void SaveData()
     {
-        await _storage.SaveDataIfNeeded();
+        var saveDataTask = Task.Run(() => _storage.SaveDataIfNeeded());
+        AppLoaded = false;
+        saveDataTask.Wait();
     }
 
     private async void LoadData()
