@@ -173,9 +173,10 @@ public sealed class MainWindowViewModel : ViewModelBase
         _scope = Program.Container.BeginLifetimeScope();
         _storage = _scope.Resolve<IDataStorage>();
         _connectionManager = _scope.Resolve<ConnectionManager>();
-        
+
         RxApp.MainThreadScheduler.Schedule(LoadData);
 
+        _storage = _storage ?? throw new ArgumentNullException(nameof(_storage));
         DataSaver = new DataSaver(_storage);
         
         // Search
@@ -339,11 +340,9 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
     }
 
-    public void SaveData()
+    public async Task SaveData()
     {
-        IDataStorage dataStorage = _storage;
-        dataStorage = dataStorage ?? throw new ArgumentNullException(nameof(dataStorage));
-        Task.Run(dataStorage.SaveDataIfNeeded);
+        await _storage.SaveDataIfNeeded();
     }
 
     private async void LoadData()
