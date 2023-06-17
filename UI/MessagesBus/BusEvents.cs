@@ -12,4 +12,6 @@ internal static class BusEvents
     public const string ListenerDeleted = nameof(ListenerDeleted);
     // Error
     public const string ErrorThrown = nameof(ErrorThrown);
+    // Autocompletion
+    public const string AutocompleteAdded = nameof(AutocompleteAdded);
 }

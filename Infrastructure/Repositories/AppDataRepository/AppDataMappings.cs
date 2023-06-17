@@ -14,7 +14,7 @@ internal static class AppDataMappings
     /// </summary>
     public static AppSettings ToDomain(this AppSettingsDto dto)
     {
-        var settings = new AppSettings();
+        var settings = new AppSettings(dto.AutoCompletionDictionary);
         settings.Servers = dto.Servers.Select(x => x.ToDomain()).ToList();
         settings.UserDictionary = dto.UserDictionary;
         settings.FormatJson = dto.FormatJson;
@@ -48,7 +48,7 @@ internal static class AppDataMappings
             template.Id = Guid.NewGuid();
             template.Name = requestTemplateDto.Name;
             template.Body = requestTemplateDto.Body;
-            template.Topic = requestTemplateDto.Topic;
+            template.Topic = requestTemplateDto.Topic ?? string.Empty;
             template.Type = requestTemplateDto.Type;
             list.Add(template);
         }
@@ -67,7 +67,7 @@ internal static class AppDataMappings
             var template = new MockTemplate();
             template.Type = mockTemplateDto.Type;
             template.AnswerTemplate = mockTemplateDto.AnswerTemplate;
-            template.Topic = mockTemplateDto.Topic;
+            template.Topic = mockTemplateDto.Topic ?? string.Empty;
             list.Add(template);
         }
 
@@ -83,7 +83,7 @@ internal static class AppDataMappings
         foreach (var dtoListener in dto.Listeners)
         {
             var listener = new Listener();
-            listener.Topic = dtoListener.Topic;
+            listener.Topic = dtoListener.Topic ?? string.Empty;
             listener.Name = dtoListener.Name;
             list.Add(listener);
         }
@@ -101,6 +101,7 @@ internal static class AppDataMappings
             Servers: serversDto,
             UserDictionary: settings.UserDictionary,
             FormatJson: settings.FormatJson,
+            AutoCompletionDictionary: settings.GetAutoCompletionDictionary(),
             Version: CurrentFileFormatVersion
         );
     }

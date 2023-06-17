@@ -5,11 +5,15 @@ using Avalonia.Markup.Xaml;
 using AvaloniaEdit;
 using AvaloniaEdit.Highlighting;
 using Domain.Enums;
+using ReactiveUI;
+using UI.MessagesBus;
 
 namespace UI.Controls;
 
 internal partial class RequestEditControl : UserControl
 {
+    private readonly AutoCompleteBox _autoCompleteBox;
+    
     public static readonly RoutedEvent<RoutedEventArgs> UpdateRequestDataEvent =
         RoutedEvent.Register<RequestEditControl, RoutedEventArgs>(nameof(UpdateRequestData), RoutingStrategies.Bubble);
     
@@ -21,6 +25,8 @@ internal partial class RequestEditControl : UserControl
     public RequestEditControl()
     {
         InitializeComponent();
+        
+        _autoCompleteBox = this.FindControl<AutoCompleteBox>("TopicAutoCompleteBox");
 
         var requestTypeComboBox = this.FindControl<ComboBox>("RequestTypeComboBox");
         requestTypeComboBox.Items = Enum.GetNames(typeof(RequestType));
@@ -44,4 +50,8 @@ internal partial class RequestEditControl : UserControl
         AvaloniaXamlLoader.Load(this);
     }
 
+    private void TopicAutoCompleteBox_OnLostFocus(object? sender, RoutedEventArgs e)
+    {
+        MessageBus.Current.SendMessage(_autoCompleteBox.Text, BusEvents.AutocompleteAdded);
+    }
 }

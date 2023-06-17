@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows.Input;
 using Application.RequestProcessing;
@@ -27,6 +28,8 @@ internal sealed class RequestEditViewModel : ViewModelBase
     private RequestType _requestType;
     private bool _showReplySection;
     private int _requestRowSpan;
+    
+    public ObservableCollection<string> AutocompleteOptions { get; set; }
 
     /// <summary> Process request </summary>
     public ICommand ProcessRequest { get; set; } = default!;
@@ -132,7 +135,7 @@ internal sealed class RequestEditViewModel : ViewModelBase
         _storage = scope.Resolve<IDataStorage>();
         RequestType = RequestType.Publish;
 
-        InitCommands();
+        Init();
     }
 
     public RequestEditViewModel(RequestTemplate requestTemplate)
@@ -146,11 +149,12 @@ internal sealed class RequestEditViewModel : ViewModelBase
         Body = requestTemplate.Body;
         RequestType = requestTemplate.Type;
 
-        InitCommands();
+        Init();
     }
 
-    private void InitCommands()
+    private void Init()
     {
+        AutocompleteOptions = new ObservableCollection<string>(_storage.AppSettings.GetAutoCompletionDictionary());
         ProcessRequest = ReactiveCommand.CreateFromTask(async _ =>
         {
             ValidationError = ValidateForm();
@@ -178,6 +182,11 @@ internal sealed class RequestEditViewModel : ViewModelBase
             {
                 ErrorHelper.ShowError(ex.Message);
             }
+        });
+        MessageBus.Current.Listen<string>(BusEvents.AutocompleteAdded).Subscribe(variant =>
+        {
+            if (!string.IsNullOrWhiteSpace(variant) && !AutocompleteOptions.Contains(variant))
+                AutocompleteOptions.Add(variant);
         });
     }
 

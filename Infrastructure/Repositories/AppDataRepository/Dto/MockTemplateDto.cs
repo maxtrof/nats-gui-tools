@@ -11,6 +11,6 @@ namespace Infrastructure.Repositories.AppDataRepository.Dto;
 /// <param name="AnswerTemplate">Answer body</param>
 internal sealed record MockTemplateDto(
     MockTypes Type,
-    string Topic,
+    string? Topic,
     string AnswerTemplate
     );

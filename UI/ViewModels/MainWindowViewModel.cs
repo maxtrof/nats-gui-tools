@@ -244,7 +244,8 @@ internal sealed class MainWindowViewModel : ViewModelBase
         {
             var newRequest = new RequestTemplate
             {
-                Name = $"Request {NameGenerator.GetRandomName()}"
+                Name = $"Request {NameGenerator.GetRandomName()}",
+                Topic = ""
             };
             _storage.RequestTemplates.Add(newRequest);
             _storage.IncRequestTemplatesVersion();
@@ -273,7 +274,8 @@ internal sealed class MainWindowViewModel : ViewModelBase
         {
             var newListener = new Listener
             {
-                Name = $"Listener {NameGenerator.GetRandomName()}"
+                Name = $"Listener {NameGenerator.GetRandomName()}",
+                Topic = ""
             };
             _storage.Listeners.Add(newListener);
             _storage.IncListenersVersion();
@@ -326,6 +328,12 @@ internal sealed class MainWindowViewModel : ViewModelBase
                 _storage.Listeners.Replace(exists, listener);
                 _listeners.AddOrUpdate(listener);
                 _storage.IncListenersVersion();
+            });
+        MessageBus.Current.Listen<string>(BusEvents.AutocompleteAdded)
+            .Subscribe(variant =>
+            {
+                _storage.AppSettings.AddVariantToAutoCompletionDictionary(variant);
+                _storage.IncAppSettingsVersion();
             });
     }
 

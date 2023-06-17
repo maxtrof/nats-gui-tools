@@ -27,6 +27,7 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
     private string? _validationError;
 
     public ObservableCollection<IncomingMessageData> Messages { get; set; }
+    public ObservableCollection<string> AutocompleteOptions { get; set; }
     public readonly Guid ListenerId = default!;
     private bool _listening;
 
@@ -100,9 +101,8 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
         _topicListener = scope.Resolve<TopicListener>();
         _storage = scope.Resolve<IDataStorage>();
         Messages = new();
-        _topicListener.OnUnsubscribed += OnUnsubscribe;
 
-        InitCommands();
+        Init();
     }
 
     public ListenerEditViewModel(Listener listener)
@@ -113,15 +113,16 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
         ListenerId = listener.Id;
         Name = listener.Name;
         Topic = listener.Topic;
-        _topicListener.OnUnsubscribed += OnUnsubscribe;
-        
+
         Messages = new (_topicListener.GetMessages(listener.Topic) ?? new List<IncomingMessageData>());
 
-        InitCommands();
+        Init();
     }
 
-    private void InitCommands()
+    private void Init()
     {
+        _topicListener.OnUnsubscribed += OnUnsubscribe;
+        AutocompleteOptions = new ObservableCollection<string>(_storage.AppSettings.GetAutoCompletionDictionary());
         StartListen = ReactiveCommand.Create<Unit>(_ =>
         {
             ValidationError = ValidateForm();
@@ -165,6 +166,11 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
             {
                 ErrorHelper.ShowError(ex.Message);
             }
+        });
+        MessageBus.Current.Listen<string>(BusEvents.AutocompleteAdded).Subscribe(variant =>
+        {
+            if (!string.IsNullOrWhiteSpace(variant) && !AutocompleteOptions.Contains(variant))
+                AutocompleteOptions.Add(variant);
         });
     }
 
