@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Windows.Input;
@@ -16,7 +15,7 @@ using UI.MessagesBus;
 
 namespace UI.ViewModels;
 
-public class ListenerEditViewModel : ViewModelBase, IDisposable
+internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
 {
     private readonly TopicListener _topicListener;
     private readonly IDataStorage _storage;

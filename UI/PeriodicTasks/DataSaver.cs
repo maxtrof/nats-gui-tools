@@ -11,7 +11,7 @@ namespace UI.PeriodicTasks;
 /// Triggers OnDataSaved Event when data is saved and
 /// changes SavedAtMessage
 /// </summary>
-public sealed class DataSaver : INotifyPropertyChanged
+internal sealed class DataSaver : INotifyPropertyChanged
 {
     private const int SavePeriodInSeconds = 10;
     

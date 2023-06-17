@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reactive;
 using System.Text.RegularExpressions;
@@ -8,7 +7,7 @@ using ReactiveUI;
 
 namespace UI.ViewModels;
 
-public sealed class AddServerViewModel : ViewModelBase
+internal sealed class AddServerViewModel : ViewModelBase
 {
     private const string NoSpacesRegex = @"^\S*$";
     

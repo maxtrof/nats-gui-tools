@@ -1,6 +1,6 @@
 ﻿namespace UI.MessagesBus;
 
-public static class BusEvents
+internal static class BusEvents
 {
     // Requests
     public const string RequestSelected = "RequestSelected";

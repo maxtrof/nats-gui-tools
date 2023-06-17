@@ -8,7 +8,7 @@ using UI.ViewModels;
 
 namespace UI.Controls;
 
-public partial class ListenersTabControl : UserControl
+internal partial class ListenersTabControl : UserControl
 {
     private readonly ListenersTabViewModel _vm;
 

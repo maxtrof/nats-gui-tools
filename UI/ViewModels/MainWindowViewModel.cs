@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace UI.ViewModels;
 
-public sealed class MainWindowViewModel : ViewModelBase
+internal sealed class MainWindowViewModel : ViewModelBase
 {
     private readonly ILifetimeScope _scope;
     private readonly IDataStorage _storage;

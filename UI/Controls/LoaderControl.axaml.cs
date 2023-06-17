@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 
 namespace UI.Controls;
 
-public partial class LoaderControl : UserControl
+internal partial class LoaderControl : UserControl
 {
     public LoaderControl()
     {

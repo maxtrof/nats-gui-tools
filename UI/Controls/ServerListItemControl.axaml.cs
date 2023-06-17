@@ -8,7 +8,7 @@ using UI.ViewModels;
 
 namespace UI.Controls;
 
-public partial class ServerListItemControl : UserControl
+internal partial class ServerListItemControl : UserControl
 {
     public static readonly RoutedEvent<RoutedEventArgs> UpdateServersStateEvent =
         RoutedEvent.Register<ServerListItemControl, RoutedEventArgs>(nameof(UpdateServersState), RoutingStrategies.Bubble);

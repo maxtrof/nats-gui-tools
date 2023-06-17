@@ -10,7 +10,7 @@ using ReactiveUI;
 
 namespace UI.ViewModels;
 
-public sealed class SettingsViewModel : ViewModelBase
+internal sealed class SettingsViewModel : ViewModelBase
 {
     private bool _showAllVariablesShouldBeUniqueError;
     public ObservableCollection<UserVariable> UserVariables { get; }

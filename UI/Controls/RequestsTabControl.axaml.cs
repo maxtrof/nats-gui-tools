@@ -8,7 +8,7 @@ using UI.ViewModels;
 
 namespace UI.Controls;
 
-public partial class RequestsTabControl : UserControl
+internal partial class RequestsTabControl : UserControl
 {
     private readonly RequestsTabViewModel _vm;
 

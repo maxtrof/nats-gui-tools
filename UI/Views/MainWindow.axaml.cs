@@ -18,7 +18,7 @@ using UI.ViewModels;
 
 namespace UI.Views;
 
-public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
+internal partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
     private static readonly List<FileDialogFilter> FileFilters = new()
     {

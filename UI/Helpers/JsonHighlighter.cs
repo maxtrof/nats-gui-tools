@@ -4,7 +4,10 @@ using AvaloniaEdit.Highlighting;
 
 namespace UI.Helpers;
 
-public static class JsonHighlighter
+/// <summary>
+/// Loads json highlighting
+/// </summary>
+internal static class JsonHighlighter
 {
     // TODO Move to resources
     private const string HighlightScheme = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
@@ -77,6 +80,10 @@ public static class JsonHighlighter
                     <Import ruleSet=""Expression""/>
                     </RuleSet>
                     </SyntaxDefinition>";
+    
+    /// <summary>
+    /// Loads json highlighting for dark theme
+    /// </summary>
     public static void LoadJsonHighlighter()
     {
         using (var reader = new XmlTextReader(new StringReader(HighlightScheme)))

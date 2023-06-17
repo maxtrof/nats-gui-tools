@@ -2,7 +2,7 @@ using ReactiveUI;
 
 namespace UI.ViewModels;
 
-public sealed class YesNoDialogViewModel : ViewModelBase
+internal sealed class YesNoDialogViewModel : ViewModelBase
 {
     private DialogResult Result { get; } = new()
     {

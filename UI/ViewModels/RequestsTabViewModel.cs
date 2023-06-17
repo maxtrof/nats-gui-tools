@@ -8,7 +8,7 @@ using UI.MessagesBus;
 
 namespace UI.ViewModels;
 
-public class RequestsTabViewModel : ViewModelBase
+internal sealed class RequestsTabViewModel : ViewModelBase
 {
     private RequestEditViewModel? _selectedTab;
     public ObservableCollection<RequestEditViewModel> Tabs { get; set; } = new();

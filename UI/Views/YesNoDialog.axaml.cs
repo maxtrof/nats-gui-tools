@@ -7,7 +7,7 @@ using UI.ViewModels;
 
 namespace UI.Views;
 
-public partial class YesNoDialog : ReactiveWindow<YesNoDialogViewModel>
+internal partial class YesNoDialog : ReactiveWindow<YesNoDialogViewModel>
 {
     public YesNoDialog()
     {

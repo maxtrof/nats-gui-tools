@@ -10,7 +10,7 @@ using UI.ViewModels;
 
 namespace UI.Views;
 
-public partial class Settings : ReactiveWindow<SettingsViewModel>
+internal partial class Settings : ReactiveWindow<SettingsViewModel>
 {
     public Settings()
     {

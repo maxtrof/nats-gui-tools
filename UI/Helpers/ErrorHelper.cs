@@ -3,8 +3,12 @@ using UI.MessagesBus;
 
 namespace UI.Helpers;
 
-public static class ErrorHelper
+internal static class ErrorHelper
 {
+    /// <summary>
+    /// Dispatch error message to the MessageBus.
+    /// </summary>
+    /// <param name="message"></param>
     public static void ShowError(string message)
     {
         MessageBus.Current.SendMessage(message, BusEvents.ErrorThrown);

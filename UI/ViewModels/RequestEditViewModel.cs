@@ -12,7 +12,7 @@ using UI.MessagesBus;
 
 namespace UI.ViewModels;
 
-public class RequestEditViewModel : ViewModelBase
+internal sealed class RequestEditViewModel : ViewModelBase
 {
     private readonly RequestProcessor _requestProcessor;
     private readonly IDataStorage _storage;

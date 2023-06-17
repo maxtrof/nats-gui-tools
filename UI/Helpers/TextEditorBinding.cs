@@ -9,7 +9,7 @@ namespace UI.Helpers;
 /// <summary>
 /// Behavior for reactive binding for <see cref="TextEditor"/>
 /// </summary>
-public class DocumentTextBindingBehavior : Behavior<TextEditor>
+internal class DocumentTextBindingBehavior : Behavior<TextEditor>
 {
     private TextEditor? _textEditor = null;
 

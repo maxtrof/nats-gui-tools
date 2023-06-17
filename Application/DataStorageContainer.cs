@@ -6,7 +6,7 @@ namespace Application;
 /// Data container for <see cref="DataStorage"/>
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class DataStorageContainer<T> where T : notnull
+internal class DataStorageContainer<T> where T : notnull
 {
     private T? _data;
     private int _dataVersion = 0;

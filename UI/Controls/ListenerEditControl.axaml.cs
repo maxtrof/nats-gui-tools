@@ -7,7 +7,7 @@ using Avalonia.Markup.Xaml;
 
 namespace UI.Controls;
 
-public partial class ListenerEditControl : UserControl
+internal partial class ListenerEditControl : UserControl
 {
     public static readonly RoutedEvent<RoutedEventArgs> UpdateRequestDataEvent =
         RoutedEvent.Register<ListenerEditControl, RoutedEventArgs>(nameof(UpdateRequestData), RoutingStrategies.Bubble);

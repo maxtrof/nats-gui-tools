@@ -3,7 +3,7 @@ using Domain.Models;
 
 namespace UI.EventArgs;
 
-public class UpdateRequestRoutedEventArgs: RoutedEventArgs
+internal class UpdateRequestRoutedEventArgs: RoutedEventArgs
 {
     public RequestTemplate RequestTemplate { get; set; }
 }

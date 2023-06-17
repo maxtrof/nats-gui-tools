@@ -8,7 +8,7 @@ using Domain.Enums;
 
 namespace UI.Controls;
 
-public partial class RequestEditControl : UserControl
+internal partial class RequestEditControl : UserControl
 {
     public static readonly RoutedEvent<RoutedEventArgs> UpdateRequestDataEvent =
         RoutedEvent.Register<RequestEditControl, RoutedEventArgs>(nameof(UpdateRequestData), RoutingStrategies.Bubble);

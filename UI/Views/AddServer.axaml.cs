@@ -7,7 +7,7 @@ using UI.ViewModels;
 
 namespace UI.Views;
 
-public partial class AddServerWindow : ReactiveWindow<AddServerViewModel>
+internal partial class AddServerWindow : ReactiveWindow<AddServerViewModel>
 {
     public AddServerWindow()
     {

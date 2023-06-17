@@ -10,7 +10,7 @@ using UI.Helpers;
 
 namespace UI.ViewModels;
 
-public class ServerListItemViewModel : ViewModelBase
+internal sealed class ServerListItemViewModel : ViewModelBase
 {
     private readonly ILifetimeScope _scope;
     private readonly ConnectionManager _connectionManager; 
@@ -75,7 +75,7 @@ public class ServerListItemViewModel : ViewModelBase
     }
 }
 
-public static class ServerListItemViewModelMapper 
+internal static class ServerListItemViewModelMapper 
 {
     private static ServerListItemViewModel ToViewModel(this NatsServerSettings settings, string connectedServer)
     {

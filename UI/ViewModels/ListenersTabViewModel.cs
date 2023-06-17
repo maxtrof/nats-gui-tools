@@ -8,7 +8,7 @@ using UI.MessagesBus;
 
 namespace UI.ViewModels;
 
-public class ListenersTabViewModel : ViewModelBase
+internal sealed class ListenersTabViewModel : ViewModelBase
 {
     private ListenerEditViewModel? _selectedTab;
     public ObservableCollection<ListenerEditViewModel> Tabs { get; set; } = new();
