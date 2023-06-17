@@ -9,7 +9,7 @@
         x:Class="UI.Views.MainWindow"
         WindowStartupLocation="CenterScreen"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/favicon.ico"
         Title="Nats GUI Tools">
     <Window.Styles>
         <Style Selector="TextBlock.TabText">
