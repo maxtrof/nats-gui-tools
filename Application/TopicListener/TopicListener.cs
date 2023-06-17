@@ -124,7 +124,7 @@ public sealed class TopicListener : IDisposable
     {
         if (_messages.TryGetValue(messageData.Topic, out var topic))
         {
-            topic.Add(messageData);
+            topic.Insert(0, messageData);
         }
         else
         {

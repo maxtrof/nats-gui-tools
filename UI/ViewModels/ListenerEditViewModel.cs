@@ -170,7 +170,7 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
 
     private void MessageReceived(object? sender, IncomingMessageData data)
     {
-        if (data.Topic == Topic)
+        if (data.Topic == Topic && Listening)
         {
             var messageToAdd = _storage.AppSettings.FormatJson
                 ? data with { Body = JsonFormatter.TryFormatJson(data.Body) }
