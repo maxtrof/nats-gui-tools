@@ -26,6 +26,10 @@
             <Setter Property="HorizontalAlignment" Value="Center"></Setter>
             <Setter Property="MaxWidth" Value="500"></Setter>
         </Style>
+        <Style Selector="ListBox.Ngt">
+            <Setter Property="Background" Value="Transparent"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+        </Style>
     </Window.Styles>
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -59,7 +63,7 @@
                             <Button Name="AddNewServer" Command="{Binding AddNewServer}" Classes="AddNewItem">
                                 <TextBlock HorizontalAlignment="Center">Add new</TextBlock>
                             </Button>
-                            <ListBox Items="{Binding Servers}" Name="ServersListBox">
+                            <ListBox Items="{Binding Servers}" Name="ServersListBox" Classes="Ngt">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <controls:ServerListItemControl UpdateServersState="ServerListItemControl_OnUpdateServersState"></controls:ServerListItemControl>
@@ -77,11 +81,11 @@
                             <Button Command="{Binding AddNewListener}" Classes="AddNewItem">
                                 <TextBlock HorizontalAlignment="Center">Add new</TextBlock>
                             </Button>
-                            <ListBox Items="{Binding Listeners}" SelectedItem="{Binding SelectedListener}">
+                            <ListBox Items="{Binding Listeners}" SelectedItem="{Binding SelectedListener}" Classes="Ngt">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid ColumnDefinitions="*, auto" VerticalAlignment="Stretch">
-                                            <TextBlock Name="TxtListenerName" Grid.Column="0" Text="{Binding Name}"/>
+                                            <TextBlock Name="TxtListenerName" Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center"/>
                                             <Button Grid.Column="1" FontSize="10" ToolTip.Tip="Delete listener"
                                                     Command="{Binding 
                                                     RelativeSource={RelativeSource AncestorType=Window},
@@ -103,11 +107,11 @@
                                     Command="{Binding AddNewRequest}" Classes="AddNewItem">
                                 <TextBlock HorizontalAlignment="Center">Add new</TextBlock>
                             </Button>
-                            <ListBox Items="{Binding RequestTemplates}" SelectedItem="{Binding SelectedRequest}">
+                            <ListBox Items="{Binding RequestTemplates}" SelectedItem="{Binding SelectedRequest}" Classes="Ngt">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid ColumnDefinitions="*, auto" VerticalAlignment="Stretch">
-                                            <TextBlock Name="TxtRequestName" Grid.Column="0" Text="{Binding Name}"/>
+                                            <TextBlock Name="TxtRequestName" Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center"/>
                                             <Button Grid.Column="1" FontSize="10" ToolTip.Tip="Delete request"
                                                     Command="{Binding 
                                                     RelativeSource={RelativeSource AncestorType=Window},
@@ -128,7 +132,7 @@
                             <Button Classes="AddNewItem">
                                 <TextBlock HorizontalAlignment="Center">Add new</TextBlock>
                             </Button>
-                            <ListBox></ListBox>
+                            <ListBox Classes="Ngt"></ListBox>
                         </StackPanel>
                     </TabItem>
                 </TabControl>

@@ -21,7 +21,7 @@
     <Grid RowDefinitions="1*" ColumnDefinitions="35, 1*, 100">
         <Rectangle Classes="green" Grid.Row="0" Grid.Column="0" IsVisible="{Binding IsConnected}"></Rectangle>
         <Rectangle Classes="red" Grid.Row="0" Grid.Column="0" IsVisible="{Binding !IsConnected}"></Rectangle>
-        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ServerSettings.Name}"></TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ServerSettings.Name}" VerticalAlignment="Center"></TextBlock>
         <Button Grid.Row="0" Grid.Column="2" Click="ConnectDisconnectButton_OnClick" Name="ConnectDisconnectButton" Content="{Binding ButtonText}"></Button>
     </Grid>
 </UserControl>
