@@ -47,6 +47,7 @@ public sealed class ConnectionManager
     /// </summary>
     public async Task Disconnect()
     {
+        if (!IsConnected) return;
         await _natsGate.Disconnect();
         _connectedServer = null;
     }
