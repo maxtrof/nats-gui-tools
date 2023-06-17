@@ -29,8 +29,7 @@ internal sealed class RequestEditViewModel : ViewModelBase
     private bool _showReplySection;
     private int _requestRowSpan;
     
-    public ObservableCollection<string> AutocompleteOptions { get; set; }
-
+    public ObservableCollection<string> AutocompleteOptions => SharedObservables.Suggestions;
     /// <summary> Process request </summary>
     public ICommand ProcessRequest { get; set; } = default!;
 
@@ -154,7 +153,6 @@ internal sealed class RequestEditViewModel : ViewModelBase
 
     private void Init()
     {
-        AutocompleteOptions = new ObservableCollection<string>(_storage.AppSettings.GetAutoCompletionDictionary());
         ProcessRequest = ReactiveCommand.CreateFromTask(async _ =>
         {
             ValidationError = ValidateForm();
@@ -182,11 +180,6 @@ internal sealed class RequestEditViewModel : ViewModelBase
             {
                 ErrorHelper.ShowError(ex.Message);
             }
-        });
-        MessageBus.Current.Listen<string>(BusEvents.AutocompleteAdded).Subscribe(variant =>
-        {
-            if (!string.IsNullOrWhiteSpace(variant) && !AutocompleteOptions.Contains(variant))
-                AutocompleteOptions.Add(variant);
         });
     }
 

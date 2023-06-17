@@ -334,6 +334,8 @@ internal sealed class MainWindowViewModel : ViewModelBase
             {
                 _storage.AppSettings.AddVariantToAutoCompletionDictionary(variant);
                 _storage.IncAppSettingsVersion();
+                if (!string.IsNullOrWhiteSpace(variant) && !SharedObservables.Suggestions.Contains(variant))
+                    SharedObservables.Suggestions.Add(variant);
             });
     }
 
@@ -363,6 +365,8 @@ internal sealed class MainWindowViewModel : ViewModelBase
         
         // Load json highlighting
         JsonHighlighter.LoadJsonHighlighter();
+        SharedObservables.Suggestions =
+            new ObservableCollection<string>(_storage.AppSettings.GetAutoCompletionDictionary());
 
         AppLoaded = true;
     }
