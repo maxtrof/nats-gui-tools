@@ -11,7 +11,12 @@ public sealed class MockTemplate
     /// Id
     /// </summary>
     public Guid Id { get; set; } = Guid.NewGuid();
-    
+
+    /// <summary>
+    /// Name of the mock template
+    /// </summary>
+    public string Name {get; set; }
+
     /// <summary>
     /// Type of a Mock
     /// </summary>
