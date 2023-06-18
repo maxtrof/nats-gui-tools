@@ -31,14 +31,17 @@ public sealed record IncomingMessageData(
             var fifthLineIndex = 0;
             for (var i = 0; i < Body.Length; i++)
             {
+                if (i >= PreviewMaxLength)
+                {
+                    fifthLineIndex = PreviewMaxLength;
+                    break;
+                }
                 if (Body[i] != '\n') continue;
                 count++;
                 if (count != 5) continue;
                 fifthLineIndex = i;
                 break;
             }
-
-            if (fifthLineIndex > PreviewMaxLength) fifthLineIndex = PreviewMaxLength;
 
             _messagePreview = Body[..fifthLineIndex] + "\n...";
             
