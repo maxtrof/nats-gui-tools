@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows.Input;
 using Application.RequestProcessing;
@@ -27,7 +28,8 @@ internal sealed class RequestEditViewModel : ViewModelBase
     private RequestType _requestType;
     private bool _showReplySection;
     private int _requestRowSpan;
-
+    
+    public ObservableCollection<string> AutocompleteOptions => SharedObservables.Suggestions;
     /// <summary> Process request </summary>
     public ICommand ProcessRequest { get; set; } = default!;
 
@@ -132,7 +134,7 @@ internal sealed class RequestEditViewModel : ViewModelBase
         _storage = scope.Resolve<IDataStorage>();
         RequestType = RequestType.Publish;
 
-        InitCommands();
+        Init();
     }
 
     public RequestEditViewModel(RequestTemplate requestTemplate)
@@ -146,10 +148,10 @@ internal sealed class RequestEditViewModel : ViewModelBase
         Body = requestTemplate.Body;
         RequestType = requestTemplate.Type;
 
-        InitCommands();
+        Init();
     }
 
-    private void InitCommands()
+    private void Init()
     {
         ProcessRequest = ReactiveCommand.CreateFromTask(async _ =>
         {

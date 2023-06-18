@@ -36,6 +36,8 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
     public ICommand StopListen { get; set; } = default!;
     /// <summary> Clears messages </summary>
     public ICommand ClearMessages { get; set; } = default!;
+    
+    public ObservableCollection<string> AutocompleteOptions => SharedObservables.Suggestions;
 
     /// <summary>
     /// Template name
@@ -100,9 +102,8 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
         _topicListener = scope.Resolve<TopicListener>();
         _storage = scope.Resolve<IDataStorage>();
         Messages = new();
-        _topicListener.OnUnsubscribed += OnUnsubscribe;
 
-        InitCommands();
+        Init();
     }
 
     public ListenerEditViewModel(Listener listener)
@@ -113,15 +114,15 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
         ListenerId = listener.Id;
         Name = listener.Name;
         Topic = listener.Topic;
-        _topicListener.OnUnsubscribed += OnUnsubscribe;
-        
+
         Messages = new (_topicListener.GetMessages(listener.Topic) ?? new List<IncomingMessageData>());
 
-        InitCommands();
+        Init();
     }
 
-    private void InitCommands()
+    private void Init()
     {
+        _topicListener.OnUnsubscribed += OnUnsubscribe;
         StartListen = ReactiveCommand.Create<Unit>(_ =>
         {
             ValidationError = ValidateForm();

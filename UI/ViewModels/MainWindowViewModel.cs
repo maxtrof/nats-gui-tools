@@ -244,7 +244,8 @@ internal sealed class MainWindowViewModel : ViewModelBase
         {
             var newRequest = new RequestTemplate
             {
-                Name = $"Request {NameGenerator.GetRandomName()}"
+                Name = $"Request {NameGenerator.GetRandomName()}",
+                Topic = ""
             };
             _storage.RequestTemplates.Add(newRequest);
             _storage.IncRequestTemplatesVersion();
@@ -273,7 +274,8 @@ internal sealed class MainWindowViewModel : ViewModelBase
         {
             var newListener = new Listener
             {
-                Name = $"Listener {NameGenerator.GetRandomName()}"
+                Name = $"Listener {NameGenerator.GetRandomName()}",
+                Topic = ""
             };
             _storage.Listeners.Add(newListener);
             _storage.IncListenersVersion();
@@ -327,6 +329,14 @@ internal sealed class MainWindowViewModel : ViewModelBase
                 _listeners.AddOrUpdate(listener);
                 _storage.IncListenersVersion();
             });
+        MessageBus.Current.Listen<string>(BusEvents.AutocompleteAdded)
+            .Subscribe(variant =>
+            {
+                _storage.AppSettings.AddVariantToAutoCompletionDictionary(variant);
+                _storage.IncAppSettingsVersion();
+                if (!string.IsNullOrWhiteSpace(variant) && !SharedObservables.Suggestions.Contains(variant))
+                    SharedObservables.Suggestions.Add(variant);
+            });
     }
 
     public void UpdateServersList()
@@ -355,6 +365,8 @@ internal sealed class MainWindowViewModel : ViewModelBase
         
         // Load json highlighting
         JsonHighlighter.LoadJsonHighlighter();
+        SharedObservables.Suggestions =
+            new ObservableCollection<string>(_storage.AppSettings.GetAutoCompletionDictionary());
 
         AppLoaded = true;
     }

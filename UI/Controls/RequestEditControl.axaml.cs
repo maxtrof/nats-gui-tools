@@ -5,6 +5,8 @@ using Avalonia.Markup.Xaml;
 using AvaloniaEdit;
 using AvaloniaEdit.Highlighting;
 using Domain.Enums;
+using ReactiveUI;
+using UI.MessagesBus;
 
 namespace UI.Controls;
 
@@ -44,4 +46,9 @@ internal partial class RequestEditControl : UserControl
         AvaloniaXamlLoader.Load(this);
     }
 
+    private void TopicAutoCompleteBox_OnLostFocus(object? sender, RoutedEventArgs e)
+    {
+        if (sender is AutoCompleteBox autoCompleteBox)
+            MessageBus.Current.SendMessage(autoCompleteBox.Text, BusEvents.AutocompleteAdded);
+    }
 }

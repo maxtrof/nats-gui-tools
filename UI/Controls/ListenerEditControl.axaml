@@ -12,10 +12,33 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <viewModels:ListenerEditViewModel />
     </Design.DataContext>
+    <UserControl.Styles>
+        <Style Selector="Expander /template/ ToggleButton#ExpanderHeader">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="Expander">
+            <Setter Property="Background" Value="DarkBlue"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"></Setter>
+            <Setter Property="Padding" Value="0"></Setter>
+        </Style>
+        <Style Selector="TextBlock.MessageText">
+            <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+            <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,Monospace"></Setter>
+        </Style>
+    </UserControl.Styles>
     <Grid RowDefinitions="auto,auto,*" Margin="5">
         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8">
             <TextBlock VerticalAlignment="Center">Topic: </TextBlock>
-            <TextBox MinWidth="200" Text="{Binding Topic}"></TextBox>
+            <AutoCompleteBox 
+                Items="{Binding AutocompleteOptions}"
+                Text="{Binding Topic}"
+                LostFocus="TopicAutoCompleteBox_OnLostFocus"
+                IsTextCompletionEnabled="True"
+                Name="TopicAutoCompleteBox"
+                Watermark="Topic name"
+                MinWidth="200"/>
 
             <Button MinWidth="100"
                     HorizontalAlignment="Left"
@@ -61,13 +84,25 @@
                                 <TextBlock Width="250" TextAlignment="Center" Background="DarkCyan" Text="{Binding Received}"></TextBlock>
                                 <Border Padding="1" Background="DarkCyan"></Border>
                                 <TextBlock
-                                    TextWrapping="Wrap"
+                                    Classes="MessageText"
+                                    IsVisible="{Binding !LargeMessage}"
                                     Background="DarkBlue"
                                     Text="{Binding Body}"
                                     ToolTip.Tip="Click to copy"
-                                    PointerPressed="MessageTextBlock_OnPointerPressed"
-                                    FontFamily="Cascadia Code,Consolas,Menlo,Monospace"
-                                    Name="MessageTextBlock"/>
+                                    PointerPressed="MessageTextBlock_OnPointerPressed"/>
+                                <Expander IsVisible="{Binding LargeMessage}">
+                                    <Expander.Header>
+                                        <TextBlock Text="{Binding Preview}" />
+                                    </Expander.Header>
+                                    <StackPanel>
+                                        <TextBlock
+                                            Classes="MessageText"
+                                            TextWrapping="Wrap"
+                                            Text="{Binding Body}"
+                                            ToolTip.Tip="Click to copy"
+                                            PointerPressed="MessageTextBlock_OnPointerPressed"/>
+                                    </StackPanel>
+                                </Expander>
                             </StackPanel>
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>

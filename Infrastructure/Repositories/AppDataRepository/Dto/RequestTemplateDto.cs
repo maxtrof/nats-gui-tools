@@ -12,7 +12,7 @@ namespace Infrastructure.Repositories.AppDataRepository.Dto;
 /// <param name="Body">Request type</param>
 internal sealed record RequestTemplateDto(
     string Name,
-    string Topic,
+    string? Topic,
     string Body,
     RequestType Type
     );

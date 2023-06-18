@@ -1,14 +1,15 @@
 ﻿using System;
-using Application.RequestProcessing;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using ReactiveUI;
+using UI.MessagesBus;
 
 namespace UI.Controls;
 
 internal partial class ListenerEditControl : UserControl
-{
+{    
     public static readonly RoutedEvent<RoutedEventArgs> UpdateRequestDataEvent =
         RoutedEvent.Register<ListenerEditControl, RoutedEventArgs>(nameof(UpdateRequestData), RoutingStrategies.Bubble);
     
@@ -31,5 +32,11 @@ internal partial class ListenerEditControl : UserControl
     {
         if (sender is TextBlock block)
             Avalonia.Application.Current?.Clipboard?.SetTextAsync(block.Text);
+    }
+
+    private void TopicAutoCompleteBox_OnLostFocus(object? sender, RoutedEventArgs e)
+    {
+        if (sender is AutoCompleteBox autoCompleteBox)
+            MessageBus.Current.SendMessage(autoCompleteBox.Text, BusEvents.AutocompleteAdded);
     }
 }

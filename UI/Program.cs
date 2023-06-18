@@ -23,8 +23,8 @@ class Program
 #pragma warning disable CS8618
     public static IContainer Container { get; set; }
 #pragma warning restore CS8618
-    
-    
+
+
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.

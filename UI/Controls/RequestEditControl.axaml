@@ -26,7 +26,14 @@
     <Grid RowDefinitions="auto,auto,*,*" Margin="5">
         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8">
             <TextBlock VerticalAlignment="Center">Topic: </TextBlock>
-            <TextBox MinWidth="200" Text="{Binding Topic}"></TextBox>
+            <AutoCompleteBox 
+                Items="{Binding AutocompleteOptions}"
+                Text="{Binding Topic}"
+                LostFocus="TopicAutoCompleteBox_OnLostFocus"
+                IsTextCompletionEnabled="True"
+                Name="TopicAutoCompleteBox"
+                Watermark="Topic name"
+                MinWidth="200"/>
             <TextBlock VerticalAlignment="Center">Type: </TextBlock>
 
             <ComboBox MinWidth="200" Cursor="Hand" SelectedIndex="{Binding RequestType}" Name="RequestTypeComboBox">
