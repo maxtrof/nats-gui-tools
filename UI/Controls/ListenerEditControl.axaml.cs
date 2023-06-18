@@ -9,9 +9,7 @@ using UI.MessagesBus;
 namespace UI.Controls;
 
 internal partial class ListenerEditControl : UserControl
-{
-    private readonly AutoCompleteBox _autoCompleteBox;
-    
+{    
     public static readonly RoutedEvent<RoutedEventArgs> UpdateRequestDataEvent =
         RoutedEvent.Register<ListenerEditControl, RoutedEventArgs>(nameof(UpdateRequestData), RoutingStrategies.Bubble);
     
@@ -23,7 +21,6 @@ internal partial class ListenerEditControl : UserControl
     public ListenerEditControl()
     {
         InitializeComponent();
-        _autoCompleteBox = this.FindControl<AutoCompleteBox>("TopicAutoCompleteBox");
     }
 
     private void InitializeComponent()
@@ -39,6 +36,7 @@ internal partial class ListenerEditControl : UserControl
 
     private void TopicAutoCompleteBox_OnLostFocus(object? sender, RoutedEventArgs e)
     {
-        MessageBus.Current.SendMessage(_autoCompleteBox.Text, BusEvents.AutocompleteAdded);
+        if (sender is AutoCompleteBox autoCompleteBox)
+            MessageBus.Current.SendMessage(autoCompleteBox.Text, BusEvents.AutocompleteAdded);
     }
 }
