@@ -7,12 +7,12 @@ using UI.ViewModels;
 
 namespace UI.Views;
 
-internal partial class AddServerWindow : ReactiveWindow<AddServerViewModel>
+internal partial class AddOrUpdateServerWindow : ReactiveWindow<AddOrUpdateServerViewModel>
 {
-    public AddServerWindow()
+    public AddOrUpdateServerWindow()
     {
         InitializeComponent();
-        this.WhenActivated(d => d(ViewModel!.AddServerCommand.Subscribe(Close)));
+        this.WhenActivated(d => d(ViewModel!.AddOrUpdateServerCommand.Subscribe(Close)));
 #if DEBUG
         this.AttachDevTools();
 #endif

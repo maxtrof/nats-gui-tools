@@ -35,7 +35,7 @@ internal partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         var platform = AvaloniaLocator.Current.GetService<IRuntimePlatform>()?.GetRuntimeInfo().OperatingSystem;
         if (platform == OperatingSystemType.OSX)
             MainMenu.IsVisible = false;
-        this.WhenActivated(d => d(ViewModel!.ShowAddNewServerDialog.RegisterHandler(DoShowAddServerDialogAsync)));
+        this.WhenActivated(d => d(ViewModel!.ShowAddOrUpdateServerDialog.RegisterHandler(DoShowAddServerDialogAsync)));
         this.WhenActivated(d => d(ViewModel!.YesNoDialog.RegisterHandler(DoShowYesNoDialogDialogAsync)));
 
         this.WhenActivated(d => d(ViewModel!.ShowSettingsWindowDialog.RegisterHandler(DoShowSettingsDialogAsync)));
@@ -49,9 +49,9 @@ internal partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     }
 
     private async Task DoShowAddServerDialogAsync(
-        InteractionContext<AddServerViewModel, NatsServerSettings?> interaction)
+        InteractionContext<AddOrUpdateServerViewModel, NatsServerSettings?> interaction)
     {
-        var dialog = new AddServerWindow
+        var dialog = new AddOrUpdateServerWindow
         {
             DataContext = interaction.Input
         };
@@ -132,5 +132,10 @@ internal partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         ViewModel!.SaveDataAndExit();
         base.OnClosing(e);
+    }
+
+    private void ServerListItemControl_OnEditServer(object? sender, UpdateServerRoutedEventArgs e)
+    {
+        ViewModel!.EditServer.Execute(e.Id);
     }
 }

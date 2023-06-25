@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reactive;
 using System.Text.RegularExpressions;
@@ -7,7 +8,7 @@ using ReactiveUI;
 
 namespace UI.ViewModels;
 
-internal sealed class AddServerViewModel : ViewModelBase
+internal sealed class AddOrUpdateServerViewModel : ViewModelBase
 {
     private const string NoSpacesRegex = @"^\S*$";
     
@@ -18,11 +19,13 @@ internal sealed class AddServerViewModel : ViewModelBase
     private string? _password;
     private bool _tls;
     private bool _addButtonEnabled;
-    public ReactiveCommand<Unit, NatsServerSettings?> AddServerCommand { get; }
+    private bool _isUpdate;
+    public Guid Id { get; set; }
+    public ReactiveCommand<Unit, NatsServerSettings?> AddOrUpdateServerCommand { get; }
 
-    public AddServerViewModel()
+    public AddOrUpdateServerViewModel()
     {
-        AddServerCommand = ReactiveCommand.Create(() => new NatsServerSettings
+        AddOrUpdateServerCommand = ReactiveCommand.Create(() => new NatsServerSettings
         {
             Name = ServerName,
             Address = Address,
@@ -31,6 +34,12 @@ internal sealed class AddServerViewModel : ViewModelBase
             Password = Password,
             Tls = Tls
         })!;
+    }
+
+    public bool IsUpdate
+    {
+        get => _isUpdate;
+        set => this.RaiseAndSetIfChanged(ref _isUpdate, value);
     }
 
     public bool AddButtonEnabled

@@ -5,18 +5,21 @@
         xmlns:viewModels="clr-namespace:UI.ViewModels"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
         Width="400" SizeToContent="Height"
-        x:Class="UI.Views.AddServerWindow"
+        x:Class="UI.Views.AddOrUpdateServerWindow"
         WindowStartupLocation="CenterScreen"
         Title="Add new server"
-        x:DataType="viewModels:AddServerViewModel">
+        x:DataType="viewModels:AddOrUpdateServerViewModel">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <viewModels:AddServerViewModel/>
+        <viewModels:AddOrUpdateServerViewModel/>
     </Design.DataContext>
     <StackPanel Margin="10">
-        <TextBlock FontSize="24" Margin="0,0,0,20">
+        <TextBlock FontSize="24" Margin="0,0,0,20" IsVisible="{Binding !IsUpdate}">
             Add new NATS server
+        </TextBlock>
+        <TextBlock FontSize="24" Margin="0,0,0,20" IsVisible="{Binding IsUpdate}">
+            Update NATS server
         </TextBlock>
         
         <TextBlock>
@@ -46,8 +49,11 @@
         
         <CheckBox IsChecked="{Binding Tls}">Use TLS</CheckBox>
         
-        <Button Width="200" Name="AddServerButton" Command="{Binding AddServerCommand}" IsEnabled="{Binding AddButtonEnabled}">
-            <TextBlock HorizontalAlignment="Center">Add Server</TextBlock>
+        <Button HorizontalAlignment="Stretch" Name="AddOrUpdateServerButton" Command="{Binding AddOrUpdateServerCommand}" IsEnabled="{Binding AddButtonEnabled}">
+            <StackPanel>
+                <TextBlock IsVisible="{Binding !IsUpdate}" HorizontalAlignment="Center">Add Server</TextBlock>
+                <TextBlock IsVisible="{Binding IsUpdate}" HorizontalAlignment="Center">Update Server</TextBlock>
+            </StackPanel>
         </Button>
     </StackPanel>
 </Window>
