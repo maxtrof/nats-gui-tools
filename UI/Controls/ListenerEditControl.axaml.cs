@@ -9,7 +9,7 @@ using UI.MessagesBus;
 namespace UI.Controls;
 
 internal partial class ListenerEditControl : UserControl
-{    
+{
     public static readonly RoutedEvent<RoutedEventArgs> UpdateRequestDataEvent =
         RoutedEvent.Register<ListenerEditControl, RoutedEventArgs>(nameof(UpdateRequestData), RoutingStrategies.Bubble);
     
