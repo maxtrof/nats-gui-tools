@@ -141,9 +141,10 @@ internal sealed class MainWindowViewModel : ViewModelBase
         set
         {
             this.RaiseAndSetIfChanged(ref _selectedTab, value);
-            IsRequestsTabVisible = value == 2;
-            IsListenersTabVisible = value == 1;
             IsServersTabVisible = value == 0;
+            IsListenersTabVisible = value == 1;
+            IsRequestsTabVisible = value == 2;
+            IsMocksTabVisible = value == 3;
         }
     }
     
