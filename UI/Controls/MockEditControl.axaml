@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:UI.ViewModels"
              xmlns:models="clr-namespace:Domain.Models;assembly=Domain"
+             xmlns:avaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+             xmlns:helpers="clr-namespace:UI.Helpers"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="UI.Controls.MockEditControl"
              x:DataType="viewModels:MockEditViewModel">
@@ -26,6 +28,13 @@
         <Style Selector="TextBlock.MessageText">
             <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
             <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,Monospace"></Setter>
+        </Style>
+        <Style Selector="avaloniaEdit|TextEditor.Editor">
+            <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+            <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
+            <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,Monospace" />
+            <Setter Property="Background" Value="#1f1f1f" />
+            <Setter Property="ShowLineNumbers" Value="True" />
         </Style>
     </UserControl.Styles>
     <Grid RowDefinitions="auto,auto,*" Margin="5">
@@ -75,6 +84,14 @@
 
         <Grid Grid.Row="1">
             <TextBlock Text="{Binding ValidationError}" Foreground="Brown" />
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="0, 5">
+            <avaloniaEdit:TextEditor Classes="Editor" Name="MockEditor">
+                <Interaction.Behaviors>
+                    <helpers:DocumentTextBindingBehavior Text="{Binding AnswerTemplate, Mode=TwoWay}" />
+                </Interaction.Behaviors>
+            </avaloniaEdit:TextEditor>
         </Grid>
 
         <!-- <Grid Grid.Row="2" Margin="0, 5"> -->
