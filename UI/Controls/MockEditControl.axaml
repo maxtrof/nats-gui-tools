@@ -45,7 +45,7 @@
                     BorderBrush="Aqua"
                     Cursor="Hand"
                     Command="{Binding ProcessMock}"
-                    IsVisible="{Binding ActivatedRule, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    IsVisible="{Binding ActivatedRule, Converter={x:Static ObjectConverters.IsNull}}">
                 <Button.Content>
                     <TextBlock HorizontalAlignment="Center">Start</TextBlock>
                 </Button.Content>
@@ -55,7 +55,7 @@
                     BorderBrush="Red"
                     Cursor="Hand"
                     Command="{Binding ProcessMock}"
-                    IsVisible="{Binding ActivatedRule, Converter={x:Static ObjectConverters.IsNull}}">
+                    IsVisible="{Binding ActivatedRule, Converter={x:Static ObjectConverters.IsNotNull}}">
                 <Button.Content>
                     <TextBlock HorizontalAlignment="Center">Stop</TextBlock>
                 </Button.Content>
