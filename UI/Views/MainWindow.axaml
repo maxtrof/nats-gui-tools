@@ -145,9 +145,7 @@
                 <controls:ListenersTabControl IsVisible="{Binding $parent[views:MainWindow].ViewModel.IsListenersTabVisible}"
                                               UpdateRequest="ListenersTabControl_OnUpdateRequest"/>
                 <StackPanel IsVisible="{Binding IsServersTabVisible}" HorizontalAlignment="Stretch">
-                    <TextBlock FontSize="24" Margin="50" HorizontalAlignment="Center">
-                        Connect to a server or create a new one.
-                    </TextBlock>
+                    <TextBlock FontSize="24" Margin="50" Text="{Binding StatsTextMessage}" DataContext="{Binding StatsUpdater}" />
                 </StackPanel>
             </Grid>
             

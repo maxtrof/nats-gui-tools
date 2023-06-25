@@ -101,6 +101,19 @@ public sealed class NatsGate : INatsGate, IDisposable
     }
 
     /// <inheritdoc />
+    public ConnectionStats GetConnectionStats()
+    {
+        var c = GetConnection();
+        
+        return new ConnectionStats(
+            MessagesSent: c.Stats.OutMsgs,
+            MessagesReceived: c.Stats.InMsgs,
+            Reconnects: c.Stats.Reconnects,
+            JetStreamAvailable: c.ServerInfo.JetStreamAvailable,
+            SubscriptionsCount: c.SubscriptionCount
+        );
+    }
+    
     public void Unsubscribe(long subscriptionId)
     {
         var sub = _subscriptions.Find(x => x.Sid == subscriptionId);

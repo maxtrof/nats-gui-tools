@@ -23,6 +23,11 @@ public sealed class ConnectionManager
     /// </summary>
     public bool IsConnected => _connectedServer is not null && _natsGate.Connected;
 
+    /// <summary>
+    /// Returns active connection stats
+    /// </summary>
+    public ConnectionStats GetStats => _natsGate.GetConnectionStats();
+
     public string GetCurrentServerName => IsConnected
         ? _connectedServer?.Address ?? ""
         : string.Empty;

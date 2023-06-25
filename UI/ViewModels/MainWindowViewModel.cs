@@ -71,6 +71,11 @@ internal sealed class MainWindowViewModel : ViewModelBase
     /// Periodic data saver
     /// </summary>
     public DataSaver DataSaver { get; set; }
+    
+    /// <summary>
+    /// Connection stats updater
+    /// </summary>
+    public ConnectionStatsUpdater StatsUpdater { get; set; }
 
     public RequestTemplate SelectedRequest
     {
@@ -177,6 +182,7 @@ internal sealed class MainWindowViewModel : ViewModelBase
 
         _storage = _storage ?? throw new ArgumentNullException(nameof(_storage));
         DataSaver = new DataSaver(_storage);
+        StatsUpdater = new ConnectionStatsUpdater(_connectionManager);
         
         // Search
         _servers.Connect()

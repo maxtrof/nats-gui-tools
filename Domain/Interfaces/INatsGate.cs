@@ -57,4 +57,9 @@ public interface INatsGate
     /// </summary>
     /// <param name="subscriptionId">Id of the subscription</param>
     void Unsubscribe(long subscriptionId);
+
+    /// <summary>
+    /// Gets active connection stats
+    /// </summary>
+    ConnectionStats GetConnectionStats();
 }
