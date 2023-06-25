@@ -42,7 +42,7 @@
         <TextBlock>
             Password (Optional)
         </TextBlock>
-        <TextBox Text="{Binding Password}" Margin="0,0,0,10"></TextBox>
+        <TextBox Text="{Binding Password}" PasswordChar="*" Margin="0,0,0,10"></TextBox>
         
         <CheckBox IsChecked="{Binding Tls}">Use TLS</CheckBox>
         
