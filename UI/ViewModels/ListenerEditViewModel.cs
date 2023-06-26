@@ -9,6 +9,8 @@ using Autofac;
 using Avalonia.Threading;
 using Domain.Interfaces;
 using Domain.Models;
+using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 using UI.Helpers;
 using UI.MessagesBus;
@@ -25,8 +27,12 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
     private string _name = default!;
     private string _topic = default!;
     private string? _validationError;
+    private string _searchText = "";
 
-    public ObservableCollection<IncomingMessageData> Messages { get; set; }
+    private SourceCache<IncomingMessageData, int> _messages = new (x => x.GetHashCode());
+    private readonly ReadOnlyObservableCollection<IncomingMessageData> _messagesFiltered;
+    public ReadOnlyObservableCollection<IncomingMessageData> Messages => _messagesFiltered;
+    
     public readonly Guid ListenerId = default!;
     private bool _listening;
 
@@ -84,6 +90,12 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
         set => this.RaiseAndSetIfChanged(ref _validationError, value);
     }
 
+    public string SearchText
+    {
+        get => _searchText;
+        set => this.RaiseAndSetIfChanged(ref _searchText, value);
+    }
+
     /// <summary>
     /// Current request template data
     /// </summary>
@@ -101,8 +113,14 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
         var scope = Program.Container.BeginLifetimeScope();
         _topicListener = scope.Resolve<TopicListener>();
         _storage = scope.Resolve<IDataStorage>();
-        Messages = new();
 
+        _messages.Connect()
+            .AutoRefreshOnObservable(_ => this.ObservableForProperty(x => x.SearchText))
+            .Filter(x =>
+                string.IsNullOrWhiteSpace(SearchText) || x.Body.ToLower().Contains(SearchText.ToLower()))
+            .Sort(SortExpressionComparer<IncomingMessageData>.Descending(t => t.Received))
+            .Bind(out _messagesFiltered)
+            .Subscribe();
         Init();
     }
 
@@ -115,7 +133,22 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
         Name = listener.Name;
         Topic = listener.Topic;
 
-        Messages = new (_topicListener.GetMessages(listener.Topic) ?? new List<IncomingMessageData>());
+        _messages.Connect()
+            .AutoRefreshOnObservable(_ => this.ObservableForProperty(x => x.SearchText))
+            .Filter(x =>
+                string.IsNullOrWhiteSpace(SearchText) || x.Body.ToLower().Contains(SearchText.ToLower()))
+            .Sort(SortExpressionComparer<IncomingMessageData>.Descending(t => t.Received))
+            .Bind(out _messagesFiltered)
+            .Subscribe();
+
+        var messages = _topicListener.GetMessages(listener.Topic);
+        if (messages is not null)
+        {
+            foreach (var incomingMessageData in messages)
+            {
+                _messages.AddOrUpdate(incomingMessageData);
+            }
+        }
 
         Init();
     }
@@ -160,7 +193,7 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
             try
             {
                 _topicListener.Clear(Topic);
-                Messages.Clear();
+                _messages.Clear();
             }
             catch (Exception ex)
             {
@@ -176,7 +209,7 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
             var messageToAdd = _storage.AppSettings.FormatJson
                 ? data with { Body = JsonFormatter.TryFormatJson(data.Body) }
                 : data;
-            Dispatcher.UIThread.Post(() => Messages.Insert(0, messageToAdd));
+            Dispatcher.UIThread.Post(() => _messages.AddOrUpdate(messageToAdd));
         }
     }
 
@@ -186,7 +219,7 @@ internal sealed class ListenerEditViewModel : ViewModelBase, IDisposable
         {
             Listening = false;
             _topicListener.OnMessageReceived -= MessageReceived;
-            Messages.Clear();
+            _messages.Clear();
         }
     }
 

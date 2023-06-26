@@ -187,21 +187,21 @@ internal sealed class MainWindowViewModel : ViewModelBase
         // Search
         _servers.Connect()
             .AutoRefreshOnObservable(_ => this.ObservableForProperty(x => x.SearchText))
-            .Sort(SortExpressionComparer<ServerListItemViewModel>.Ascending(t => t.ServerSettings.Name))
             .Filter(x =>
                 string.IsNullOrWhiteSpace(SearchText) || x.ServerSettings.Name.ToLower().Contains(SearchText.ToLower()))
+            .Sort(SortExpressionComparer<ServerListItemViewModel>.Ascending(t => t.ServerSettings.Name))
             .Bind(out _serversFiltered)
             .Subscribe();
         _listeners.Connect()
             .AutoRefreshOnObservable(_ => this.ObservableForProperty(x => x.SearchText))
-            .Sort(SortExpressionComparer<Listener>.Ascending(t => t.Name))
             .Filter(x => string.IsNullOrWhiteSpace(SearchText) || x.Name.ToLower().Contains(SearchText.ToLower()))
+            .Sort(SortExpressionComparer<Listener>.Ascending(t => t.Name))
             .Bind(out _listenersFiltered)
             .Subscribe();
         _requestTemplates.Connect()
             .AutoRefreshOnObservable(_ => this.ObservableForProperty(x => x.SearchText))
-            .Sort(SortExpressionComparer<RequestTemplate>.Ascending(t => t.Name))
             .Filter(x => string.IsNullOrWhiteSpace(SearchText) || x.Name.ToLower().Contains(SearchText.ToLower()))
+            .Sort(SortExpressionComparer<RequestTemplate>.Ascending(t => t.Name))
             .Bind(out _requestTemplatesFiltered)
             .Subscribe();
 
