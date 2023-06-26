@@ -53,7 +53,7 @@ internal partial class ServerListItemControl : ReactiveUserControl<ServerListIte
         RxApp.MainThreadScheduler.Schedule(ConnectOrDisconnectToAServer);
     }
 
-    private void Button_OnClick(object? sender, RoutedEventArgs e)
+    private void EditButton_OnClick(object? sender, RoutedEventArgs e)
     {
         RaiseEvent(new UpdateServerRoutedEventArgs { RoutedEvent = EditServerEvent, Id = ViewModel!.Id});
     }
