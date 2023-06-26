@@ -29,16 +29,27 @@ internal sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel
     private MockTypes _MockType;
     private bool _showReplySection;
     private int _MockRowSpan;
+    private Guid? _activatedRule;
 
     /// <summary>
     /// Current activated rule
     /// </summary>
-    private Guid? ActivatedRule { get; set; }
+    private Guid? ActivatedRule
+    {
+        get => _activatedRule;
+        set => this.RaiseAndSetIfChanged(ref _activatedRule, value);
+    }
 
     public ObservableCollection<string> AutocompleteOptions => SharedObservables.Suggestions;
 
-    /// <summary> Process Mock </summary>
-    public ICommand ProcessMock { get; set; } = default!;
+    /// <summary>
+    /// Enable Mock
+    /// </summary>
+    public ICommand EnableMock { get; set; } = default!;
+    /// <summary>
+    /// Disable mock
+    /// </summary>
+    public ICommand DisableMock { get; set; } = default!;
 
     /// <inheritdoc />
     public ViewModelActivator Activator { get; }
@@ -86,12 +97,6 @@ internal sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel
             this.RaiseAndSetIfChanged(ref _answerTemplate, value);
             BroadcastMockTemplateUpdated();
         }
-    }
-
-    public string ResponseText
-    {
-        get => _responseText;
-        set => this.RaiseAndSetIfChanged(ref _responseText, value);
     }
 
     public MockTypes MockType
@@ -170,7 +175,7 @@ internal sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel
 
     private void Init()
     {
-        ProcessMock = ReactiveCommand.CreateFromTask(async _ =>
+        EnableMock = ReactiveCommand.CreateFromTask(async _ =>
         {
             ValidationError = ValidateForm();
             if (ValidationError != null)
@@ -181,7 +186,6 @@ internal sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel
                 {
                     case MockTypes.SimpleRequestReply:
                         ActivatedRule = await _mockEngine.ActivateRule(MockTemplate);
-                        ResponseText = "";
                         break;
                     default:
                         throw new ArgumentOutOfRangeException("Unknown Mock type");
@@ -192,6 +196,32 @@ internal sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel
                 ErrorHelper.ShowError(ex.Message);
             }
         });
+        
+        DisableMock =  ReactiveCommand.CreateFromTask(async _ =>
+        {
+            ValidationError = ValidateForm();
+            if (ValidationError != null)
+                return;
+            try
+            {
+                switch (MockType)
+                {
+                    case MockTypes.SimpleRequestReply:
+                        if(ActivatedRule == null)
+                            return;
+                        _mockEngine.DeactivateRule(ActivatedRule.Value);
+                        ActivatedRule = null;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("Unknown Mock type");
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHelper.ShowError(ex.Message);
+            }
+        });
+
     }
 
     private void BroadcastMockTemplateUpdated() => 

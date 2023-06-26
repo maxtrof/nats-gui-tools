@@ -53,7 +53,7 @@
                     HorizontalAlignment="Left"
                     BorderBrush="Aqua"
                     Cursor="Hand"
-                    Command="{Binding ProcessMock}"
+                    Command="{Binding EnableMock}"
                     IsVisible="{Binding ActivatedRule, Converter={x:Static ObjectConverters.IsNull}}">
                 <Button.Content>
                     <TextBlock HorizontalAlignment="Center">Start</TextBlock>
@@ -63,23 +63,12 @@
                     HorizontalAlignment="Left"
                     BorderBrush="Red"
                     Cursor="Hand"
-                    Command="{Binding ProcessMock}"
+                    Command="{Binding DisableMock}"
                     IsVisible="{Binding ActivatedRule, Converter={x:Static ObjectConverters.IsNotNull}}">
                 <Button.Content>
                     <TextBlock HorizontalAlignment="Center">Stop</TextBlock>
                 </Button.Content>
             </Button>
-            <!-- <Button MinWidth="100" -->
-            <!--         HorizontalAlignment="Left" -->
-            <!--         BorderBrush="DarkOrange" -->
-            <!--         Cursor="Hand" -->
-            <!--         Margin="10, 0, 0, 0" -->
-            <!--         IsEnabled="{Binding Messages.Count}" -->
-            <!--         Command="{Binding ClearMessages}"> -->
-            <!--     <Button.Content> -->
-            <!--         <TextBlock HorizontalAlignment="Center">Remove all</TextBlock> -->
-            <!--     </Button.Content> -->
-            <!-- </Button> -->
         </StackPanel>
 
         <Grid Grid.Row="1">
@@ -93,42 +82,5 @@
                 </Interaction.Behaviors>
             </avaloniaEdit:TextEditor>
         </Grid>
-
-        <!-- <Grid Grid.Row="2" Margin="0, 5"> -->
-        <!--     <ScrollViewer> -->
-        <!--         <ItemsRepeater Items="{Binding Messages}"> -->
-        <!--             <ItemsRepeater.ItemTemplate> -->
-        <!--                 <DataTemplate DataType="models:IncomingMessageData"> -->
-        <!--                     <StackPanel Margin="0,10,0,0"> -->
-        <!--                         <TextBlock Width="250" TextAlignment="Center" Background="DarkCyan" -->
-        <!--                                    Text="{Binding Received}"> -->
-        <!--                         </TextBlock> -->
-        <!--                         <Border Padding="1" Background="DarkCyan"></Border> -->
-        <!--                         <TextBlock -->
-        <!--                             Classes="MessageText" -->
-        <!--                             IsVisible="{Binding !LargeMessage}" -->
-        <!--                             Background="DarkBlue" -->
-        <!--                             Text="{Binding Body}" -->
-        <!--                             ToolTip.Tip="Click to copy" -->
-        <!--                             PointerPressed="MessageTextBlock_OnPointerPressed" /> -->
-        <!--                         <Expander IsVisible="{Binding LargeMessage}"> -->
-        <!--                             <Expander.Header> -->
-        <!--                                 <TextBlock Text="{Binding Preview}" /> -->
-        <!--                             </Expander.Header> -->
-        <!--                             <StackPanel> -->
-        <!--                                 <TextBlock -->
-        <!--                                     Classes="MessageText" -->
-        <!--                                     TextWrapping="Wrap" -->
-        <!--                                     Text="{Binding Body}" -->
-        <!--                                     ToolTip.Tip="Click to copy" -->
-        <!--                                     PointerPressed="MessageTextBlock_OnPointerPressed" /> -->
-        <!--                             </StackPanel> -->
-        <!--                         </Expander> -->
-        <!--                     </StackPanel> -->
-        <!--                 </DataTemplate> -->
-        <!--             </ItemsRepeater.ItemTemplate> -->
-        <!--         </ItemsRepeater> -->
-        <!--     </ScrollViewer> -->
-        <!-- </Grid> -->
     </Grid>
 </UserControl>
