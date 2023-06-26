@@ -391,15 +391,15 @@ internal sealed class MainWindowViewModel : ViewModelBase
                 _storage.IncListenersVersion();
             });
         MessageBus.Current.Listen<MockTemplate>(BusEvents.MockUpdated)
-            .Subscribe(listener =>
+            .Subscribe(mockTemplate =>
             {
-                var exists = _storage.MockTemplates.FirstOrDefault(x => x.Id == listener.Id);
+                var exists = _storage.MockTemplates.FirstOrDefault(x => x.Id == mockTemplate.Id);
                 if (exists is null)
                     return;
 
-                _storage.MockTemplates.Replace(exists, listener);
-                _mocks.AddOrUpdate(listener);
-                _storage.IncListenersVersion();
+                _storage.MockTemplates.Replace(exists, mockTemplate);
+                _storage.IncMockTemplatesVersion();
+                _mocks.AddOrUpdate(mockTemplate);
             });
         MessageBus.Current.Listen<string>(BusEvents.AutocompleteAdded)
             .Subscribe(variant =>
