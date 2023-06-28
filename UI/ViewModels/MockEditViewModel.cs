@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Text;
 using System.Windows.Input;
@@ -14,7 +15,7 @@ using UI.MessagesBus;
 
 namespace UI.ViewModels;
 
-internal sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel
+public sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel, IDisposable
 {
     private readonly MockEngine _mockEngine;
     private readonly IDataStorage _storage;
@@ -22,7 +23,6 @@ internal sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel
     private string _name = default!;
     private string _topic = default!;
     private string _answerTemplate = default!;
-    private string _responseText = default!;
 
     public readonly Guid MockId = default!;
     private string? _validationError;
@@ -197,7 +197,7 @@ internal sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel
             }
         });
         
-        DisableMock =  ReactiveCommand.CreateFromTask(async _ =>
+        DisableMock =  ReactiveCommand.Create<Unit>(_ =>
         {
             ValidationError = ValidateForm();
             if (ValidationError != null)
@@ -235,9 +235,10 @@ internal sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel
         return sb.Length > 0 ? sb.ToString() : null;
     }
 
-    private void Dispose()
+    public void Dispose()
     {
-        if (ActivatedRule == null) return;
+        if (ActivatedRule == null) 
+            return;
         _mockEngine.DeactivateRule(ActivatedRule.Value);
         _mockEngine.Dispose();
     }

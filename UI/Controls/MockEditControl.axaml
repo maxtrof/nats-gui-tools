@@ -15,16 +15,6 @@
         <viewModels:MockEditViewModel />
     </Design.DataContext>
     <UserControl.Styles>
-        <Style Selector="Expander /template/ ToggleButton#ExpanderHeader">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        </Style>
-        <Style Selector="Expander">
-            <Setter Property="Background" Value="DarkBlue"></Setter>
-            <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-            <Setter Property="VerticalContentAlignment" Value="Stretch"></Setter>
-            <Setter Property="Padding" Value="0"></Setter>
-        </Style>
         <Style Selector="TextBlock.MessageText">
             <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
             <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,Monospace"></Setter>

@@ -225,8 +225,8 @@ internal sealed class MainWindowViewModel : ViewModelBase
             .Subscribe();
         _mocks.Connect()
             .AutoRefreshOnObservable(_ => this.ObservableForProperty(x => x.SearchText))
-            .Sort(SortExpressionComparer<MockTemplate>.Ascending(t => t.Name))
             .Filter(x => string.IsNullOrWhiteSpace(SearchText) || x.Name.ToLower().Contains(SearchText.ToLower()))
+            .Sort(SortExpressionComparer<MockTemplate>.Ascending(t => t.Name))
             .Bind(out _mockTemplatesFiltered)
             .Subscribe();
 

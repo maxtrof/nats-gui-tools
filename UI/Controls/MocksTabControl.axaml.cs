@@ -12,16 +12,6 @@ internal partial class MocksTabControl : UserControl
 {
     private readonly MocksTabViewModel _vm;
 
-    // public static readonly RoutedEvent<UpdateMockRoutedEventArgs> OnRequestUpdated =
-    //     RoutedEvent.Register<MocksTabControl, UpdateMockRoutedEventArgs>(nameof(UpdateRequest),
-    //         RoutingStrategies.Bubble);
-
-    // public event EventHandler<UpdateMockRoutedEventArgs> UpdateRequest
-    // {
-    //     add => AddHandler(OnRequestUpdated, value);
-    //     remove => RemoveHandler(OnRequestUpdated, value);
-    // }
-
     public MocksTabControl()
     {
         _vm = new MocksTabViewModel();
