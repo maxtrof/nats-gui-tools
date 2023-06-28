@@ -3,6 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using AvaloniaEdit;
+using AvaloniaEdit.Highlighting;
 using ReactiveUI;
 using UI.MessagesBus;
 
@@ -21,6 +23,12 @@ internal partial class MockEditControl : UserControl
     public MockEditControl()
     {
         InitializeComponent();
+        // Editors json highlighting
+        var requestEditor = this.FindControl<TextEditor>("MockEditor");
+        var hlDefinition = HighlightingManager.Instance.GetDefinitionByExtension(".jsondark");
+        requestEditor.SyntaxHighlighting = hlDefinition;
+        requestEditor.Options.EnableHyperlinks = false;
+        requestEditor.Options.HighlightCurrentLine = true;
     }
 
     private void InitializeComponent()
