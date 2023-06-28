@@ -40,6 +40,7 @@ internal sealed class MainWindowViewModel : ViewModelBase
 
 
     public ICommand AddNewServer { get; }
+    public ICommand EditServer { get; }
     public ICommand ShowSettingsWindow { get; }
     public ICommand ShowExportDialog { get; }
     public ICommand ShowImportDialog { get; }
@@ -49,7 +50,7 @@ internal sealed class MainWindowViewModel : ViewModelBase
     public ICommand DeleteListener { get; }
     public ICommand AddNewMock { get; }
     public ICommand DeleteMock { get; }
-    public Interaction<AddServerViewModel, NatsServerSettings?> ShowAddNewServerDialog { get; }
+    public Interaction<AddOrUpdateServerViewModel, NatsServerSettings?> ShowAddOrUpdateServerDialog { get; }
     public Interaction<SettingsViewModel, Dictionary<string, string>?> ShowSettingsWindowDialog { get; }
     public Interaction<Unit, string?> ShowExportFileSaveDialog { get; }
     public Interaction<Unit, string?> ShowImportFileLoadDialog { get; }
@@ -81,6 +82,11 @@ internal sealed class MainWindowViewModel : ViewModelBase
     /// Periodic data saver
     /// </summary>
     public DataSaver DataSaver { get; set; }
+    
+    /// <summary>
+    /// Connection stats updater
+    /// </summary>
+    public ConnectionStatsUpdater StatsUpdater { get; set; }
 
     public RequestTemplate SelectedRequest
     {
@@ -202,25 +208,26 @@ internal sealed class MainWindowViewModel : ViewModelBase
 
         _storage = _storage ?? throw new ArgumentNullException(nameof(_storage));
         DataSaver = new DataSaver(_storage);
+        StatsUpdater = new ConnectionStatsUpdater(_connectionManager);
         
         // Search
         _servers.Connect()
             .AutoRefreshOnObservable(_ => this.ObservableForProperty(x => x.SearchText))
-            .Sort(SortExpressionComparer<ServerListItemViewModel>.Ascending(t => t.ServerSettings.Name))
             .Filter(x =>
                 string.IsNullOrWhiteSpace(SearchText) || x.ServerSettings.Name.ToLower().Contains(SearchText.ToLower()))
+            .Sort(SortExpressionComparer<ServerListItemViewModel>.Ascending(t => t.ServerSettings.Name))
             .Bind(out _serversFiltered)
             .Subscribe();
         _listeners.Connect()
             .AutoRefreshOnObservable(_ => this.ObservableForProperty(x => x.SearchText))
-            .Sort(SortExpressionComparer<Listener>.Ascending(t => t.Name))
             .Filter(x => string.IsNullOrWhiteSpace(SearchText) || x.Name.ToLower().Contains(SearchText.ToLower()))
+            .Sort(SortExpressionComparer<Listener>.Ascending(t => t.Name))
             .Bind(out _listenersFiltered)
             .Subscribe();
         _requestTemplates.Connect()
             .AutoRefreshOnObservable(_ => this.ObservableForProperty(x => x.SearchText))
-            .Sort(SortExpressionComparer<RequestTemplate>.Ascending(t => t.Name))
             .Filter(x => string.IsNullOrWhiteSpace(SearchText) || x.Name.ToLower().Contains(SearchText.ToLower()))
+            .Sort(SortExpressionComparer<RequestTemplate>.Ascending(t => t.Name))
             .Bind(out _requestTemplatesFiltered)
             .Subscribe();
         _mocks.Connect()
@@ -231,16 +238,40 @@ internal sealed class MainWindowViewModel : ViewModelBase
             .Subscribe();
 
         // Add new Server
-        ShowAddNewServerDialog = new Interaction<AddServerViewModel, NatsServerSettings?>();
+        ShowAddOrUpdateServerDialog = new Interaction<AddOrUpdateServerViewModel, NatsServerSettings?>();
         
         AddNewServer = ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = new AddServerViewModel();
-            var result = await ShowAddNewServerDialog.Handle(vm);
+            var vm = new AddOrUpdateServerViewModel() {
+                Id = Guid.NewGuid()
+            };
+            var result = await ShowAddOrUpdateServerDialog.Handle(vm);
             if (result is null) return;
             _storage.AppSettings.Servers.Add(result);
             _storage.IncAppSettingsVersion();
-            UpdateServersList(); // Force update search to fetch changes in UI
+            UpdateServersList();
+        });
+        
+        // EditServer
+        EditServer = ReactiveCommand.CreateFromTask(async (Guid id) =>
+        {
+            var server = _storage.AppSettings.Servers.First(x => x.Id == id);
+            var vm = new AddOrUpdateServerViewModel
+            {
+                IsUpdate = true,
+                Address = server.Address,
+                Login = server.Login,
+                Password = server.Password,
+                Port = server.Port?.ToString() ?? string.Empty,
+                ServerName = server.Name,
+                Tls = server.Tls
+            };
+            var result = await ShowAddOrUpdateServerDialog.Handle(vm);
+            if (result is null) return;
+            result.Id = id;
+            _storage.AppSettings.Servers.Replace(server, result);
+            _storage.IncAppSettingsVersion();
+            UpdateServersList();
         });
 
         // Settings
@@ -258,17 +289,17 @@ internal sealed class MainWindowViewModel : ViewModelBase
         ShowExportFileSaveDialog = new Interaction<Unit, string?>();
         ShowExportDialog = ReactiveCommand.CreateFromTask(async () =>
         {
-            var result = await ShowExportFileSaveDialog.Handle(new Unit());
+            var result = await ShowExportFileSaveDialog.Handle(Unit.Default);
             if (result is null) return;
             await _storage.ExportAsync(result);
         });
         ShowImportFileLoadDialog = new Interaction<Unit, string?>();
         ShowImportDialog = ReactiveCommand.CreateFromTask(async () =>
         {
-            var result = await ShowImportFileLoadDialog.Handle(new Unit());
+            var result = await ShowImportFileLoadDialog.Handle(Unit.Default);
             if (result is null) return;
             await _storage.ImportAsync(result);
-            UpdateListsFromStorage(); // Force update search to fetch changes in UI
+            UpdateListsFromStorage();
         });
         
         AddNewRequest = ReactiveCommand.Create(() =>
@@ -451,7 +482,6 @@ internal sealed class MainWindowViewModel : ViewModelBase
         {
             _requestTemplates.AddOrUpdate(storageRequestTemplate);
         }
-        
         _listeners.Clear();
         foreach (var storageListener in _storage.Listeners)
         {

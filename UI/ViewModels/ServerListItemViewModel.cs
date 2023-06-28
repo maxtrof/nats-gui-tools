@@ -18,7 +18,7 @@ internal sealed class ServerListItemViewModel : ViewModelBase
     private bool _isConnected;
     private string _buttonText;
 
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; }
 
     public ServerListItemViewModel()
     {
@@ -82,7 +82,8 @@ internal static class ServerListItemViewModelMapper
         return new ServerListItemViewModel
         {
             ServerSettings = settings,
-            IsConnected = settings.Address == connectedServer
+            IsConnected = settings.Address == connectedServer,
+            Id = settings.Id
         };
     }
 

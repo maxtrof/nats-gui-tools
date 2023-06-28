@@ -18,10 +18,13 @@
             <Setter Property="Fill" Value="Red"/>
         </Style>
     </UserControl.Styles>
-    <Grid RowDefinitions="1*" ColumnDefinitions="35, 1*, 100">
+    <Grid RowDefinitions="1*" ColumnDefinitions="35, 1*, auto, 34">
         <Rectangle Classes="green" Grid.Row="0" Grid.Column="0" IsVisible="{Binding IsConnected}"></Rectangle>
         <Rectangle Classes="red" Grid.Row="0" Grid.Column="0" IsVisible="{Binding !IsConnected}"></Rectangle>
         <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ServerSettings.Name}" VerticalAlignment="Center"></TextBlock>
         <Button Grid.Row="0" Grid.Column="2" Click="ConnectDisconnectButton_OnClick" Name="ConnectDisconnectButton" Content="{Binding ButtonText}"></Button>
+        <Button Margin="10,0,0,0" Grid.Column="3" Name="EditButton" Click="EditButton_OnClick">
+            <Image Width="16" Height="16" Source="/Assets/edit.png"></Image>
+        </Button>
     </Grid>
 </UserControl>

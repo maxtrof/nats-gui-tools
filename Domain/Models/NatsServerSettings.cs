@@ -3,6 +3,10 @@ namespace Domain.Models;
 public sealed class NatsServerSettings
 {
     /// <summary>
+    /// Id
+    /// </summary>
+    public Guid Id { get; set; } = Guid.NewGuid();
+    /// <summary>
     /// Server name
     /// </summary>
     public string Name { get; set; } = default!;
