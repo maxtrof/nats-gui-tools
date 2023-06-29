@@ -182,14 +182,7 @@ public sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel, ID
                 return;
             try
             {
-                switch (MockType)
-                {
-                    case MockTypes.SimpleRequestReply:
-                        ActivatedRule = await _mockEngine.ActivateRule(MockTemplate);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException("Unknown Mock type");
-                }
+                ActivatedRule = await _mockEngine.ActivateRule(MockTemplate);
             }
             catch (Exception ex)
             {
@@ -204,17 +197,10 @@ public sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel, ID
                 return;
             try
             {
-                switch (MockType)
-                {
-                    case MockTypes.SimpleRequestReply:
-                        if(ActivatedRule == null)
-                            return;
-                        _mockEngine.DeactivateRule(ActivatedRule.Value);
-                        ActivatedRule = null;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException("Unknown Mock type");
-                }
+                if (ActivatedRule == null)
+                    return;
+                _mockEngine.DeactivateRule(ActivatedRule.Value);
+                ActivatedRule = null;
             }
             catch (Exception ex)
             {
