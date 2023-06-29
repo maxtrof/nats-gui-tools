@@ -65,6 +65,7 @@ internal static class AppDataMappings
         foreach (var mockTemplateDto in dto.Templates)
         {
             var template = new MockTemplate();
+            template.Name = mockTemplateDto.Name;
             template.Type = mockTemplateDto.Type;
             template.AnswerTemplate = mockTemplateDto.AnswerTemplate;
             template.Topic = mockTemplateDto.Topic ?? string.Empty;
@@ -153,6 +154,7 @@ internal static class AppDataMappings
         foreach (var mockTemplate in templates)
         {
             var templateDto = new MockTemplateDto(
+                Name: mockTemplate.Name,
                 Type: mockTemplate.Type,
                 AnswerTemplate: mockTemplate.AnswerTemplate,
                 Topic: mockTemplate.Topic

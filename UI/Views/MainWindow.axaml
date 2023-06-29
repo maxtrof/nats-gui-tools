@@ -132,10 +132,24 @@
                             <TextBlock Classes="TabText">Mocks</TextBlock>
                         </TabItem.Header>
                         <StackPanel>
-                            <Button Classes="AddNewItem">
+                            <Button Name="BtnAddNewMock" 
+                                    Command="{Binding AddNewMock}" Classes="AddNewItem">
                                 <TextBlock HorizontalAlignment="Center">Add new</TextBlock>
                             </Button>
-                            <ListBox Classes="Ngt"></ListBox>
+                            <ListBox Items="{Binding MockTemplates}" SelectedItem="{Binding SelectedMockTemplate}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="*, auto" VerticalAlignment="Stretch">
+                                            <TextBlock Name="TxtMockName" Grid.Column="0" Text="{Binding Name}"/>
+                                            <Button Grid.Column="1" FontSize="10" ToolTip.Tip="Delete mock"
+                                                    Command="{Binding 
+                                                    RelativeSource={RelativeSource AncestorType=Window},
+                                                    Path=DataContext.DeleteMock}"
+                                                    CommandParameter="{Binding .}">x</Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
                         </StackPanel>
                     </TabItem>
                 </TabControl>
@@ -147,6 +161,8 @@
                                              UpdateRequest="RequestsTabControl_OnUpdateRequest"/>
                 <controls:ListenersTabControl IsVisible="{Binding $parent[views:MainWindow].ViewModel.IsListenersTabVisible}"
                                               UpdateRequest="ListenersTabControl_OnUpdateRequest"/>
+                <controls:MocksTabControl IsVisible="{Binding $parent[views:MainWindow].ViewModel.IsMocksTabVisible}"
+                                              />
                 <StackPanel IsVisible="{Binding IsServersTabVisible}" HorizontalAlignment="Stretch">
                     <TextBlock FontSize="24" Margin="50" Text="{Binding StatsTextMessage}" DataContext="{Binding StatsUpdater}" />
                 </StackPanel>

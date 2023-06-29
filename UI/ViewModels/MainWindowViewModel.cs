@@ -29,12 +29,15 @@ internal sealed class MainWindowViewModel : ViewModelBase
     private bool _appLoaded;
     private bool _isRequestsTabVisible;
     private bool _isListenersTabVisible;
+    private bool _isMocksTabVisible;
     private bool _isServersTabVisible = true;
     private bool _formatJson;
     private int _selectedTab;
     private string? _errorMessage;
     private RequestTemplate _selectedRequest;
     private Listener _selectedListener;
+    private MockTemplate _selectedMockTemplate;
+
 
     public ICommand AddNewServer { get; }
     public ICommand EditServer { get; }
@@ -45,6 +48,8 @@ internal sealed class MainWindowViewModel : ViewModelBase
     public ICommand DeleteRequest { get; }
     public ICommand AddNewListener { get; }
     public ICommand DeleteListener { get; }
+    public ICommand AddNewMock { get; }
+    public ICommand DeleteMock { get; }
     public Interaction<AddOrUpdateServerViewModel, NatsServerSettings?> ShowAddOrUpdateServerDialog { get; }
     public Interaction<SettingsViewModel, Dictionary<string, string>?> ShowSettingsWindowDialog { get; }
     public Interaction<Unit, string?> ShowExportFileSaveDialog { get; }
@@ -54,11 +59,16 @@ internal sealed class MainWindowViewModel : ViewModelBase
     // Source caches for lists
     public SourceCache<RequestTemplate, Guid> _requestTemplates { get; set; } = new(x => x.Id);
     public SourceCache<Listener, Guid> _listeners { get; set; } = new(x => x.Id);
+    public SourceCache<MockTemplate, Guid> _mocks { get; set; } = new(x => x.Id);
     public SourceCache<ServerListItemViewModel, Guid> _servers { get; set; } = new(x => x.Id);
     
     // Filtered data for lists
     private readonly ReadOnlyObservableCollection<RequestTemplate> _requestTemplatesFiltered;
     public ReadOnlyObservableCollection<RequestTemplate> RequestTemplates => _requestTemplatesFiltered;
+    
+    // Filtered data for lists
+    private readonly ReadOnlyObservableCollection<MockTemplate> _mockTemplatesFiltered;
+    public ReadOnlyObservableCollection<MockTemplate> MockTemplates => _mockTemplatesFiltered;
     
     
     private readonly ReadOnlyObservableCollection<ServerListItemViewModel> _serversFiltered;
@@ -98,6 +108,15 @@ internal sealed class MainWindowViewModel : ViewModelBase
         }
     }
 
+    public MockTemplate SelectedMockTemplate
+    {
+        get => _selectedMockTemplate;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedMockTemplate, value);
+            MessageBus.Current.SendMessage(SelectedMockTemplate, BusEvents.MockSelected);
+        }
+    }
 
     public bool IsRequestsTabVisible
     {
@@ -109,6 +128,11 @@ internal sealed class MainWindowViewModel : ViewModelBase
     {
         get => _isListenersTabVisible;
         set => this.RaiseAndSetIfChanged(ref _isListenersTabVisible, value);
+    }
+    public bool IsMocksTabVisible
+    {
+        get => _isMocksTabVisible;
+        set => this.RaiseAndSetIfChanged(ref _isMocksTabVisible, value);
     }
     
     public bool IsServersTabVisible
@@ -123,9 +147,10 @@ internal sealed class MainWindowViewModel : ViewModelBase
         set
         {
             this.RaiseAndSetIfChanged(ref _selectedTab, value);
-            IsRequestsTabVisible = value == 2;
-            IsListenersTabVisible = value == 1;
             IsServersTabVisible = value == 0;
+            IsListenersTabVisible = value == 1;
+            IsRequestsTabVisible = value == 2;
+            IsMocksTabVisible = value == 3;
         }
     }
     
@@ -204,6 +229,12 @@ internal sealed class MainWindowViewModel : ViewModelBase
             .Filter(x => string.IsNullOrWhiteSpace(SearchText) || x.Name.ToLower().Contains(SearchText.ToLower()))
             .Sort(SortExpressionComparer<RequestTemplate>.Ascending(t => t.Name))
             .Bind(out _requestTemplatesFiltered)
+            .Subscribe();
+        _mocks.Connect()
+            .AutoRefreshOnObservable(_ => this.ObservableForProperty(x => x.SearchText))
+            .Filter(x => string.IsNullOrWhiteSpace(SearchText) || x.Name.ToLower().Contains(SearchText.ToLower()))
+            .Sort(SortExpressionComparer<MockTemplate>.Ascending(t => t.Name))
+            .Bind(out _mockTemplatesFiltered)
             .Subscribe();
 
         // Add new Server
@@ -289,7 +320,7 @@ internal sealed class MainWindowViewModel : ViewModelBase
             var result = await YesNoDialog.Handle(new YesNoDialogViewModel()
             {
                 Title = "Delete?",
-                Text = "Request will be removed permanently?"
+                Text = "Request will be removed permanently"
             });
 
             if (result.Result == DialogResultEnum.Yes)
@@ -319,7 +350,7 @@ internal sealed class MainWindowViewModel : ViewModelBase
             var result = await YesNoDialog.Handle(new YesNoDialogViewModel()
             {
                 Title = "Delete?",
-                Text = "Listener will be removed permanently?"
+                Text = "Listener will be removed permanently"
             });
 
             if (result.Result == DialogResultEnum.Yes)
@@ -328,6 +359,36 @@ internal sealed class MainWindowViewModel : ViewModelBase
                 _storage.Listeners.Remove(listener);
                 _storage.IncListenersVersion();
                 MessageBus.Current.SendMessage(listener, BusEvents.ListenerDeleted);
+            }
+        });
+        
+        AddNewMock = ReactiveCommand.Create(() =>
+        {
+            var newMock = new MockTemplate
+            {
+                Name = $"Mock {NameGenerator.GetRandomName()}",
+                Topic = ""
+            };
+            _storage.MockTemplates.Add(newMock);
+            _storage.IncMockTemplatesVersion();
+            _mocks.AddOrUpdate(newMock);
+            MessageBus.Current.SendMessage(newMock, BusEvents.MockSelected);
+        });
+
+        DeleteMock = ReactiveCommand.CreateFromTask<MockTemplate>(async listener =>
+        {
+            var result = await YesNoDialog.Handle(new YesNoDialogViewModel()
+            {
+                Title = "Delete?",
+                Text = "Mock will be removed permanently"
+            });
+
+            if (result.Result == DialogResultEnum.Yes)
+            {
+                _mocks.Remove(listener);
+                _storage.MockTemplates.Remove(listener);
+                _storage.IncMockTemplatesVersion();
+                MessageBus.Current.SendMessage(listener, BusEvents.MockDeleted);
             }
         });
         
@@ -359,6 +420,17 @@ internal sealed class MainWindowViewModel : ViewModelBase
                 _storage.Listeners.Replace(exists, listener);
                 _listeners.AddOrUpdate(listener);
                 _storage.IncListenersVersion();
+            });
+        MessageBus.Current.Listen<MockTemplate>(BusEvents.MockUpdated)
+            .Subscribe(mockTemplate =>
+            {
+                var exists = _storage.MockTemplates.FirstOrDefault(x => x.Id == mockTemplate.Id);
+                if (exists is null)
+                    return;
+
+                _storage.MockTemplates.Replace(exists, mockTemplate);
+                _storage.IncMockTemplatesVersion();
+                _mocks.AddOrUpdate(mockTemplate);
             });
         MessageBus.Current.Listen<string>(BusEvents.AutocompleteAdded)
             .Subscribe(variant =>
@@ -414,6 +486,12 @@ internal sealed class MainWindowViewModel : ViewModelBase
         foreach (var storageListener in _storage.Listeners)
         {
             _listeners.AddOrUpdate(storageListener);
+        }
+        
+        _mocks.Clear();
+        foreach (var mockTemplate in _storage.MockTemplates)
+        {
+            _mocks.AddOrUpdate(mockTemplate);
         }
     }
 }

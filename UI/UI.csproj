@@ -43,5 +43,13 @@
         <Compile Update="Controls\ListenersTabControl.axaml.cs">
             <SubType>Code</SubType>
         </Compile>
+        <Compile Update="Controls\MockEditControl.axaml.cs">
+          <SubType>Code</SubType>
+          <DependentUpon>MockEditControl.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\MocksTabControl.axaml.cs">
+          <SubType>Code</SubType>
+          <DependentUpon>MocksTabControl.axaml</DependentUpon>
+        </Compile>
     </ItemGroup>
 </Project>
