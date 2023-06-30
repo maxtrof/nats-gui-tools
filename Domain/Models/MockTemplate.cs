@@ -15,7 +15,7 @@ public sealed class MockTemplate
     /// <summary>
     /// Name of the mock template
     /// </summary>
-    public string Name {get; set; }
+    public string Name { get; set; } = default!;
 
     /// <summary>
     /// Type of a Mock

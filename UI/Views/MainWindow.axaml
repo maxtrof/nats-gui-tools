@@ -136,7 +136,7 @@
                                     Command="{Binding AddNewMock}" Classes="AddNewItem">
                                 <TextBlock HorizontalAlignment="Center">Add new</TextBlock>
                             </Button>
-                            <ListBox Items="{Binding MockTemplates}" SelectedItem="{Binding SelectedMockTemplate}">
+                            <ListBox Items="{Binding MockTemplates}" SelectedItem="{Binding SelectedMockTemplate}" Classes="Ngt">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid ColumnDefinitions="*, auto" VerticalAlignment="Stretch">

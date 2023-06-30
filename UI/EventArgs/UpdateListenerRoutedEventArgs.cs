@@ -5,5 +5,5 @@ namespace UI.EventArgs;
 
 internal class UpdateListenerRoutedEventArgs: RoutedEventArgs
 {
-    public Listener Listener { get; set; }
+    public Listener Listener { get; set; } = default!;
 }

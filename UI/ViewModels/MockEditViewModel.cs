@@ -26,9 +26,9 @@ public sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel, ID
 
     public readonly Guid MockId = default!;
     private string? _validationError;
-    private MockTypes _MockType;
+    private MockTypes _mockType;
     private bool _showReplySection;
-    private int _MockRowSpan;
+    private int _mockRowSpan;
     private Guid? _activatedRule;
 
     /// <summary>
@@ -52,7 +52,7 @@ public sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel, ID
     public ICommand DisableMock { get; set; } = default!;
 
     /// <inheritdoc />
-    public ViewModelActivator Activator { get; }
+    public ViewModelActivator Activator { get; } = default!;
 
     /// <summary>
     /// Template name
@@ -101,10 +101,10 @@ public sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel, ID
 
     public MockTypes MockType
     {
-        get => _MockType;
+        get => _mockType;
         set
         {
-            this.RaiseAndSetIfChanged(ref _MockType, value);
+            this.RaiseAndSetIfChanged(ref _mockType, value);
             BroadcastMockTemplateUpdated();
         }
     }
@@ -123,8 +123,8 @@ public sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel, ID
 
     public int MockRowSpan
     {
-        get => _MockRowSpan;
-        set => this.RaiseAndSetIfChanged(ref _MockRowSpan, value);
+        get => _mockRowSpan;
+        set => this.RaiseAndSetIfChanged(ref _mockRowSpan, value);
     }
 
     /// <summary>
@@ -175,6 +175,7 @@ public sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel, ID
 
     private void Init()
     {
+        _mockEngine.OnRuleStopped += OnRuleStop;
         EnableMock = ReactiveCommand.CreateFromTask(async _ =>
         {
             ValidationError = ValidateForm();
@@ -220,9 +221,18 @@ public sealed class MockEditViewModel : ViewModelBase, IActivatableViewModel, ID
         if (string.IsNullOrWhiteSpace(AnswerTemplate)) sb.AppendLine("Mock answer template is empty");
         return sb.Length > 0 ? sb.ToString() : null;
     }
+    
+    private void OnRuleStop(object? sender, Guid id)
+    {
+        if (id == ActivatedRule)
+        {
+            ActivatedRule = null;
+        }
+    }
 
     public void Dispose()
     {
+        _mockEngine.OnRuleStopped -= OnRuleStop;
         if (ActivatedRule == null) 
             return;
         _mockEngine.DeactivateRule(ActivatedRule.Value);

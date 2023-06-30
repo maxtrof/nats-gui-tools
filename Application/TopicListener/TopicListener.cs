@@ -28,12 +28,12 @@ public sealed class TopicListener : IDisposable
     /// <summary>
     /// Event, firing on message received
     /// </summary>
-    public event EventHandler<IncomingMessageData> OnMessageReceived;
+    public event EventHandler<IncomingMessageData> OnMessageReceived = default!;
 
     /// <summary>
     /// Event, firing on disconnect, passing topic name
     /// </summary>
-    public event EventHandler<string> OnUnsubscribed;
+    public event EventHandler<string> OnUnsubscribed = default!;
 
     /// <summary>
     /// Gets messages or returns null

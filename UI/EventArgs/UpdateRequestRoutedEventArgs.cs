@@ -5,5 +5,5 @@ namespace UI.EventArgs;
 
 internal class UpdateRequestRoutedEventArgs: RoutedEventArgs
 {
-    public RequestTemplate RequestTemplate { get; set; }
+    public RequestTemplate RequestTemplate { get; set; } = default!;
 }

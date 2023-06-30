@@ -34,9 +34,9 @@ internal sealed class MainWindowViewModel : ViewModelBase
     private bool _formatJson;
     private int _selectedTab;
     private string? _errorMessage;
-    private RequestTemplate _selectedRequest;
-    private Listener _selectedListener;
-    private MockTemplate _selectedMockTemplate;
+    private RequestTemplate _selectedRequest = default!;
+    private Listener _selectedListener = default!;
+    private MockTemplate _selectedMockTemplate = default!; 
 
 
     public ICommand AddNewServer { get; }

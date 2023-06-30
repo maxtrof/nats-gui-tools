@@ -16,6 +16,11 @@ public sealed class MockEngine : IDisposable
     /// </summary>
     private readonly List<MockEngineRuleBase> _rules = new ();
     
+    /// <summary>
+    /// Event, firing on rule stop, passing rule Id
+    /// </summary>
+    public event EventHandler<Guid> OnRuleStopped = default!;
+    
     public MockEngine(INatsGate natsGate)
     {
         _natsGate = natsGate ?? throw new ArgumentNullException(nameof(natsGate));
@@ -53,8 +58,25 @@ public sealed class MockEngine : IDisposable
         var rule = _rules.Find(x => x.Id == id);
         if (rule is null) return;
         
+        DeactivateRuleInternal(rule);
+    }
+
+    /// <summary>
+    /// Deactivates all rules
+    /// </summary>
+    public void DeactivateAllRules()
+    {
+        for (var index = 0; index < _rules.Count; index++)
+        {
+            DeactivateRuleInternal(_rules[index]);
+        }
+    }
+    
+    private void DeactivateRuleInternal(MockEngineRuleBase rule)
+    {
         rule.Stop();
         _rules.Remove(rule);
+        OnRuleStopped.Invoke(this, rule.Id);
     }
 
     /// <inheritdoc />

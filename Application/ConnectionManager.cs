@@ -10,12 +10,14 @@ public sealed class ConnectionManager
 {
     private readonly INatsGate _natsGate;
     private readonly TopicListener.TopicListener _topicListener;
+    private readonly MockEngine.MockEngine _mockEngine;
     private NatsServerSettings? _connectedServer;
 
-    public ConnectionManager(INatsGate natsGate, TopicListener.TopicListener topicListener)
+    public ConnectionManager(INatsGate natsGate, TopicListener.TopicListener topicListener, MockEngine.MockEngine mockEngine)
     {
         _natsGate = natsGate ?? throw new ArgumentNullException(nameof(natsGate));
-        _topicListener = topicListener;
+        _topicListener = topicListener ?? throw new ArgumentNullException(nameof(topicListener));
+        _mockEngine = mockEngine ?? throw new ArgumentNullException(nameof(mockEngine));
     }
 
     /// <summary>
@@ -36,11 +38,14 @@ public sealed class ConnectionManager
     /// Connects to a server. If there's active connection - closes it and opens a new one
     /// </summary>
     /// <param name="settings">Server settings</param>
-    /// <param name="clearTopics">Clears all topics</param>
-    public async Task Connect(NatsServerSettings settings, bool clearTopics = true)
+    /// <param name="clearTopicsAndMocks">Clears all topics</param>
+    public async Task Connect(NatsServerSettings settings, bool clearTopicsAndMocks = true)
     {
-        if (clearTopics)
+        if (clearTopicsAndMocks)
+        {
             _topicListener.UnsubscribeAll();
+            _mockEngine.DeactivateAllRules();
+        }
         if (_natsGate.Connected)
             await _natsGate.Disconnect();
         _natsGate.ConnectToServer(settings);

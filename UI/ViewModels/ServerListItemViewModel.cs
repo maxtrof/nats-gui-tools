@@ -12,18 +12,17 @@ namespace UI.ViewModels;
 
 internal sealed class ServerListItemViewModel : ViewModelBase
 {
-    private readonly ILifetimeScope _scope;
-    private readonly ConnectionManager _connectionManager; 
-    private NatsServerSettings _serverSettings;
+    private readonly ConnectionManager _connectionManager;
+    private NatsServerSettings _serverSettings = default!;
     private bool _isConnected;
-    private string _buttonText;
+    private string _buttonText = string.Empty;
 
     public Guid Id { get; set; }
 
     public ServerListItemViewModel()
     {
-        _scope = Program.Container.BeginLifetimeScope();
-        _connectionManager = _scope.Resolve<ConnectionManager>();
+        var scope = Program.Container.BeginLifetimeScope();
+        _connectionManager = scope.Resolve<ConnectionManager>();
     }
 
     public NatsServerSettings ServerSettings
