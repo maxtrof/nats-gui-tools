@@ -69,6 +69,7 @@
                                         <controls:ServerListItemControl 
                                             UpdateServersState="ServerListItemControl_OnUpdateServersState"
                                             EditServer="ServerListItemControl_OnEditServer"
+                                            DeleteServer="ServerListItemControl_OnDeleteServer"
                                         />
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
