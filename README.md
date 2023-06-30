@@ -1,7 +1,7 @@
 # nats-gui-tools
 ### Looking for something similar to Postman, but for NATS? You've found it! Cross-platform and free.
 
-![ScreenShot](/screenshot.jpg?raw=true "Optional Title")
+![ScreenShot](/screenshot.jpg?raw=true "Nats GUI Tools")
 
 ## Features:
 
