@@ -140,7 +140,7 @@
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid ColumnDefinitions="*, auto" VerticalAlignment="Stretch">
-                                            <TextBlock Name="TxtMockName" Grid.Column="0" Text="{Binding Name}"/>
+                                            <TextBlock Name="TxtMockName" Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center"/>
                                             <Button Grid.Column="1" FontSize="10" ToolTip.Tip="Delete mock"
                                                     Command="{Binding 
                                                     RelativeSource={RelativeSource AncestorType=Window},
