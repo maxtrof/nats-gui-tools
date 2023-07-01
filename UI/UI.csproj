@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Folder Include="Models\" />
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectCapability Include="Avalonia" />
+        <TrimmerRootAssembly Include="Avalonia.Themes.Fluent" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="0.10.19" />
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.19" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.19" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.19" />
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.10.12.2" />
+        <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.19" />
+
+        <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Application\Application.csproj" />
+        <ProjectReference Include="..\Domain\Domain.csproj" />
+        <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Controls\ListenerEditControl.axaml.cs">
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\ListenersTabControl.axaml.cs">
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\MockEditControl.axaml.cs">
+          <SubType>Code</SubType>
+          <DependentUpon>MockEditControl.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\MocksTabControl.axaml.cs">
+          <SubType>Code</SubType>
+          <DependentUpon>MocksTabControl.axaml</DependentUpon>
+        </Compile>
+    </ItemGroup>
+</Project>

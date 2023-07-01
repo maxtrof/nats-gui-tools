@@ -1,0 +1,4 @@
+dotnet publish -c Release -r linux-x64 -p:PublishSingleFile=true --self-contained true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishReadyToRun=true
+dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true --self-contained true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishReadyToRun=true
+dotnet publish -c Release -r osx.13-x64 -p:PublishSingleFile=true --self-contained true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishReadyToRun=true
+dotnet publish -c Release -r osx.13-arm64 -p:PublishSingleFile=true --self-contained true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishReadyToRun=true

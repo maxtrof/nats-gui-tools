@@ -1,0 +1,39 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:UI.ViewModels"
+             xmlns:controls="clr-namespace:UI.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="UI.Controls.ListenersTabControl"
+             x:DataType="vm:RequestsTabViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:RequestsTabViewModel />
+    </Design.DataContext>
+
+    <TabControl Items="{Binding Tabs}" TabStripPlacement="Top" BorderBrush="Aqua" SelectedItem="{Binding SelectedTab}">
+        <TabControl.ItemTemplate>
+            <DataTemplate>
+                <TextBox Name="editTitleField" Text="{Binding Name}" 
+                         GotFocus="EditTitleField_OnGotFocus" 
+                         LostFocus="EditTitleField_OnLostFocus">
+                    <TextBox.Styles>
+                        <Style Selector="TextBlock">
+                            <Setter Property="FontSize" Value="14"/>
+                        </Style>
+                    </TextBox.Styles>
+                </TextBox>
+            </DataTemplate>
+        </TabControl.ItemTemplate>
+
+
+        <TabControl.ContentTemplate>
+            <DataTemplate DataType="vm:ListenerEditViewModel">
+                <controls:ListenerEditControl DataContext="{Binding  }" />
+            </DataTemplate>
+        </TabControl.ContentTemplate>
+    </TabControl>
+
+</UserControl>

@@ -1,0 +1,117 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:UI.ViewModels"
+             xmlns:models="clr-namespace:Domain.Models;assembly=Domain"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="UI.Controls.ListenerEditControl"
+             x:DataType="viewModels:ListenerEditViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <viewModels:ListenerEditViewModel />
+    </Design.DataContext>
+    <UserControl.Styles>
+        <Style Selector="Expander /template/ ToggleButton#ExpanderHeader">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="Expander">
+            <Setter Property="Background" Value="DarkBlue"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"></Setter>
+            <Setter Property="Padding" Value="0"></Setter>
+        </Style>
+        <Style Selector="TextBlock.MessageText">
+            <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+            <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,Monospace"></Setter>
+        </Style>
+    </UserControl.Styles>
+    <Grid RowDefinitions="auto,auto,*" Margin="5">
+        <Grid Grid.Row="0" ColumnDefinitions="2*, 1*">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                <TextBlock VerticalAlignment="Center">Topic: </TextBlock>
+                <AutoCompleteBox 
+                    Items="{Binding AutocompleteOptions}"
+                    Text="{Binding Topic}"
+                    LostFocus="TopicAutoCompleteBox_OnLostFocus"
+                    IsTextCompletionEnabled="True"
+                    Name="TopicAutoCompleteBox"
+                    Watermark="Topic name"
+                    MinWidth="200"/>
+
+                <Button MinWidth="100"
+                        HorizontalAlignment="Left"
+                        BorderBrush="Aqua"
+                        Cursor="Hand"
+                        Command="{Binding StartListen}" IsVisible="{Binding !Listening}">
+                    <Button.Content>
+                        <TextBlock HorizontalAlignment="Center">Listen</TextBlock>
+                    </Button.Content>
+                </Button>
+                <Button MinWidth="100"
+                        HorizontalAlignment="Left"
+                        BorderBrush="Red"
+                        Cursor="Hand"
+                        Command="{Binding StopListen}" IsVisible="{Binding Listening}">
+                    <Button.Content>
+                        <TextBlock HorizontalAlignment="Center">Stop</TextBlock>
+                    </Button.Content>
+                </Button>
+                <Button MinWidth="100"
+                        HorizontalAlignment="Left"
+                        BorderBrush="DarkOrange"
+                        Cursor="Hand"
+                        Margin="10, 0, 0, 0"
+                        IsEnabled="{Binding Messages.Count}"
+                        Command="{Binding ClearMessages}">
+                    <Button.Content>
+                        <TextBlock HorizontalAlignment="Center">Remove all</TextBlock>
+                    </Button.Content>
+                </Button>
+            </StackPanel>
+            <TextBox Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Watermark="Search..." MinWidth="180" Text="{Binding SearchText}"/>
+        </Grid>
+        
+
+        <Grid Grid.Row="1">
+            <TextBlock Text="{Binding ValidationError}" Foreground="Brown" />
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="0, 5">
+            <ScrollViewer Name="ScrollViewer">
+                <ItemsRepeater Items="{Binding Messages}">
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate DataType="models:IncomingMessageData">
+                            <StackPanel Margin="0,10,0,0">
+                                <TextBlock Width="250" TextAlignment="Center" Background="DarkCyan" Text="{Binding Received}"></TextBlock>
+                                <Border Padding="1" Background="DarkCyan"></Border>
+                                <TextBlock
+                                    Classes="MessageText"
+                                    IsVisible="{Binding !LargeMessage}"
+                                    Background="DarkBlue"
+                                    Text="{Binding Body}"
+                                    ToolTip.Tip="Click to copy"
+                                    PointerPressed="MessageTextBlock_OnPointerPressed"/>
+                                <Expander IsVisible="{Binding LargeMessage}">
+                                    <Expander.Header>
+                                        <TextBlock Text="{Binding Preview}" />
+                                    </Expander.Header>
+                                    <StackPanel>
+                                        <TextBlock
+                                            Classes="MessageText"
+                                            TextWrapping="Wrap"
+                                            Text="{Binding Body}"
+                                            ToolTip.Tip="Click to copy"
+                                            PointerPressed="MessageTextBlock_OnPointerPressed"/>
+                                    </StackPanel>
+                                </Expander>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

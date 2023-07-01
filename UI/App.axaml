@@ -1,0 +1,17 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Name="Nats Gui Tools"
+             x:Class="UI.App">
+    <Application.Resources>
+        <Thickness x:Key="ExpanderContentPadding">6</Thickness> 
+    </Application.Resources>
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="About" Click="AboutNativeMenuItem_OnClick"/>
+        </NativeMenu>
+    </NativeMenu.Menu>
+    <Application.Styles>
+        <FluentTheme Mode="Dark"/>
+        <StyleInclude Source="avares://AvaloniaEdit/AvaloniaEdit.xaml" />
+    </Application.Styles>
+</Application>

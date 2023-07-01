@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="250"
+             Width="250"
+             Height="250"
+             x:Class="UI.Controls.LoaderControl">
+    <UserControl.Styles>
+        <Style Selector="Rectangle.blue">
+            <Setter Property="Height" Value="100"/>
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Fill" Value="DarkBlue"/>
+            <Style.Animations>
+                <Animation Duration="0:0:3" IterationCount="9999"> 
+                    <KeyFrame Cue="0%">
+                        <Setter Property="RotateTransform.Angle" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="RotateTransform.Angle" Value="360"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </UserControl.Styles>
+    <StackPanel>
+        <Rectangle Classes="blue" Margin="25"></Rectangle>
+        <TextBlock HorizontalAlignment="Center" Margin="30">Loading...</TextBlock>
+    </StackPanel>
+</UserControl>

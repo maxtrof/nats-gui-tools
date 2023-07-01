@@ -1,0 +1,59 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:UI.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+        Width="400" SizeToContent="Height"
+        x:Class="UI.Views.AddOrUpdateServerWindow"
+        WindowStartupLocation="CenterScreen"
+        Title="Add new server"
+        x:DataType="viewModels:AddOrUpdateServerViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <viewModels:AddOrUpdateServerViewModel/>
+    </Design.DataContext>
+    <StackPanel Margin="10">
+        <TextBlock FontSize="24" Margin="0,0,0,20" IsVisible="{Binding !IsUpdate}">
+            Add new NATS server
+        </TextBlock>
+        <TextBlock FontSize="24" Margin="0,0,0,20" IsVisible="{Binding IsUpdate}">
+            Update NATS server
+        </TextBlock>
+        
+        <TextBlock>
+            Server Name
+        </TextBlock>
+        <TextBox Text="{Binding ServerName}" Margin="0,0,0,10"></TextBox>
+        
+        <TextBlock>
+            Server IP or Machine name
+        </TextBlock>
+        <TextBox Text="{Binding Address}" Margin="0,0,0,10"></TextBox>
+        
+        <TextBlock>
+            Server Port (Empty for default)
+        </TextBlock>
+        <TextBox Text="{Binding Port}" Margin="0,0,0,10"></TextBox>
+        
+        <TextBlock>
+            Username (Optional)
+        </TextBlock>
+        <TextBox Text="{Binding Login}" Margin="0,0,0,10"></TextBox>
+        
+        <TextBlock>
+            Password (Optional)
+        </TextBlock>
+        <TextBox Text="{Binding Password}" PasswordChar="*" Margin="0,0,0,10"></TextBox>
+        
+        <CheckBox IsChecked="{Binding Tls}">Use TLS</CheckBox>
+        
+        <Button HorizontalAlignment="Stretch" Name="AddOrUpdateServerButton" Command="{Binding AddOrUpdateServerCommand}" IsEnabled="{Binding AddButtonEnabled}">
+            <StackPanel>
+                <TextBlock IsVisible="{Binding !IsUpdate}" HorizontalAlignment="Center">Add Server</TextBlock>
+                <TextBlock IsVisible="{Binding IsUpdate}" HorizontalAlignment="Center">Update Server</TextBlock>
+            </StackPanel>
+        </Button>
+    </StackPanel>
+</Window>

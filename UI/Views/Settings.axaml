@@ -1,0 +1,48 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:UI.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
+        Width="400" Height="500"
+        x:Class="UI.Views.Settings"
+        WindowStartupLocation="CenterScreen"
+        Title="Settings"
+        x:DataType="viewModels:SettingsViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <viewModels:SettingsViewModel/>
+    </Design.DataContext>
+    <Window.Styles>
+        <Style Selector="TextBlock.Danger">
+            <Setter Property="Foreground" Value="Red"></Setter>
+        </Style>
+    </Window.Styles>
+    <StackPanel Margin="10">
+        <TextBlock FontSize="24" Margin="0,0,0,10">User dictionary</TextBlock>
+        <Grid ColumnDefinitions="1*,1*" RowDefinitions="1*">
+            <Button HorizontalAlignment="Stretch" Grid.Column="0" Margin="0,0,0,10" Command="{Binding CreateNewVariable}">
+                <TextBlock TextAlignment="Center">Add new variable</TextBlock>
+            </Button>
+            <Button HorizontalAlignment="Stretch" Grid.Column="1" Margin="0,0,0,10" Command="{Binding UpdateUserDictionaryCommand}">
+                <TextBlock TextAlignment="Center">Save</TextBlock>
+            </Button>
+        </Grid>
+        <TextBlock Classes="Danger" IsVisible="{Binding ShowAllVariablesShouldBeUniqueError}">All variable names should be unique</TextBlock>
+        <ScrollViewer MaxHeight="400">
+            <ListBox Items="{Binding UserVariables}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="viewModels:UserVariable">
+                        <Grid Margin="0,10,0,0" ColumnDefinitions="18,1*,1*,30" RowDefinitions="1*">
+                            <TextBlock Grid.Column="0" FontWeight="Bold" FontSize="18">$</TextBlock>
+                            <TextBox Grid.Column="1" Text="{Binding Name}"></TextBox>
+                            <TextBox Grid.Column="2" Text="{Binding Value}"></TextBox>
+                            <Button Grid.Column="3" FontWeight="Black" Command="{Binding RemoveMe}">x</Button>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
+    </StackPanel>
+</Window>
