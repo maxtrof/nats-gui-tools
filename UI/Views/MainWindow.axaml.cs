@@ -138,4 +138,9 @@ internal partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         ViewModel!.EditServer.Execute(e.Id);
     }
+
+    private void ServerListItemControl_OnDeleteServer(object? sender, DeleteServerRoutedEventArgs e)
+    {
+        ViewModel!.DeleteServer.Execute(e.Id);
+    }
 }

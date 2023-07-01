@@ -29,6 +29,15 @@ internal partial class ServerListItemControl : ReactiveUserControl<ServerListIte
         add => AddHandler(EditServerEvent, value);
         remove => RemoveHandler(EditServerEvent, value);
     }
+    
+    public static readonly RoutedEvent<DeleteServerRoutedEventArgs> DeleteServerEvent =
+        RoutedEvent.Register<ServerListItemControl, DeleteServerRoutedEventArgs>(nameof(DeleteServerEvent), RoutingStrategies.Bubble);
+   
+    public event EventHandler<DeleteServerRoutedEventArgs> DeleteServer
+    { 
+        add => AddHandler(DeleteServerEvent, value);
+        remove => RemoveHandler(DeleteServerEvent, value);
+    }
    
    public ServerListItemControl()
     {
@@ -56,5 +65,10 @@ internal partial class ServerListItemControl : ReactiveUserControl<ServerListIte
     private void EditButton_OnClick(object? sender, RoutedEventArgs e)
     {
         RaiseEvent(new UpdateServerRoutedEventArgs { RoutedEvent = EditServerEvent, Id = ViewModel!.Id});
+    }
+
+    private void DeleteButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        RaiseEvent(new DeleteServerRoutedEventArgs { RoutedEvent = DeleteServerEvent, Id = ViewModel!.Id});
     }
 }

@@ -41,6 +41,7 @@ internal sealed class MainWindowViewModel : ViewModelBase
 
     public ICommand AddNewServer { get; }
     public ICommand EditServer { get; }
+    public ICommand DeleteServer { get; }
     public ICommand ShowSettingsWindow { get; }
     public ICommand ShowExportDialog { get; }
     public ICommand ShowImportDialog { get; }
@@ -272,6 +273,23 @@ internal sealed class MainWindowViewModel : ViewModelBase
             _storage.AppSettings.Servers.Replace(server, result);
             _storage.IncAppSettingsVersion();
             UpdateServersList();
+        });
+        
+        // Delete server
+        DeleteServer = ReactiveCommand.CreateFromTask(async (Guid id) =>
+        {
+            var result = await YesNoDialog.Handle(new YesNoDialogViewModel()
+            {
+                Title = "Delete?",
+                Text = "Server will be removed permanently"
+            });
+            if (result.Result == DialogResultEnum.Yes)
+            {
+                var server = _storage.AppSettings.Servers.First(x => x.Id == id);
+                _storage.AppSettings.Servers.Remove(server);
+                _storage.IncAppSettingsVersion();
+                UpdateServersList();
+            }
         });
 
         // Settings
