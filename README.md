@@ -22,3 +22,8 @@
 ### Export/Import
 
 - Share your collections with colleagues
+
+## Download
+
+Choose binary suitable for your system in **Assets** section of latest release:
+https://github.com/maxtrof/nats-gui-tools/releases
