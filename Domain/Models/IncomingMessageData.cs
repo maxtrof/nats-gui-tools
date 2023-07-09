@@ -3,8 +3,11 @@ namespace Domain.Models;
 /// <summary>
 /// Incoming to Nats topic message data
 /// </summary>
+/// <param name="Topic">Topic template, with wildcards</param>
+/// <param name="SpecificTopic">Topic without wildcards</param>
 public sealed record IncomingMessageData(
     string Topic,
+    string SpecificTopic,
     string Body,
     string? TopicToReply,
     DateTime Received
