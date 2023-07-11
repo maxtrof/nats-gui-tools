@@ -89,7 +89,7 @@ public sealed class NatsGate : INatsGate, IDisposable
         {
             var body = Encoding.UTF8.GetString(args.Message.Data);
             var response = handler.Invoke(
-                new IncomingMessageData(topicName, body, string.IsNullOrWhiteSpace(args.Message.Reply) ? null : args.Message.Reply, DateTime.Now)
+                new IncomingMessageData(topicName, args.Message.Subject,body, string.IsNullOrWhiteSpace(args.Message.Reply) ? null : args.Message.Reply, DateTime.Now)
             );
             if (response is null) return;
             

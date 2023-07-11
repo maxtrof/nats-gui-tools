@@ -107,6 +107,10 @@
                                             PointerPressed="MessageTextBlock_OnPointerPressed"/>
                                     </StackPanel>
                                 </Expander>
+                                <StackPanel Orientation="Horizontal" Background="DarkSlateBlue">
+                                    <TextBlock FontWeight="Bold" Margin="0 0 10 0">Topic: </TextBlock>
+                                    <TextBlock Text="{Binding SpecificTopic}"></TextBlock>
+                                </StackPanel>
                             </StackPanel>
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>
