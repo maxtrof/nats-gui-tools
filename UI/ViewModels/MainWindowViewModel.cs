@@ -314,10 +314,19 @@ internal sealed class MainWindowViewModel : ViewModelBase
         ShowImportFileLoadDialog = new Interaction<Unit, string?>();
         ShowImportDialog = ReactiveCommand.CreateFromTask(async () =>
         {
-            var result = await ShowImportFileLoadDialog.Handle(Unit.Default);
-            if (result is null) return;
-            await _storage.ImportAsync(result);
-            UpdateListsFromStorage();
+            var dialogResult = await YesNoDialog.Handle(new YesNoDialogViewModel()
+            {
+                Title = "Warning",
+                Text = "This action will remove your current collection. Do you want to continue?"
+            });
+
+            if (dialogResult.Result == DialogResultEnum.Yes)
+            {
+                var result = await ShowImportFileLoadDialog.Handle(Unit.Default);
+                if (result is null) return;
+                await _storage.ImportAsync(result);
+                UpdateListsFromStorage();
+            }
         });
         
         AddNewRequest = ReactiveCommand.Create(() =>
